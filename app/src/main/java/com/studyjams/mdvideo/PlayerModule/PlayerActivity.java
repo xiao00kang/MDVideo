@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -283,7 +284,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
             intent.putExtra(Tables.Video_id,contentId);
             intent.putExtra(Tables.Video_playDuration,String.valueOf(playDuration));
             intent.putExtra(Tables.Video_createdDate,Tools.getCurrentTimeMillis());
-            sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }
     }
 

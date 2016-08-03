@@ -62,3 +62,7 @@
 - 集成firebase的crash、messaging服务
 - 添加分享时的github下载地址
 
+2016.8.3
+- 更新播放历史的广播改为LocalBroadcastManager，提高安全性和效率
+- 更新应用分享的地址为google play地址
+
