@@ -46,24 +46,4 @@
             android:layout_height="match_parent"/>
 
     </com.google.android.exoplayer.AspectRatioFrameLayout>
-
-    <LinearLayout
-        android:id="@+id/controls_root"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/colorHalfTransparent"
-        android:visibility="gone">
-
-        <ImageButton
-            android:id="@+id/player_exit"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:background="@android:color/transparent"
-            android:onClick="exitPlayer"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/abc_ic_ab_back_mtrl_am_alpha"/>
-    </LinearLayout>
-
 </FrameLayout>

@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -36,7 +37,6 @@ import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.accessibility.CaptioningManager;
-import android.widget.MediaController;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.Toast;
@@ -64,12 +64,15 @@ import com.google.android.exoplayer.util.Util;
 import com.google.android.exoplayer.util.VerboseLogUtil;
 import com.studyjams.mdvideo.DatabaseHelper.Tables;
 import com.studyjams.mdvideo.MainActivity;
-import com.studyjams.mdvideo.PlayerModule.widget.DashRendererBuilder;
-import com.studyjams.mdvideo.PlayerModule.widget.DemoPlayer;
-import com.studyjams.mdvideo.PlayerModule.widget.DemoPlayer.RendererBuilder;
-import com.studyjams.mdvideo.PlayerModule.widget.ExtractorRendererBuilder;
-import com.studyjams.mdvideo.PlayerModule.widget.HlsRendererBuilder;
-import com.studyjams.mdvideo.PlayerModule.widget.SmoothStreamingRendererBuilder;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
+import com.studyjams.mdvideo.PlayerModule.MediaController.ExtractorMediaController;
+import com.studyjams.mdvideo.PlayerModule.Renderer.Dash.DashRendererBuilder;
+import com.studyjams.mdvideo.PlayerModule.Renderer.Dash.WidevineTestMediaDrmCallback;
+import com.studyjams.mdvideo.PlayerModule.Renderer.Extractor.ExtractorRendererBuilder;
+import com.studyjams.mdvideo.PlayerModule.Renderer.Hls.HlsRendererBuilder;
+import com.studyjams.mdvideo.PlayerModule.Renderer.SmoothStreaming.SmoothStreamingRendererBuilder;
+import com.studyjams.mdvideo.PlayerModule.Renderer.SmoothStreaming.SmoothStreamingTestMediaDrmCallback;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.Util.Tools;
 
@@ -106,8 +109,8 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
     }
 
     private EventLogger eventLogger;
-    private MediaController mediaController;
-    private View debugRootView;
+    private ExtractorMediaController mediaController;
+//    private View debugRootView;
     private View shutterView;
     private AspectRatioFrameLayout videoFrame;
     private SurfaceView surfaceView;
@@ -164,7 +167,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         });
 
         shutterView = findViewById(R.id.shutter);
-        debugRootView = findViewById(R.id.controls_root);
+//        debugRootView = findViewById(R.id.controls_root);
 
         videoFrame = (AspectRatioFrameLayout) findViewById(R.id.video_frame);
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);
@@ -174,13 +177,16 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
 //        playerStateTextView = (TextView) findViewById(R.id.player_state_view);
         subtitleLayout = (SubtitleLayout) findViewById(R.id.subtitles);
 
-        mediaController = new KeyCompatibleMediaController(this);
+        mediaController = new ExtractorMediaController(this);
         mediaController.setAnchorView(root);
 //        retryButton = (Button) findViewById(R.id.retry_button);
 //        retryButton.setOnClickListener(this);
 //        videoButton = (Button) findViewById(R.id.video_controls);
 //        audioButton = (Button) findViewById(R.id.audio_controls);
 //        textButton = (Button) findViewById(R.id.text_controls);
+
+        //控制指定的音频流，在自定义的mediaController里获取不到window
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         CookieHandler currentHandler = CookieHandler.getDefault();
         if (currentHandler != defaultCookieManager) {
@@ -509,11 +515,6 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         popup.show();
     }
 
-    //add by arthar
-    public void exitPlayer(View v){
-        super.onBackPressed();
-    }
-
     //弹出声道选择的菜单
     public void showAudioPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
@@ -651,7 +652,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
     private void toggleControlsVisibility() {
         if (mediaController.isShowing()) {
             mediaController.hide();
-            debugRootView.setVisibility(View.GONE);
+//            debugRootView.setVisibility(View.GONE);
         } else {
             showControls();
         }
@@ -659,7 +660,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
 
     private void showControls() {
         mediaController.show(0);
-        debugRootView.setVisibility(View.VISIBLE);
+//        debugRootView.setVisibility(View.VISIBLE);
     }
 
     // DemoPlayer.CaptionListener implementation
@@ -761,41 +762,4 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
                 : uri.getLastPathSegment();
         return Util.inferContentType(lastPathSegment);
     }
-
-    private static final class KeyCompatibleMediaController extends MediaController {
-
-        private MediaPlayerControl playerControl;
-
-        public KeyCompatibleMediaController(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void setMediaPlayer(MediaPlayerControl playerControl) {
-            super.setMediaPlayer(playerControl);
-            this.playerControl = playerControl;
-        }
-
-        @Override
-        public boolean dispatchKeyEvent(KeyEvent event) {
-            int keyCode = event.getKeyCode();
-            if (playerControl.canSeekForward() && (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD
-                    || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    playerControl.seekTo(playerControl.getCurrentPosition() + 15000); // milliseconds
-                    show();
-                }
-                return true;
-            } else if (playerControl.canSeekBackward() && (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND
-                    || keyCode == KeyEvent.KEYCODE_DPAD_LEFT)) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    playerControl.seekTo(playerControl.getCurrentPosition() - 5000); // milliseconds
-                    show();
-                }
-                return true;
-            }
-            return super.dispatchKeyEvent(event);
-        }
-    }
-
 }

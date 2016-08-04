@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.studyjams.mdvideo.PlayerModule.widget;
+package com.studyjams.mdvideo.PlayerModule.Renderer.Extractor;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -21,7 +21,6 @@ import android.media.MediaCodec;
 import android.net.Uri;
 import android.os.Handler;
 
-import com.studyjams.mdvideo.PlayerModule.widget.DemoPlayer.RendererBuilder;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.MediaCodecSelector;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
@@ -35,9 +34,14 @@ import com.google.android.exoplayer.upstream.DataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.google.android.exoplayer.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer.upstream.DefaultUriDataSource;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
 
 /**
  * A {@link RendererBuilder} for streams that can be read using an {@link Extractor}.
+ *
+ * 本地视频流的渲染器 支持如下格式：
+ * FMP4, MP4, M4A, MKV, WebM, MP3, AAC, MPEG-TS, MPEG-PS, OGG, FLV and WAV.
  */
 public class ExtractorRendererBuilder implements RendererBuilder {
 

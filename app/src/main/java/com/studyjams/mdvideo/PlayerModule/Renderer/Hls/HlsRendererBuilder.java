@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.studyjams.mdvideo.PlayerModule.widget;
+package com.studyjams.mdvideo.PlayerModule.Renderer.Hls;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaCodec;
 import android.os.Handler;
 
-import com.studyjams.mdvideo.PlayerModule.widget.DemoPlayer.RendererBuilder;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
 import com.google.android.exoplayer.DefaultLoadControl;
 import com.google.android.exoplayer.LoadControl;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
@@ -53,6 +54,8 @@ import java.util.List;
 
 /**
  * A {@link RendererBuilder} for HLS.
+ *
+ * HLS(在线视频，直播等)的渲染器
  */
 public class HlsRendererBuilder implements RendererBuilder {
 

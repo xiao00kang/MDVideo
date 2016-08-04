@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.studyjams.mdvideo.PlayerModule.widget;
+package com.studyjams.mdvideo.PlayerModule.Renderer.Dash;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaCodec;
 import android.os.Handler;
 import android.util.Log;
-import com.studyjams.mdvideo.PlayerModule.widget.DemoPlayer.RendererBuilder;
+
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
 import com.google.android.exoplayer.DefaultLoadControl;
 import com.google.android.exoplayer.LoadControl;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
@@ -56,6 +58,7 @@ import java.io.IOException;
 
 /**
  * A {@link RendererBuilder} for DASH.
+ * DASH的渲染器
  */
 public class DashRendererBuilder implements RendererBuilder {
 

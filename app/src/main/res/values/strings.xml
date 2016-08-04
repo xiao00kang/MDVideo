@@ -31,6 +31,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--playerDemo-->
+    <string name="player_play">play</string>
+    <string name="player_pause">pause</string>
     <string name="enable_background_audio">Play in background</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
