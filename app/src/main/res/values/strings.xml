@@ -21,7 +21,7 @@
     <string name="menu_folder_desc">请安装文件管理器</string>
 
     <!--分享与反馈-->
-    <string name="send_share_url" translatable="false">https://github.com/AndroidTips/MDVideo/releases</string>
+    <string name="send_share_url" translatable="false">https://play.google.com/store/apps/details?id=com.studyjams.mdvideo</string>
     <string name="send_share_title">分享应用给小伙伴~</string>
     <string name="send_share_email">"mailto:artharyoungcn@gmail.com"</string>
     <string name="player_play_history">已观看至：</string>
@@ -31,6 +31,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--playerDemo-->
+    <string name="player_play">play</string>
+    <string name="player_pause">pause</string>
     <string name="enable_background_audio">Play in background</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>

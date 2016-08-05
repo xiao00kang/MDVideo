@@ -30,4 +30,15 @@
         <item name="android:minWidth">40dp</item>
     </style>
 
+    <!--播放页面底部popupWindow弹窗动画-->
+    <style name="BottomPopupAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/popup_bottom_out</item>
+    </style>
+
+    <!--播放页面顶部popupWindow弹窗动画-->
+    <style name="TopPopupAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_top_in</item>
+        <item name="android:windowExitAnimation">@anim/popup_top_out</item>
+    </style>
 </resources>

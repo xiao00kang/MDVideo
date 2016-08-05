@@ -25,7 +25,7 @@ import com.google.android.exoplayer.TimeRange;
 import com.google.android.exoplayer.audio.AudioTrack;
 import com.google.android.exoplayer.chunk.Format;
 import com.google.android.exoplayer.util.VerboseLogUtil;
-import com.studyjams.mdvideo.PlayerModule.widget.DemoPlayer;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
 
 import java.io.IOException;
 import java.text.NumberFormat;

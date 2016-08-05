@@ -8,6 +8,7 @@
 - [Material Design](https://material.google.com/#)
 
 ## 代码提交Git指令
+![](https://github.com/AndroidTips/MDVideo/blob/dev/docs/gitbranch.jpg)
 ```java
 git rm -r --cached .
 git add .
@@ -16,6 +17,8 @@ git commit -m "msg"
 git pull
 
 git push 仓库地址
+
+git push (remote) (branch)
 ```
 
 ```java

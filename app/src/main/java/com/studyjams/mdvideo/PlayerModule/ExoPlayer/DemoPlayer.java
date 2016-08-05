@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.studyjams.mdvideo.PlayerModule.widget;
+package com.studyjams.mdvideo.PlayerModule.ExoPlayer;
 
 import android.media.MediaCodec.CryptoException;
 import android.os.Handler;
@@ -305,7 +305,7 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
    *     element may be null if there do not exist tracks of the corresponding type.
    * @param bandwidthMeter Provides an estimate of the currently available bandwidth. May be null.
    */
-  /* package */ void onRenderers(TrackRenderer[] renderers, BandwidthMeter bandwidthMeter) {
+  public void onRenderers(TrackRenderer[] renderers, BandwidthMeter bandwidthMeter) {
     for (int i = 0; i < RENDERER_COUNT; i++) {
       if (renderers[i] == null) {
         // Convert a null renderer to a dummy renderer.
@@ -329,7 +329,7 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
    *
    * @param e Describes the error.
    */
-  /* package */ void onRenderersError(Exception e) {
+  public void onRenderersError(Exception e) {
     if (internalErrorListener != null) {
       internalErrorListener.onRendererInitializationError(e);
     }
@@ -400,11 +400,11 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
     return player.getPlayWhenReady();
   }
 
-  /* package */ Looper getPlaybackLooper() {
+  public Looper getPlaybackLooper() {
     return player.getPlaybackLooper();
   }
 
-  /* package */ Handler getMainHandler() {
+  public Handler getMainHandler() {
     return mainHandler;
   }
 

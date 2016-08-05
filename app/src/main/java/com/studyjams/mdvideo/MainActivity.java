@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity
     private MyReceiver mMyReceiver;
     private IntentFilter mIntentFilter;
 
+    //定义进程内广播管理，比全局广播更高效
+    private LocalBroadcastManager mLocalBroadcastManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,10 +69,12 @@ public class MainActivity extends AppCompatActivity
         mData.add(getResources().getString(R.string.menu_video_history));
 //        mData.add(getResources().getString(R.string.menu_video_info));
 
+
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         mMyReceiver = new MyReceiver();
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(PLAY_HISTORY_ACTION);
-        registerReceiver(mMyReceiver,mIntentFilter);
+        mLocalBroadcastManager.registerReceiver(mMyReceiver,mIntentFilter);
 
         mSyncSqlHandler = new SyncSqlHandler(getContentResolver());
         refreshData();
@@ -188,7 +193,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mMyReceiver);
+        mLocalBroadcastManager.unregisterReceiver(mMyReceiver);
     }
 
     @Override

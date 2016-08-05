@@ -62,3 +62,13 @@
 - 集成firebase的crash、messaging服务
 - 添加分享时的github下载地址
 
+2016.8.3
+- 更新播放历史的广播改为LocalBroadcastManager，提高安全性和效率
+- 更新应用分享的地址为google play地址
+
+2016.8.4
+- 调整ExoPlayer包结构，分离渲染器Renderer和MediaController
+- 参考系统的MediaController，使用PopupWindow自定义一个播放控制器
+- 添加播放页面控制弹窗进入与退出时的动画
+- 添加播放器部分部分代码的注释
+

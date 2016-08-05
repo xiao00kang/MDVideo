@@ -29,11 +29,10 @@
             </intent-filter>
         </activity>
 
-        <!--   android:screenOrientation="landscape"-->
+        <!-- 测试版本不固定界面，方便测试横竖屏切换时是否有问题  android:screenOrientation="landscape"-->
         <activity
             android:name=".PlayerModule.PlayerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
-            android:screenOrientation="landscape"
             android:launchMode="singleTop"
             android:parentActivityName="com.studyjams.mdvideo.MainActivity"
             android:theme="@style/MyTheme.FullScreen">
