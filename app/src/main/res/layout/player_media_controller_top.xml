@@ -3,17 +3,32 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#CC000000"
+    android:background="@color/colorHalfTransparent"
     android:layoutDirection="ltr"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/player_exit"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:background="@android:color/transparent"
-        android:padding="10dp"
-        android:scaleType="fitCenter"
-        android:src="@mipmap/abc_ic_ab_back_mtrl_am_alpha"/>
 
+        style="@style/playerPopupTopImageView"
+        android:background="@drawable/player_icon_back"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"/>
+
+    <TextClock
+        android:format24Hour="@string/player_system_time"
+        android:layout_marginEnd="16dp"
+        style="@style/playerPopupTextView"/>
+
+    <ImageView
+        android:id="@+id/player_subtitle"
+        style="@style/playerPopupTopImageView"
+        android:background="@drawable/player_icon_subtitle"/>
+    <ImageView
+        android:id="@+id/player_more"
+        style="@style/playerPopupTopImageView"
+        android:background="@drawable/player_icon_storage"/>
 </LinearLayout>

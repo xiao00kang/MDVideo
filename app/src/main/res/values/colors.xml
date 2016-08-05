@@ -6,14 +6,16 @@
 
     <color name="colorIcon">#2196F3</color>
     <color name="black_overlay">#66000000</color>
-    <color name="colorHalfTransparent">#88000000</color>
+
     <color name="colorDark">#000000</color>
 
-    <color name="window_background">#FFF5F5F5</color>
+    <color name="light_white">#FFF5F5F5</color>
 
+    <!--当前使用颜色-->
     <color name="primary">#2196F3</color>
     <color name="primaryDark">#1976D2</color>
     <color name="accent">#FF4081</color>
+    <color name="colorHalfTransparent">#88000000</color>
 
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>

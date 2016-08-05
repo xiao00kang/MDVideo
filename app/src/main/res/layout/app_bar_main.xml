@@ -41,7 +41,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:layout_behavior="com.studyjams.mdvideo.View.FloatingActionButtonScrollBehavior"
-        android:src="@drawable/ic_create_new_folder_"
+        android:src="@drawable/ic_menu_new_folder_"
         app:elevation="6dp"
         app:pressedTranslationZ="25dp"
         android:clickable="true"

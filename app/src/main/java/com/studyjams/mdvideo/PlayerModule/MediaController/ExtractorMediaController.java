@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
@@ -32,9 +32,13 @@ import java.util.Locale;
  * Created by syamiadmin on 2016/8/3.
  */
 public class ExtractorMediaController extends FrameLayout{
+    private static final String TAG = "MediaController";
 
+    /**播放控制，从播放器传入**/
     private MediaPlayerControl mPlayer;
     private final Context mContext;
+
+    /**从外部传入的视图，可能是播放页面的父布局，也可能只是播放器部分的布局**/
     private View mAnchor;
     private View mRoot;
 
@@ -43,6 +47,7 @@ public class ExtractorMediaController extends FrameLayout{
 
     /**顶部交互的悬浮窗 返回等**/
     private PopupWindow mTopControlView;
+
     private View mDecor;
     private WindowManager.LayoutParams mDecorLayoutParams;
     private SeekBar mProgress;
@@ -56,13 +61,13 @@ public class ExtractorMediaController extends FrameLayout{
     private boolean mFromXml;
     private boolean mListenersSet;
     private OnClickListener mNextListener, mPrevListener;
-    StringBuilder mFormatBuilder;
-    Formatter mFormatter;
-    private ImageButton mPauseButton;
-    private ImageButton mFfwdButton;
-    private ImageButton mRewButton;
-    private ImageButton mNextButton;
-    private ImageButton mPrevButton;
+    private StringBuilder mFormatBuilder;
+    private Formatter mFormatter;
+    private ImageView mPauseButton;
+    private ImageView mFfwdButton;
+    private ImageView mRewButton;
+    private ImageView mNextButton;
+    private ImageView mPrevButton;
     private CharSequence mPlayDescription;
     private CharSequence mPauseDescription;
     private final AccessibilityManager mAccessibilityManager;
@@ -72,7 +77,7 @@ public class ExtractorMediaController extends FrameLayout{
         mRoot = this;
         mContext = context;
         mUseFastForward = true;
-        mFromXml = true;
+        mFromXml = false;
         mAccessibilityManager = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
     }
 
@@ -120,10 +125,14 @@ public class ExtractorMediaController extends FrameLayout{
         //设置显示和消失的动画
         mTopControlView.setAnimationStyle(R.style.TopPopupAnimation);
 
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-        requestFocus();
+        /**
+         * 系统的mediaController可能更多的出于按键（例如电视）适配的考虑，所以会用这样的方式去处理焦点问题
+         */
+
+//        setFocusable(true);
+//        setFocusableInTouchMode(true);
+//        setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+//        requestFocus();
     }
 
     //这个地方好像并没有什么卵用
@@ -245,8 +254,8 @@ public class ExtractorMediaController extends FrameLayout{
     protected View makeTopControllerView() {
         LayoutInflater inflate = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View mTopControl = inflate.inflate(R.layout.player_media_controller_top, null);
-        ImageButton imageButton = (ImageButton)mTopControl.findViewById(R.id.player_exit);
-        imageButton.setOnClickListener(new OnClickListener() {
+        ImageView imageView = (ImageView)mTopControl.findViewById(R.id.player_exit);
+        imageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isShowing()) {
@@ -269,13 +278,13 @@ public class ExtractorMediaController extends FrameLayout{
         Resources res = mContext.getResources();
         mPlayDescription = res.getText(R.string.player_play);
         mPauseDescription = res.getText(R.string.player_pause);
-        mPauseButton = (ImageButton) v.findViewById(R.id.pause);
+        mPauseButton = (ImageView) v.findViewById(R.id.pause);
         if (mPauseButton != null) {
             mPauseButton.requestFocus();
             mPauseButton.setOnClickListener(mPauseListener);
         }
 
-        mFfwdButton = (ImageButton) v.findViewById(R.id.ffwd);
+        mFfwdButton = (ImageView) v.findViewById(R.id.ffwd);
         if (mFfwdButton != null) {
             mFfwdButton.setOnClickListener(mFfwdListener);
             if (!mFromXml) {
@@ -283,7 +292,7 @@ public class ExtractorMediaController extends FrameLayout{
             }
         }
 
-        mRewButton = (ImageButton) v.findViewById(R.id.rew);
+        mRewButton = (ImageView) v.findViewById(R.id.rew);
         if (mRewButton != null) {
             mRewButton.setOnClickListener(mRewListener);
             if (!mFromXml) {
@@ -292,11 +301,11 @@ public class ExtractorMediaController extends FrameLayout{
         }
 
         // By default these are hidden. They will be enabled when setPrevNextListeners() is called
-        mNextButton = (ImageButton) v.findViewById(R.id.next);
+        mNextButton = (ImageView) v.findViewById(R.id.next);
         if (mNextButton != null && !mFromXml && !mListenersSet) {
             mNextButton.setVisibility(View.GONE);
         }
-        mPrevButton = (ImageButton) v.findViewById(R.id.prev);
+        mPrevButton = (ImageView) v.findViewById(R.id.prev);
         if (mPrevButton != null && !mFromXml && !mListenersSet) {
             mPrevButton.setVisibility(View.GONE);
         }
@@ -490,6 +499,7 @@ public class ExtractorMediaController extends FrameLayout{
     //触摸事件处理
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.d(TAG, "onTouchEvent: ============感觉这个地方并不会触发");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 show(0); // show until hide is called
@@ -515,8 +525,10 @@ public class ExtractorMediaController extends FrameLayout{
     //按键控制
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        int keyCode = event.getKeyCode();
+        //这个地方，在播放界面有直接调用
 
+        int keyCode = event.getKeyCode();
+        Log.d(TAG, "dispatchKeyEvent: =============keyCode" + keyCode);
         //add by ZZY
         if (mPlayer.canSeekForward() && (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD
                 || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
@@ -588,15 +600,16 @@ public class ExtractorMediaController extends FrameLayout{
         }
     };
 
+    //更新暂停、播放按键的状态
     private void updatePausePlay() {
         if (mRoot == null || mPauseButton == null)
             return;
 
         if (mPlayer.isPlaying()) {
-            mPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+            mPauseButton.setBackgroundResource(R.drawable.player_icon_pause);
             mPauseButton.setContentDescription(mPauseDescription);
         } else {
-            mPauseButton.setImageResource(android.R.drawable.ic_media_play);
+            mPauseButton.setBackgroundResource(R.drawable.player_icon_play);
             mPauseButton.setContentDescription(mPlayDescription);
         }
     }
@@ -698,10 +711,11 @@ public class ExtractorMediaController extends FrameLayout{
         @Override
         public void onClick(View v) {
             int pos = mPlayer.getCurrentPosition();
-            pos -= 5000; // milliseconds
+            pos -= 1000; // milliseconds
             mPlayer.seekTo(pos);
             setProgress();
 
+            //刷新菜单的显示时间
             show(sDefaultTimeout);
         }
     };
@@ -710,7 +724,7 @@ public class ExtractorMediaController extends FrameLayout{
         @Override
         public void onClick(View v) {
             int pos = mPlayer.getCurrentPosition();
-            pos += 15000; // milliseconds
+            pos += 1000; // milliseconds
             mPlayer.seekTo(pos);
             setProgress();
 
@@ -730,6 +744,7 @@ public class ExtractorMediaController extends FrameLayout{
         }
     }
 
+    //设置上一个和下一个的显示条件
     public void setPrevNextListeners(OnClickListener next, OnClickListener prev) {
         mNextListener = next;
         mPrevListener = prev;

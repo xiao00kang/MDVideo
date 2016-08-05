@@ -20,7 +20,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/DrawerLayoutTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -34,6 +34,7 @@
             android:name=".PlayerModule.PlayerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:launchMode="singleTop"
+            android:screenOrientation="sensorLandscape"
             android:parentActivityName="com.studyjams.mdvideo.MainActivity"
             android:theme="@style/MyTheme.FullScreen">
             <intent-filter>
