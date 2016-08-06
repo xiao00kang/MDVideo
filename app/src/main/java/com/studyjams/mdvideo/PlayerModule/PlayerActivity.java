@@ -27,14 +27,12 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.accessibility.CaptioningManager;
 import android.widget.PopupMenu;
@@ -155,16 +153,16 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
                 return true;
             }
         });
-        root.setOnKeyListener(new OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE
-                        || keyCode == KeyEvent.KEYCODE_MENU) {
-                    return false;
-                }
-                return mediaController.dispatchKeyEvent(event);
-            }
-        });
+//        root.setOnKeyListener(new OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE
+//                        || keyCode == KeyEvent.KEYCODE_MENU) {
+//                    return false;
+//                }
+//                return mediaController.dispatchKeyEvent(event);
+//            }
+//        });
 
         shutterView = findViewById(R.id.shutter);
 //        debugRootView = findViewById(R.id.controls_root);

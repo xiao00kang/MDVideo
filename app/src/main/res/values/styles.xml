@@ -49,7 +49,6 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:padding">16dp</item>
         <item name="android:scaleType">fitXY</item>
-        <item name="android:contentDescription">null</item>
     </style>
 
     <!--顶部的菜单-->
