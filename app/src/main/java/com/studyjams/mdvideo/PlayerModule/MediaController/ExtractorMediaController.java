@@ -7,7 +7,6 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
@@ -17,12 +16,12 @@ import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
 import com.studyjams.mdvideo.R;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -72,12 +71,49 @@ public class ExtractorMediaController extends AbstractMediaController implements
     /**辅助功能管理**/
     private final AccessibilityManager mAccessibilityManager;
 
+    /**实例化一个Handler用于进度条更新**/
+    private final Handler mHandler = new MyHandler(this);
+
     public ExtractorMediaController(Context context) {
         mContext = context;
         initFloatingWindow();
         mAccessibilityManager = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+    }
+
+    /**通过弱引用来使用Handler**/
+    private static class MyHandler extends Handler {
+        private WeakReference<ExtractorMediaController> controllerWeakReference;
+        public MyHandler(ExtractorMediaController controller) {
+            controllerWeakReference = new WeakReference<>(controller);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            ExtractorMediaController controller = controllerWeakReference.get();
+            if (controller != null) {
+                controller.handleMessage(msg);
+            }
+        }
+    }
+
+    /**处理Message**/
+    private void handleMessage(Message msg) {
+        int pos;
+        switch (msg.what) {
+            case FADE_OUT:
+                hide();
+                break;
+            case SHOW_PROGRESS:
+                pos = setProgress();
+                if (!mDragging && mShowing && mPlayer.isPlaying()) {
+                    msg = mHandler.obtainMessage(SHOW_PROGRESS);
+                    mHandler.sendMessageDelayed(msg, 1000 - (pos % 1000));
+                }
+                break;
+            default:break;
+        }
     }
 
     /**初始化悬浮窗**/
@@ -105,18 +141,6 @@ public class ExtractorMediaController extends AbstractMediaController implements
         mTopControlView.setAnimationStyle(R.style.TopPopupAnimation);
     }
 
-    private final View.OnTouchListener mTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                if (mShowing) {
-                    hide();
-                }
-            }
-            return false;
-        }
-    };
-
     /**播放控制器 初始化时添加**/
     @Override
     public void setMediaPlayer(MediaPlayerControl player) {
@@ -135,9 +159,7 @@ public class ExtractorMediaController extends AbstractMediaController implements
     @Override
     public void setAnchorView(View view) {
         mAnchor = view;
-        if (mAnchor != null) {
-            mAnchor.getRootView().setOnTouchListener(mTouchListener);
-        }else{
+        if (mAnchor == null) {
             throw new NullPointerException("the anchor view can not be null");
         }
     }
@@ -151,26 +173,26 @@ public class ExtractorMediaController extends AbstractMediaController implements
      */
     private View makeBottomControllerView() {
         LayoutInflater inflate = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View mRoot = inflate.inflate(R.layout.player_media_controller_bottom, null);
-        mPauseButton = (ImageView)mRoot.findViewById(R.id.player_play);
+        View mBottomControl = inflate.inflate(R.layout.player_media_controller_bottom, null);
+        mPauseButton = (ImageView)mBottomControl.findViewById(R.id.player_play);
         mPauseButton.setOnClickListener(this);
-        mForwardButton = (ImageView)mRoot.findViewById(R.id.player_forward);
+        mForwardButton = (ImageView)mBottomControl.findViewById(R.id.player_forward);
         mForwardButton.setOnClickListener(this);
-        mRewindButton = (ImageView)mRoot.findViewById(R.id.player_rewind);
+        mRewindButton = (ImageView)mBottomControl.findViewById(R.id.player_rewind);
         mRewindButton.setOnClickListener(this);
-        mNextButton = (ImageView)mRoot.findViewById(R.id.player_next);
+        mNextButton = (ImageView)mBottomControl.findViewById(R.id.player_next);
         mNextButton.setOnClickListener(this);
-        mPreviousButton = (ImageView)mRoot.findViewById(R.id.player_previous);
+        mPreviousButton = (ImageView)mBottomControl.findViewById(R.id.player_previous);
         mPreviousButton.setOnClickListener(this);
 
-        mProgress = (SeekBar)mRoot.findViewById(R.id.player_progress);
+        mProgress = (SeekBar)mBottomControl.findViewById(R.id.player_progress);
         mProgress.setMax(1000);
         mProgress.setOnSeekBarChangeListener(mSeekListener);
 
-        mEndTime = (TextView) mRoot.findViewById(R.id.player_time);
-        mCurrentTime = (TextView) mRoot.findViewById(R.id.player_time_current);
+        mEndTime = (TextView) mBottomControl.findViewById(R.id.player_time);
+        mCurrentTime = (TextView) mBottomControl.findViewById(R.id.player_time_current);
 
-        return mRoot;
+        return mBottomControl;
     }
 
     private View makeTopControllerView() {
@@ -200,6 +222,7 @@ public class ExtractorMediaController extends AbstractMediaController implements
                 break;
             case R.id.player_subtitle:
                 //字幕加载
+                EventBus.getDefault().post(new ControllerMessage(v));
                 Log.d(TAG, "onClick: subtitle");
                 break;
             case R.id.player_more:
@@ -222,7 +245,7 @@ public class ExtractorMediaController extends AbstractMediaController implements
                 show(sDefaultTimeout);
                 break;
             case R.id.player_rewind:
-                //后腿
+                //后退
                 pos = mPlayer.getCurrentPosition();
                 pos -= 5000; // milliseconds
                 mPlayer.seekTo(pos);
@@ -246,16 +269,12 @@ public class ExtractorMediaController extends AbstractMediaController implements
     private void dismissPopupWindow(){
         mBottomControlView.dismiss();
         mTopControlView.dismiss();
-        /**解除注册**/
-        EventBus.getDefault().unregister(this);
     }
 
     /**显示悬浮窗**/
     private void showPopupWindow(){
         mBottomControlView.showAtLocation(mAnchor,Gravity.BOTTOM,0,0);
         mTopControlView.showAtLocation(mAnchor,Gravity.TOP,0,0);
-        /**注册事件总线**/
-        EventBus.getDefault().register(this);
     }
 
     /**
@@ -274,13 +293,7 @@ public class ExtractorMediaController extends AbstractMediaController implements
             if (mForwardButton != null && !mPlayer.canSeekForward()) {
                 mForwardButton.setEnabled(false);
             }
-            // TODO What we really should do is add a canSeek to the MediaPlayerControl interface;
-            // this scheme can break the case when applications want to allow seek through the
-            // progress bar but disable forward/backward buttons.
-            //
-            // However, currently the flags SEEK_BACKWARD_AVAILABLE, SEEK_FORWARD_AVAILABLE,
-            // and SEEK_AVAILABLE are all (un)set together; as such the aforementioned issue
-            // shouldn't arise in existing applications.
+
             if (mProgress != null && !mPlayer.canSeekBackward() && !mPlayer.canSeekForward()) {
                 mProgress.setEnabled(false);
             }
@@ -351,32 +364,6 @@ public class ExtractorMediaController extends AbstractMediaController implements
         }
     }
 
-    //处理事件
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true, priority = 100)
-    public void test(String str) {
-
-    }
-
-    /**处理进度条更新**/
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            int pos;
-            switch (msg.what) {
-                case FADE_OUT:
-                    hide();
-                    break;
-                case SHOW_PROGRESS:
-                    pos = setProgress();
-                    if (!mDragging && mShowing && mPlayer.isPlaying()) {
-                        msg = obtainMessage(SHOW_PROGRESS);
-                        sendMessageDelayed(msg, 1000 - (pos % 1000));
-                    }
-                    break;
-            }
-        }
-    };
-
     //格式化时间为分钟、秒钟显示
     private String stringForTime(int timeMs) {
         int totalSeconds = timeMs / 1000;
@@ -393,13 +380,13 @@ public class ExtractorMediaController extends AbstractMediaController implements
         }
     }
 
-    //设置播放进度与时间显示
+    /**更新播放进度与时间显示**/
     private int setProgress() {
         if (mPlayer == null || mDragging) {
             return 0;
         }
-        int position = mPlayer.getCurrentPosition();
-        int duration = mPlayer.getDuration();
+        int position = mPlayer.getCurrentPosition();//已播放时长
+        int duration = mPlayer.getDuration();//总时长
         if (mProgress != null) {
             if (duration > 0) {
                 // use long to avoid overflow
