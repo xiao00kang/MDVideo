@@ -27,18 +27,15 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.accessibility.CaptioningManager;
 import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.Toast;
 
 import com.google.android.exoplayer.AspectRatioFrameLayout;
@@ -64,6 +61,7 @@ import com.google.android.exoplayer.util.Util;
 import com.google.android.exoplayer.util.VerboseLogUtil;
 import com.studyjams.mdvideo.DatabaseHelper.Tables;
 import com.studyjams.mdvideo.MainActivity;
+import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
 import com.studyjams.mdvideo.PlayerModule.MediaController.ExtractorMediaController;
@@ -75,6 +73,10 @@ import com.studyjams.mdvideo.PlayerModule.Renderer.SmoothStreaming.SmoothStreami
 import com.studyjams.mdvideo.PlayerModule.Renderer.SmoothStreaming.SmoothStreamingTestMediaDrmCallback;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.Util.Tools;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -110,25 +112,18 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
 
     private EventLogger eventLogger;
     private ExtractorMediaController mediaController;
-//    private View debugRootView;
     private View shutterView;
     private AspectRatioFrameLayout videoFrame;
     private SurfaceView surfaceView;
-//    private TextView debugTextView;
-//    private TextView playerStateTextView;
     private SubtitleLayout subtitleLayout;
-//    private Button videoButton;
-//    private Button audioButton;
-//    private Button textButton;
-//    private Button retryButton;
 
     private DemoPlayer player;
-//    private DebugTextViewHelper debugViewHelper;
     private boolean playerNeedsPrepare;
 
     private long playerPosition;
     private boolean enableBackgroundAudio;
 
+    /**播放的4个必要条件**/
     private Uri contentUri;
     private int contentType;
     private String contentId;
@@ -136,14 +131,13 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
 
-    // Activity lifecycle
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.player_activity);
         View root = findViewById(R.id.root);
+        //响应时间，拉起和隐藏控制菜单
         root.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -155,28 +149,14 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
                 return true;
             }
         });
-        root.setOnKeyListener(new OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE
-                        || keyCode == KeyEvent.KEYCODE_MENU) {
-                    return false;
-                }
-                return mediaController.dispatchKeyEvent(event);
-            }
-        });
 
         shutterView = findViewById(R.id.shutter);
-//        debugRootView = findViewById(R.id.controls_root);
-
         videoFrame = (AspectRatioFrameLayout) findViewById(R.id.video_frame);
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);
         surfaceView.getHolder().addCallback(this);
-//        debugTextView = (TextView) findViewById(R.id.debug_text_view);
-
-//        playerStateTextView = (TextView) findViewById(R.id.player_state_view);
         subtitleLayout = (SubtitleLayout) findViewById(R.id.subtitles);
 
+        //初始化播放控制器
         mediaController = new ExtractorMediaController(this);
         mediaController.setAnchorView(root);
 //        retryButton = (Button) findViewById(R.id.retry_button);
@@ -195,6 +175,8 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
 
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(this, this);
         audioCapabilitiesReceiver.register();
+
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -279,6 +261,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         super.onDestroy();
         audioCapabilitiesReceiver.unregister();
         releasePlayer();
+        EventBus.getDefault().unregister(this);
     }
 
     /**将已播放时长以广播的形式发出去**/
@@ -325,8 +308,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             preparePlayer(true);
         } else {
-            Toast.makeText(getApplicationContext(), R.string.storage_permission_denied,
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.storage_permission_denied, Toast.LENGTH_LONG).show();
             finish();
         }
     }
@@ -505,6 +487,17 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
 //        textButton.setVisibility(haveTracks(DemoPlayer.TYPE_TEXT) ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     *  threadMode回调所在线程
+     *  priority 事件优先级
+     *  sticky 是否接收粘性事件
+     * @param msg
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, priority = 0, sticky = false)
+    public void handleEvent(ControllerMessage msg) {
+       toggleControlsVisibility();
+    }
+
     private boolean haveTracks(int type) {
         return player != null && player.getTrackCount(type) > 0;
     }
@@ -523,7 +516,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         final MenuItem backgroundAudioItem = menu.findItem(0);
         backgroundAudioItem.setCheckable(true);
         backgroundAudioItem.setChecked(enableBackgroundAudio);
-        OnMenuItemClickListener clickListener = new OnMenuItemClickListener() {
+        PopupMenu.OnMenuItemClickListener clickListener = new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item == backgroundAudioItem) {
@@ -551,7 +544,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         menu.add(Menu.NONE, 1, Menu.NONE, R.string.logging_verbose);
         menu.setGroupCheckable(Menu.NONE, true, true);
         menu.findItem((VerboseLogUtil.areAllTagsEnabled()) ? 1 : 0).setChecked(true);
-        popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == 0) {
@@ -566,7 +559,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
     }
 
     private void configurePopupWithTracks(PopupMenu popup,
-                                          final OnMenuItemClickListener customActionClickListener,
+                                          final PopupMenu.OnMenuItemClickListener customActionClickListener,
                                           final int trackType) {
         if (player == null) {
             return;
@@ -575,7 +568,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         if (trackCount == 0) {
             return;
         }
-        popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 return (customActionClickListener != null
@@ -649,18 +642,18 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         return true;
     }
 
+    /**切换Controller的显示控制**/
     private void toggleControlsVisibility() {
         if (mediaController.isShowing()) {
             mediaController.hide();
-//            debugRootView.setVisibility(View.GONE);
         } else {
             showControls();
         }
     }
 
+    /**显示Controller**/
     private void showControls() {
         mediaController.show(0);
-//        debugRootView.setVisibility(View.VISIBLE);
     }
 
     // DemoPlayer.CaptionListener implementation
@@ -721,6 +714,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         }
     }
 
+    /**字幕设置**/
     private void configureSubtitleView() {
         CaptionStyleCompat style;
         float fontScale;
@@ -752,14 +746,22 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
     /**
      * Makes a best guess to infer the type from a media {@link Uri} and an optional overriding file
      * extension.
-     *
+     * 根据后缀判断输入
      * @param uri           The {@link Uri} of the media.
      * @param fileExtension An overriding file extension.
      * @return The inferred type.
      */
     private static int inferContentType(Uri uri, String fileExtension) {
-        String lastPathSegment = !TextUtils.isEmpty(fileExtension) ? "." + fileExtension
-                : uri.getLastPathSegment();
+        String lastPathSegment = !TextUtils.isEmpty(fileExtension) ? "." + fileExtension : uri.getLastPathSegment();
         return Util.inferContentType(lastPathSegment);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mediaController.isShowing()) {
+            mediaController.hide();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

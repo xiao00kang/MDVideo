@@ -43,7 +43,7 @@ public class VideoLocalCursorAdapter extends RecyclerViewCursorAdapter<VideoLoca
         mVideoData = new ArrayList<>();
 
         /**Format time**/
-        mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+        mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
     }
 
