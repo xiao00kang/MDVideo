@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -24,13 +25,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.exoplayer.util.Util;
 import com.studyjams.mdvideo.Adapter.MainPagerAdapter;
 import com.studyjams.mdvideo.DatabaseHelper.SyncSqlHandler;
 import com.studyjams.mdvideo.DatabaseHelper.Tables;
 import com.studyjams.mdvideo.DatabaseHelper.VideoProvider;
+import com.studyjams.mdvideo.FileChooserModule.FileChooserDialog;
 import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 
@@ -288,14 +289,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fileChooser(){
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("video/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.menu_folder_title)), REQUEST_CODE);
-        }else{
-            // Potentially direct the user to the Market with a Toast
-            Toast.makeText(this, getString(R.string.menu_folder_desc), Toast.LENGTH_SHORT).show();
-        }
+
+        DialogFragment dialogFragment = new FileChooserDialog();
+        dialogFragment.show(getSupportFragmentManager(),"");
+
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("video/*");
+//        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//        if (intent.resolveActivity(getPackageManager()) != null) {
+//            startActivityForResult(Intent.createChooser(intent, getString(R.string.menu_folder_title)), REQUEST_CODE);
+//        }else{
+//            // Potentially direct the user to the Market with a Toast
+//            Toast.makeText(this, getString(R.string.menu_folder_desc), Toast.LENGTH_SHORT).show();
+//        }
     }
 }
