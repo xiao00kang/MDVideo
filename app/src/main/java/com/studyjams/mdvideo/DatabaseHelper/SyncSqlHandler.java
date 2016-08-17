@@ -27,6 +27,7 @@ public class SyncSqlHandler extends AsyncQueryHandler{
 
     //自建应用内媒体库查询后校验URI地址是否可用并进行清理操作
     public static final int LOCAL_QUERY_DELETE = 2;
+
     //自建应用内媒体库查询后校验URI地址是否可用并进行清理操作
     public static final int LOCAL_UPDATE = 3;
 

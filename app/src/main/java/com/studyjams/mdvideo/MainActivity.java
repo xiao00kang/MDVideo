@@ -13,7 +13,6 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -25,13 +24,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.exoplayer.util.Util;
 import com.studyjams.mdvideo.Adapter.MainPagerAdapter;
+import com.studyjams.mdvideo.DatabaseHelper.FileTraversal.SyncService;
 import com.studyjams.mdvideo.DatabaseHelper.SyncSqlHandler;
 import com.studyjams.mdvideo.DatabaseHelper.Tables;
 import com.studyjams.mdvideo.DatabaseHelper.VideoProvider;
-import com.studyjams.mdvideo.FileChooserModule.FileChooserDialog;
 import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 
@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE = 1;
+    public static final int EXTERNAL_READ_PERMISSION_GRANT = 112;
     private List<String> mData;
     private MainPagerAdapter mainPagerAdapter;
 
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity
     public static final String PLAY_HISTORY_ACTION = "com.studyjams.mdvideo.HISTORY";
     private MyReceiver mMyReceiver;
     private IntentFilter mIntentFilter;
+
+    private DrawerLayout drawer;
 
     //定义进程内广播管理，比全局广播更高效
     private LocalBroadcastManager mLocalBroadcastManager;
@@ -97,11 +100,12 @@ public class MainActivity extends AppCompatActivity
          * selectionArgs: 查询参数
          * orderBy: 排序条件
          */
-        mSyncSqlHandler.startQuery(SyncSqlHandler.MEDIA_QUERY_INSERT, null, MEDIA_VIDEO_URI, null, null, null,null);
         mSyncSqlHandler.startQuery(SyncSqlHandler.LOCAL_QUERY_DELETE,null,
                 VideoProvider.VIDEO_PLAY_HISTORY_URI,
                 new String[]{Tables.Video_path},
                 null,null,null);
+//        mSyncSqlHandler.startQuery(SyncSqlHandler.MEDIA_QUERY_INSERT, null, MEDIA_VIDEO_URI, null, null, null,null);
+        SyncService.startActionTraversal(this);
     }
 
     private void initView(){
@@ -116,7 +120,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -290,17 +294,14 @@ public class MainActivity extends AppCompatActivity
 
     private void fileChooser(){
 
-        DialogFragment dialogFragment = new FileChooserDialog();
-        dialogFragment.show(getSupportFragmentManager(),"");
-
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("video/*");
-//        intent.addCategory(Intent.CATEGORY_OPENABLE);
-//        if (intent.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(Intent.createChooser(intent, getString(R.string.menu_folder_title)), REQUEST_CODE);
-//        }else{
-//            // Potentially direct the user to the Market with a Toast
-//            Toast.makeText(this, getString(R.string.menu_folder_desc), Toast.LENGTH_SHORT).show();
-//        }
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("video/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(Intent.createChooser(intent, getString(R.string.menu_folder_title)), REQUEST_CODE);
+        }else{
+            // Potentially direct the user to the Market with a Toast
+            Toast.makeText(this, getString(R.string.menu_folder_desc), Toast.LENGTH_SHORT).show();
+        }
     }
 }

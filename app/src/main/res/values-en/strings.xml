@@ -4,7 +4,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!--导航菜单-->
-
     <string name="menu_video_local">Local</string>
     <string name="menu_video_history" translatable="false">History</string>
 

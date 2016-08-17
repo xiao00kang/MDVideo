@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <style name="AppTheme" parent="@style/BaseAppTheme"/>
@@ -73,6 +74,25 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:typeface">monospace</item>
+    </style>
+
+    <style name="FileChooserDialog" parent="Theme.AppCompat.Light.Dialog">
+
+        <!--
+        <item name="android:windowBackground"> @color/light_white</item>
+        -->
+        <!--Dialog边框
+        <item name="android:windowFrame">@null</item>
+        -->
+        <!--背景是否模糊显示  -->
+        <item name="android:backgroundDimEnabled">false</item>
+
+        <!--
+       <item name="android:windowIsTranslucent">true</item>
+       <item name="android:windowNoTitle">true</item>
+
+       <item name="android:windowContentOverlay">@null</item>
+       -->
     </style>
 
 </resources>
