@@ -71,7 +71,7 @@
         </provider>
 
         <service
-            android:name=".DatabaseHelper.FileTraversal.SyncService"
+            android:name=".DatabaseHelper.SyncService"
             android:exported="false">
         </service>
     </application>

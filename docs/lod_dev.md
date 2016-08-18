@@ -91,3 +91,9 @@
 2016.8.17
 - 通过广度优先算法来遍历SD卡上的文件（暂时只实现算法部分，逻辑还未调完整）
 - 通过MediaMetadataRetriever来获取视频信息
+
+2016.8.18
+- 遍历时过滤掉隐藏的缓存文件和长度为0的文件，这些文件可能是无法播放的
+- 处理MediaMetadataRetriever setDataSource failed: status = 0xFFFFFFEA的bug,原因是微博缓存视频文件中有长度为0的文件。
+- 关于为什么采用单线程广度优先遍历[快速目录和文件遍历](http://www.oschina.net/question/565065_75805?fromerr=9TSYJVTZ)(其实还是很慢啊)
+- 更改数据的操作逻辑，全部放到IntentService中来完成。

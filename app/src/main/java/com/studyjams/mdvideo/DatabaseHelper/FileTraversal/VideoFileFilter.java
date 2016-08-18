@@ -13,8 +13,8 @@ public class VideoFileFilter implements FileFilter {
     //FMP4, MP4, M4A, MKV, WebM, MP3, AAC, MPEG-TS, MPEG-PS, OGG, FLV, WAV
     //*.avi    *.rmvb    *.rm    *.asf    *.divx    *.mpg    *.mpeg *.mpe    *.wmv    *.mp4    *.mkv    *.vob
     public VideoFileFilter(String ...filter){
-        if(filter == null){
-            this.filter = new String[]{"srt","avi","asf","mpg","mpeg","wmv","mp4","mkv","vob","flv","f4v"};
+        if(filter.length == 0){
+            this.filter = new String[]{"avi","asf","mpg","mpeg","wmv","mp4","mkv","vob","flv","f4v"};
         }else{
             this.filter = filter;
         }
