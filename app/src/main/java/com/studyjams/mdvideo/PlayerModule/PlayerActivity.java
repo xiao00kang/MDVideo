@@ -495,7 +495,8 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
      */
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 0, sticky = false)
     public void handleEvent(ControllerMessage msg) {
-       toggleControlsVisibility();
+//       toggleControlsVisibility();
+
     }
 
     private boolean haveTracks(int type) {

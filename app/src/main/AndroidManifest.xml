@@ -2,13 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.studyjams.mdvideo">
 
-
     <!-- 网络访问 -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- 屏幕锁定 -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <!--读写SD卡的权限-->
+    <!-- 读写SD卡的权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- 申明自定义权限 -->
+    <permission android:name="com.studyjams.mdvideo.PRIVODER"/>
 
     <application
         android:name=".MDVideoApplication"
@@ -29,21 +30,21 @@
             </intent-filter>
         </activity>
 
-        <!-- 测试版本不固定界面，方便测试横竖屏切换时是否有问题  android:screenOrientation="landscape"-->
+        <!-- 测试版本不固定界面，方便测试横竖屏切换时是否有问题  android:screenOrientation="landscape" -->
         <activity
             android:name=".PlayerModule.PlayerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="sensorLandscape"
-            android:parentActivityName="com.studyjams.mdvideo.MainActivity"
             android:theme="@style/MyTheme.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="video/*" />
-                <data android:mimeType="audio/*" />
-
+                <data android:mimeType="video/*"/>
+                <data android:mimeType="audio/*"/>
                 <data android:scheme="http"/>
                 <data android:scheme="https"/>
                 <data android:scheme="content"/>
@@ -51,22 +52,28 @@
                 <data android:scheme="file"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.SEND"/>
 
-                <data android:mimeType="video/*" />
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="video/*"/>
             </intent-filter>
         </activity>
 
-        <!--用来存储视频信息的provider-->
+        <!-- 用来存储视频信息的provider -->
         <provider
             android:name=".DatabaseHelper.VideoProvider"
             android:authorities="com.studyjams.mdvideo.VideoProvider"
             android:enabled="true"
+            android:exported="true"
             android:multiprocess="true"
-            android:permission="@string/app_name"
-            android:exported="true">
+            android:permission="com.studyjams.mdvideo.PRIVODER">
         </provider>
+
+        <service
+            android:name=".DatabaseHelper.SyncService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

@@ -2,14 +2,11 @@ package com.studyjams.mdvideo;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -20,7 +17,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,9 +24,8 @@ import android.widget.Toast;
 
 import com.google.android.exoplayer.util.Util;
 import com.studyjams.mdvideo.Adapter.MainPagerAdapter;
-import com.studyjams.mdvideo.DatabaseHelper.SyncSqlHandler;
+import com.studyjams.mdvideo.DatabaseHelper.SyncService;
 import com.studyjams.mdvideo.DatabaseHelper.Tables;
-import com.studyjams.mdvideo.DatabaseHelper.VideoProvider;
 import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 
@@ -42,16 +37,15 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE = 1;
+    public static final int EXTERNAL_READ_PERMISSION_GRANT = 112;
     private List<String> mData;
     private MainPagerAdapter mainPagerAdapter;
-
-    //查询本地媒体库
-    public static final Uri MEDIA_VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-    private SyncSqlHandler mSyncSqlHandler;
 
     public static final String PLAY_HISTORY_ACTION = "com.studyjams.mdvideo.HISTORY";
     private MyReceiver mMyReceiver;
     private IntentFilter mIntentFilter;
+
+    private DrawerLayout drawer;
 
     //定义进程内广播管理，比全局广播更高效
     private LocalBroadcastManager mLocalBroadcastManager;
@@ -76,7 +70,6 @@ public class MainActivity extends AppCompatActivity
         mIntentFilter.addAction(PLAY_HISTORY_ACTION);
         mLocalBroadcastManager.registerReceiver(mMyReceiver,mIntentFilter);
 
-        mSyncSqlHandler = new SyncSqlHandler(getContentResolver());
         refreshData();
     }
 
@@ -86,21 +79,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshData(){
-        /**
-         * token:一个令牌，主要用来标识查询,保证唯一即可.需要跟onXXXComplete方法传入的一致。
-         * （当然你也可以不一致，同样在数据库的操作结束后会调用对应的onXXXComplete方法 ）
-         * cookie:你想传给onXXXComplete方法使用的一个对象。(没有的话传递null即可)
-         * Uri :uri（进行查询的通用资源标志符）:
-         * projection: 查询的列
-         * selection:  限制条件
-         * selectionArgs: 查询参数
-         * orderBy: 排序条件
-         */
-        mSyncSqlHandler.startQuery(SyncSqlHandler.MEDIA_QUERY_INSERT, null, MEDIA_VIDEO_URI, null, null, null,null);
-        mSyncSqlHandler.startQuery(SyncSqlHandler.LOCAL_QUERY_DELETE,null,
-                VideoProvider.VIDEO_PLAY_HISTORY_URI,
-                new String[]{Tables.Video_path},
-                null,null,null);
+
+        SyncService.startActionCheck(this);
+        SyncService.startActionTraversal(this);
     }
 
     private void initView(){
@@ -115,7 +96,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -164,16 +145,10 @@ public class MainActivity extends AppCompatActivity
 
             if(intent.getAction().equals(PLAY_HISTORY_ACTION)) {
 
-                ContentValues values = new ContentValues();
-                values.put(Tables.Video_playDuration, intent.getStringExtra(Tables.Video_playDuration));
-                values.put(Tables.Video_createdDate, intent.getStringExtra(Tables.Video_createdDate));
-                Log.d(TAG, "============onReceive: " + intent.getStringExtra(Tables.Video_playDuration));
-                /**更新播放时长**/
-                Uri updateUri = ContentUris.withAppendedId(VideoProvider.VIDEO_PLAY_HISTORY_URI,
-                        Long.valueOf(intent.getStringExtra(Tables.Video_id)));
-                mSyncSqlHandler.startUpdate(SyncSqlHandler.LOCAL_UPDATE, null,
-                        updateUri, values, null,
-                        new String[]{Tables.Video_playDuration, Tables.Video_createdDate});
+                SyncService.startActionUpdate(MainActivity.this,
+                        intent.getStringExtra(Tables.Video_id),
+                        intent.getStringExtra(Tables.Video_playDuration),
+                        intent.getStringExtra(Tables.Video_createdDate));
             }
         }
     }
@@ -288,6 +263,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fileChooser(){
+
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("video/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
