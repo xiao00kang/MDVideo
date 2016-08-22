@@ -10,7 +10,7 @@ public class Tables {
     /**数据库版本**/
     public static final int VERSION = 1;
 
-    /**播放历史数据表的定义**/
+    /**视频文件数据表的定义**/
     public static final String TABLE_VIDEO_NAME = "VideoPlayHistory";//数据表名
     public static final String Video_id = "_id";
     public static final String Video_title="title";
@@ -23,4 +23,9 @@ public class Tables {
     public static final String Video_duration="duration";
     public static final String Video_playDuration="playDuration";
     public static final String Video_createdDate="createdDate";
+
+    /**字幕文件数据表的定义**/
+    public static final String TABLE_SUBTITLE = "TableSubtitle";
+    public static final String Subtitle_id = "_id";
+    public static final String Subtitle_path = "path";
 }

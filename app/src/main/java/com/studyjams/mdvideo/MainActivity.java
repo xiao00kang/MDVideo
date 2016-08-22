@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,7 +22,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.exoplayer.util.Util;
 import com.studyjams.mdvideo.Adapter.MainPagerAdapter;
@@ -30,6 +31,7 @@ import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -55,13 +57,26 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initData();
         initView();
+
+    }
+
+    private void playSound(){
+        //参数：1、Map中取值   2、当前音量     3、最大音量  4、优先级   5、重播次数   6、播放速度
+        SoundPool soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
+        HashMap<Integer, Integer> soundPoolMap = new HashMap<>();
+        soundPoolMap.put(1, soundPool.load(this, R.raw.black_rock_shooter, 1));
+        AudioManager mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
+        float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
+        float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float volume = streamVolumeCurrent/streamVolumeMax;
+        soundPool.play(soundPoolMap.get(1), volume, volume, 1, 0, 1f);
     }
 
     private void initData(){
         mData = new ArrayList<>();
         mData.add(getResources().getString(R.string.menu_video_local));
         mData.add(getResources().getString(R.string.menu_video_history));
-//        mData.add(getResources().getString(R.string.menu_video_info));
+        mData.add(getResources().getString(R.string.menu_video_subtitle));
 
 
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -263,15 +278,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fileChooser(){
+        playSound();
 
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("video/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.menu_folder_title)), REQUEST_CODE);
-        }else{
-            // Potentially direct the user to the Market with a Toast
-            Toast.makeText(this, getString(R.string.menu_folder_desc), Toast.LENGTH_SHORT).show();
-        }
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("video/*");
+//        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//        if (intent.resolveActivity(getPackageManager()) != null) {
+//            startActivityForResult(Intent.createChooser(intent, getString(R.string.menu_folder_title)), REQUEST_CODE);
+//        }else{
+//            // Potentially direct the user to the Market with a Toast
+//            Toast.makeText(this, getString(R.string.menu_folder_desc), Toast.LENGTH_SHORT).show();
+//        }
     }
 }

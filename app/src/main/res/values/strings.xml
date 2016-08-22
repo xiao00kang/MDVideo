@@ -1,7 +1,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!--BLACK&#9733;ROCK SHOOTER-->
-    <string name="app_name" translatable="false">MDVideo</string>
+    <string name="app_name" translatable="false">BLACK&#9733;ROCK SHOOTER</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -11,6 +11,7 @@
     <!--导航菜单-->
     <string name="menu_video_local">本地视频</string>
     <string name="menu_video_history">播放记录</string>
+    <string name="menu_video_subtitle">字幕文件</string>
     <string name="menu_video_display" translatable="false">显示样式</string>
     <string name="menu_video_setting" translatable="false">设置</string>
     <string name="menu_video_share">分享给好友</string>

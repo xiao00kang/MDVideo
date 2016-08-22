@@ -21,9 +21,12 @@ import android.media.MediaCodec;
 import android.net.Uri;
 import android.os.Handler;
 
+import com.google.android.exoplayer.C;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.MediaCodecSelector;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
+import com.google.android.exoplayer.MediaFormat;
+import com.google.android.exoplayer.SingleSampleSource;
 import com.google.android.exoplayer.TrackRenderer;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.extractor.Extractor;
@@ -34,6 +37,7 @@ import com.google.android.exoplayer.upstream.DataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.google.android.exoplayer.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer.upstream.DefaultUriDataSource;
+import com.google.android.exoplayer.util.MimeTypes;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
 
@@ -68,19 +72,31 @@ public class ExtractorRendererBuilder implements RendererBuilder {
 
     DataSource dataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
 
+    //从uri中获取视频源
     ExtractorSampleSource sampleSource = new ExtractorSampleSource(uri, dataSource, allocator,
         BUFFER_SEGMENT_COUNT * BUFFER_SEGMENT_SIZE, mainHandler, player, 0);
 
+    //video轨道
     MediaCodecVideoTrackRenderer videoRenderer = new MediaCodecVideoTrackRenderer(context,
         sampleSource, MediaCodecSelector.DEFAULT, MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 5000,
         mainHandler, player, 50);
-
+    //Audio轨道
     MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource,
         MediaCodecSelector.DEFAULT, null, true, mainHandler, player,
         AudioCapabilities.getCapabilities(context), AudioManager.STREAM_MUSIC);
 
+
+    //实验一下
+//    Uri textUri = Uri.parse("android.resource://" + context.getPackageName() + "/" +R.raw.test);
+    Uri textUri = Uri.parse("file:///android_asset/test.srt");
+
+    MediaFormat mediaFormat = MediaFormat.createTextFormat("0", MimeTypes.APPLICATION_SUBRIP, MediaFormat.NO_VALUE, C.MATCH_LONGEST_US, null);
+    DataSource textDataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
+    SingleSampleSource textSampleSource = new SingleSampleSource(textUri, textDataSource, mediaFormat);
+    TrackRenderer textRenderer = new TextTrackRenderer(textSampleSource, player, mainHandler.getLooper());
+
     //文本轨道渲染
-    TrackRenderer textRenderer = new TextTrackRenderer(sampleSource, player, mainHandler.getLooper());
+//    TrackRenderer textRenderer = new TextTrackRenderer(sampleSource, player, mainHandler.getLooper());
 
     // Invoke the callback.
     TrackRenderer[] renderers = new TrackRenderer[DemoPlayer.RENDERER_COUNT];
@@ -94,5 +110,4 @@ public class ExtractorRendererBuilder implements RendererBuilder {
   public void cancel() {
     // Do nothing.
   }
-
 }

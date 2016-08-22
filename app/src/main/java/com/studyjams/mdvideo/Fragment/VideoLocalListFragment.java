@@ -28,6 +28,7 @@ import com.studyjams.mdvideo.DatabaseHelper.VideoProvider;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
+import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemDivider;
 
 import java.lang.ref.WeakReference;
 
@@ -110,10 +111,11 @@ public class VideoLocalListFragment extends Fragment implements LoaderManager.Lo
 
         mRecyclerView = (RecyclerView) parent.findViewById(R.id.local_video_list_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        //设置布局管理器
-        mRecyclerView.setLayoutManager(layoutManager);
         //设置为垂直布局，这也是默认的
         layoutManager.setOrientation(OrientationHelper.VERTICAL);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.addItemDecoration(new RecyclerViewItemDivider(getActivity(), RecyclerViewItemDivider.VERTICAL_LIST));
 
         mLocalVideoCursorAdapter = new VideoLocalCursorAdapter(getActivity());
         mRecyclerView.setAdapter(mLocalVideoCursorAdapter);
