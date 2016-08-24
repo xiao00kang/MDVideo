@@ -385,6 +385,8 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         }
         player.setSurface(surfaceView.getHolder().getSurface());
         player.setPlayWhenReady(playWhenReady);
+        //测试打开字幕渲染
+//        player.setSelectedTrack(DemoPlayer.TYPE_TEXT, DemoPlayer.TRACK_DISABLED);
     }
 
     private void releasePlayer() {
@@ -658,9 +660,9 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
     }
 
     // DemoPlayer.CaptionListener implementation
-
     @Override
     public void onCues(List<Cue> cues) {
+        Log.d(TAG, "==============onCues: " + cues.size());
         subtitleLayout.setCues(cues);
     }
 

@@ -97,3 +97,6 @@
 - 处理MediaMetadataRetriever setDataSource failed: status = 0xFFFFFFEA的bug,原因是微博缓存视频文件中有长度为0的文件。
 - 关于为什么采用单线程广度优先遍历[快速目录和文件遍历](http://www.oschina.net/question/565065_75805?fromerr=9TSYJVTZ)(其实还是很慢啊)
 - 更改数据的操作逻辑，全部放到IntentService中来完成。
+
+2016.8.24
+- 更新 ExoPlayer 至 1.5.10，并更新部分更改的 API 调用

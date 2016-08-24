@@ -87,12 +87,16 @@ public class ExtractorRendererBuilder implements RendererBuilder {
 
 
     //实验一下
-//    Uri textUri = Uri.parse("android.resource://" + context.getPackageName() + "/" +R.raw.test);
+//    Uri textUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.test);
     Uri textUri = Uri.parse("file:///android_asset/test.srt");
 
-    MediaFormat mediaFormat = MediaFormat.createTextFormat("0", MimeTypes.APPLICATION_SUBRIP, MediaFormat.NO_VALUE, C.MATCH_LONGEST_US, null);
+//    Uri textUri = Uri.parse("file:///storage/emulated/0/Download/test.srt");
+
+    MediaFormat mediaFormat = MediaFormat.createTextFormat(String.valueOf(MediaFormat.NO_VALUE), MimeTypes.APPLICATION_SUBRIP,
+            MediaFormat.NO_VALUE, C.MATCH_LONGEST_US, null);
     DataSource textDataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
     SingleSampleSource textSampleSource = new SingleSampleSource(textUri, textDataSource, mediaFormat);
+
     TrackRenderer textRenderer = new TextTrackRenderer(textSampleSource, player, mainHandler.getLooper());
 
     //文本轨道渲染

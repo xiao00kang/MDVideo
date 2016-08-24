@@ -71,6 +71,9 @@ public class ExtractorMediaController extends AbstractMediaController implements
     /**辅助功能管理**/
     private final AccessibilityManager mAccessibilityManager;
 
+    /**获取系统音频管理**/
+//    private AudioManager mAudioManager;
+
     /**实例化一个Handler用于进度条更新**/
     private final Handler mHandler = new MyHandler(this);
 
@@ -78,6 +81,7 @@ public class ExtractorMediaController extends AbstractMediaController implements
         mContext = context;
         initFloatingWindow();
         mAccessibilityManager = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+//        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
     }
@@ -444,6 +448,12 @@ public class ExtractorMediaController extends AbstractMediaController implements
 
             mDragging = true;
 
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+//                mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
+//            } else {
+//                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+//            }
+
             // By removing these pending progress messages we make sure
             // that a) we won't update the progress while the user adjusts
             // the seekbar and b) once the user is done dragging the thumb
@@ -473,7 +483,11 @@ public class ExtractorMediaController extends AbstractMediaController implements
             setProgress();
             updatePausePlay();
             show(sDefaultTimeout);
-
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+//                mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+//            } else {
+//                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+//            }
             // Ensure that progress is properly updated in the future,
             // the call to show() does not guarantee this because it is a
             // no-op if we are already showing.
