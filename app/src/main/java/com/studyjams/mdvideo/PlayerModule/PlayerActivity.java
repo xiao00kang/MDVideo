@@ -385,8 +385,6 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         }
         player.setSurface(surfaceView.getHolder().getSurface());
         player.setPlayWhenReady(playWhenReady);
-        //测试打开字幕渲染
-//        player.setSelectedTrack(DemoPlayer.TYPE_TEXT, DemoPlayer.TRACK_DISABLED);
     }
 
     private void releasePlayer() {

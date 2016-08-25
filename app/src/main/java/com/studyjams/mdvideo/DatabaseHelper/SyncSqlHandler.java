@@ -41,7 +41,7 @@ public class SyncSqlHandler extends AsyncQueryHandler{
     protected void onDeleteComplete(int token, Object cookie, int result) {
         super.onDeleteComplete(token, cookie, result);
         Log.d(TAG, "onDeleteComplete: " + result);
-        mContentResolver.notifyChange(VideoProvider.VIDEO_PLAY_HISTORY_URI, null);
+        mContentResolver.notifyChange(DataSourceProvider.VIDEO_PLAY_HISTORY_URI, null);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class SyncSqlHandler extends AsyncQueryHandler{
 
                     startQuery(LOCAL_QUERY_INSERT,
                             values,
-                            VideoProvider.VIDEO_PLAY_HISTORY_URI,
+                            DataSourceProvider.VIDEO_PLAY_HISTORY_URI,
                             null,
                             Tables.Video_path + " like '" + path + "'",
                             null,
@@ -95,12 +95,12 @@ public class SyncSqlHandler extends AsyncQueryHandler{
             case LOCAL_QUERY_INSERT:
 
                 if(!cursor.moveToPosition(0)){
-                    startInsert(LOCAL_QUERY_INSERT,null,VideoProvider.VIDEO_PLAY_HISTORY_URI,(ContentValues)cookie);
+                    startInsert(LOCAL_QUERY_INSERT,null, DataSourceProvider.VIDEO_PLAY_HISTORY_URI,(ContentValues)cookie);
 
                 }else{
                     String path = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_path));
                     Log.d(TAG, "onQueryComplete: LOCAL_QUERY_INSERT" + path);
-                    mContentResolver.notifyChange(VideoProvider.VIDEO_PLAY_HISTORY_URI, null);
+                    mContentResolver.notifyChange(DataSourceProvider.VIDEO_PLAY_HISTORY_URI, null);
                 }
 
                 break;
@@ -110,7 +110,7 @@ public class SyncSqlHandler extends AsyncQueryHandler{
                     File file = new File(path);
                     if(!file.exists()){
                         startDelete(LOCAL_QUERY_DELETE,null,
-                                VideoProvider.VIDEO_PLAY_HISTORY_URI,
+                                DataSourceProvider.VIDEO_PLAY_HISTORY_URI,
                                 Tables.Video_path + " like '" + path + "'",
                                 null);
                     }
@@ -132,6 +132,6 @@ public class SyncSqlHandler extends AsyncQueryHandler{
     protected void onUpdateComplete(int token, Object cookie, int result) {
         super.onUpdateComplete(token, cookie, result);
         Log.d(TAG, "======================onUpdateComplete: ");
-        mContentResolver.notifyChange(VideoProvider.VIDEO_CHANGE_URI, null);
+        mContentResolver.notifyChange(DataSourceProvider.VIDEO_CHANGE_URI, null);
     }
 }

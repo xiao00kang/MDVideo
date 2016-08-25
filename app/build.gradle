@@ -3,8 +3,18 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
 
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+
+    //签名的配置
+    signingConfigs {
+        release {
+            storeFile file("artharyoung.jks")
+            storePassword 'Zhongzhiyong'
+            keyAlias 'artharyoung'
+            keyPassword 'Zhongzhiyong'
+        }
+    }
 
     defaultConfig {
         applicationId "com.studyjams.mdvideo"
@@ -18,24 +28,12 @@ android {
 
     }
 
-    //签名的配置
-    signingConfigs {
-        release {
-            storeFile file("artharyoung.jks")
-            storePassword 'Zhongzhiyong'
-            keyAlias 'artharyoung'
-            keyPassword 'Zhongzhiyong'
-        }
-    }
-
-
     lintOptions {
         checkReleaseBuilds false
         // Or, if you prefer, you can continue to check for errors in release builds,
         // but continue the build even when errors are found:
         abortOnError false
     }
-
 
     buildTypes {
         release {
@@ -61,11 +59,11 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.android.support:cardview-v7:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:recyclerview-v7:24.2.0'
+    compile 'com.android.support:cardview-v7:24.2.0'
+    compile 'com.android.support:support-v4:24.2.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.google.android.exoplayer:exoplayer:r1.5.10'

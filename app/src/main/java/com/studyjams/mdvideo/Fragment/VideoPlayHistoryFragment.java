@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 
 import com.studyjams.mdvideo.Adapter.VideoPlayHistoryCursorAdapter;
 import com.studyjams.mdvideo.DatabaseHelper.Tables;
-import com.studyjams.mdvideo.DatabaseHelper.VideoProvider;
+import com.studyjams.mdvideo.DatabaseHelper.DataSourceProvider;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
@@ -107,7 +107,7 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
     public void onResume() {
         super.onResume();
         //注册数据库变化监听
-        getActivity().getContentResolver().registerContentObserver(VideoProvider.VIDEO_CHANGE_URI, true, mVideoObserver);
+        getActivity().getContentResolver().registerContentObserver(DataSourceProvider.VIDEO_CHANGE_URI, true, mVideoObserver);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
             case VIDEO_PLAY_HISTORY_LOADER:
                 return new CursorLoader(
                         getActivity(),
-                        VideoProvider.VIDEO_PLAY_HISTORY_URI,
+                        DataSourceProvider.VIDEO_PLAY_HISTORY_URI,
                         null,
                         Tables.Video_playDuration + " > -1",
                         null,
