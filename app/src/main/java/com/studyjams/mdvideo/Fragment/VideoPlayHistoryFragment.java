@@ -29,6 +29,7 @@ import com.studyjams.mdvideo.DatabaseHelper.DataSourceProvider;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
+import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemDivider;
 
 import java.lang.ref.WeakReference;
 
@@ -88,7 +89,7 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
         layoutManager.setOrientation(OrientationHelper.VERTICAL);
-
+        mRecyclerView.addItemDecoration(new RecyclerViewItemDivider(getActivity(), RecyclerViewItemDivider.VERTICAL_LIST));
         mVideoPlayHistoryCursorAdapter = new VideoPlayHistoryCursorAdapter(getActivity());
         mRecyclerView.setAdapter(mVideoPlayHistoryCursorAdapter);
         mRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(getActivity(), this));

@@ -25,7 +25,7 @@ MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作
 - 支持FMP4, MP4, M4A, MKV, WebM, MP3, AAC, MPEG-TS, MPEG-PS, OGG, FLV, WAV格式
 
 ## Download
-<a href='https://play.google.com/store/apps/details?id=com.studyjams.mdvideo&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=com.studyjams.mdvideo&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="20%"/></a>
 
 ## Remark
 Please feel free to [report bugs](https://github.com/AndroidTips/MDVideo/issues) or ask for help via email.
@@ -41,6 +41,8 @@ Email: artharyoungcn@gmail.com
 - [Adapter](https://github.com/hongyangAndroid/baseAdapter)
 - [RecyclerViewCursorAdapter](https://github.com/androidessence/RecyclerViewCursorAdapter)
 - [MaterialDesignExample](https://github.com/chenyangcun/MaterialDesignExample)
+- [android-support-23.2-sample](https://github.com/liaohuqiu/android-support-23.2-sample)
+- [AnotherEChan](https://github.com/fython/AnotherEChan)
 
 ## License
 MDVideo is licensed under the terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)

@@ -136,13 +136,18 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.player_activity);
-        View root = findViewById(R.id.root);
+        final View root = findViewById(R.id.root);
         //响应时间，拉起和隐藏控制菜单
         root.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     toggleControlsVisibility();
+                    Log.d(TAG, "X==================onTouch: " + motionEvent.getX());//相对于容器
+                    Log.d(TAG, "RawX==================onTouch: " + motionEvent.getRawX());//屏幕坐标
+                    Log.d(TAG, "Y==================onTouch: " + motionEvent.getY());
+                    Log.d(TAG, "RawY==================onTouch: " + motionEvent.getRawY());
+
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     view.performClick();
                 }
@@ -182,7 +187,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
     @Override
     public void onNewIntent(Intent intent) {
         releasePlayer();
-        playerPosition = 0;
+//        playerPosition = 0;
         setIntent(intent);
     }
 
@@ -214,13 +219,18 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
             contentType = Util.TYPE_SS;
             contentId = "";
             provider = "0";
+            playerPosition = 0;
         } else{
             contentUri = intent.getData();
             contentType = intent.getIntExtra(CONTENT_TYPE_EXTRA, inferContentType(contentUri, intent.getStringExtra(CONTENT_EXT_EXTRA)));
             contentId = intent.getStringExtra(CONTENT_ID_EXTRA);
             provider = intent.getStringExtra(PROVIDER_EXTRA);
+            if(provider != null){
+                playerPosition = Long.valueOf(provider);
+            }
         }
 
+        configureTitleName(contentUri);
         configureSubtitleView();
         if (player == null) {
             if (!maybeRequestPermission()) {
@@ -229,6 +239,11 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         } else {
             player.setBackgrounded(false);
         }
+    }
+
+    private void configureTitleName(Uri uri){
+
+        mediaController.setTitle(uri.getLastPathSegment());
     }
 
     @Override
@@ -365,8 +380,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
             player.addListener(this);
             player.setCaptionListener(this);
             player.setMetadataListener(this);
-//            player.seekTo(playerPosition);
-            player.seekTo(Long.valueOf(provider));
+            player.seekTo(playerPosition);
             playerNeedsPrepare = true;
             mediaController.setMediaPlayer(player.getPlayerControl());
             mediaController.setEnabled(true);

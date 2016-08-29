@@ -34,6 +34,7 @@
     <!--playerDemo-->
     <!--格式例子：下午 3：40 -->
     <string name="player_system_time">aa&#160;&#160;h:mm</string>
+    <string name="player_time_separator">/</string>
 
     <string name="player_play">play</string>
     <string name="player_pause">pause</string>
@@ -54,5 +55,4 @@
     <string name="error_querying_decoders">Unable to query device decoders</string>
     <string name="error_instantiating_decoder">Unable to instantiate decoder <xliff:g id="decoder_name">%1$s</xliff:g></string>
     <string name="storage_permission_denied">Permission to access storage was denied</string>
-
 </resources>
