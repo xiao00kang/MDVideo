@@ -23,11 +23,7 @@
             android:label="@string/app_name"
             android:screenOrientation="fullSensor"
             android:theme="@style/DrawerLayoutTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
 
         <!-- 测试版本不固定界面，方便测试横竖屏切换时是否有问题  android:screenOrientation="landscape" -->
@@ -62,8 +58,8 @@
 
         <!-- 用来存储视频信息的provider -->
         <provider
-            android:name=".DatabaseHelper.VideoProvider"
-            android:authorities="com.studyjams.mdvideo.VideoProvider"
+            android:name=".DatabaseHelper.DataSourceProvider"
+            android:authorities="com.studyjams.mdvideo.DataSourceProvider"
             android:enabled="true"
             android:exported="true"
             android:multiprocess="true"
@@ -74,6 +70,15 @@
             android:name=".DatabaseHelper.SyncService"
             android:exported="false">
         </service>
+        <!--最先启动的activity，用于解决烦人的黑白屏问题-->
+        <activity android:name=".WelcomeActivity"
+            android:theme="@style/StartActivityTransparent">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

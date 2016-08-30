@@ -68,16 +68,29 @@ public class ExtractorRendererBuilder implements RendererBuilder {
 
     DataSource dataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
 
+    //从uri中获取视频源
     ExtractorSampleSource sampleSource = new ExtractorSampleSource(uri, dataSource, allocator,
         BUFFER_SEGMENT_COUNT * BUFFER_SEGMENT_SIZE, mainHandler, player, 0);
 
+    //video轨道
     MediaCodecVideoTrackRenderer videoRenderer = new MediaCodecVideoTrackRenderer(context,
         sampleSource, MediaCodecSelector.DEFAULT, MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 5000,
         mainHandler, player, 50);
-
+    //Audio轨道
     MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource,
         MediaCodecSelector.DEFAULT, null, true, mainHandler, player,
         AudioCapabilities.getCapabilities(context), AudioManager.STREAM_MUSIC);
+
+
+    //实验一下
+//    Uri textUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.test);
+//
+//    MediaFormat mediaFormat = MediaFormat.createTextFormat(String.valueOf(MediaFormat.NO_VALUE), MimeTypes.APPLICATION_SUBRIP,
+//            MediaFormat.NO_VALUE, C.MATCH_LONGEST_US, null);
+//    DataSource textDataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
+//    SingleSampleSource textSampleSource = new SingleSampleSource(textUri, textDataSource, mediaFormat);
+//
+//    TrackRenderer textRenderer = new TextTrackRenderer(textSampleSource, player, mainHandler.getLooper(),new Tx3gParser());
 
     //文本轨道渲染
     TrackRenderer textRenderer = new TextTrackRenderer(sampleSource, player, mainHandler.getLooper());
@@ -94,5 +107,4 @@ public class ExtractorRendererBuilder implements RendererBuilder {
   public void cancel() {
     // Do nothing.
   }
-
 }

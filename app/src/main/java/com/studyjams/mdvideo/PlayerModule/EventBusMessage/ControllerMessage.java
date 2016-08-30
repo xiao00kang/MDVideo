@@ -1,25 +1,24 @@
 package com.studyjams.mdvideo.PlayerModule.EventBusMessage;
 
-import android.view.View;
-
 /**
  * Created by syamiadmin on 2016/8/8.
  */
 public class ControllerMessage {
 
-    public static final int CODE = 1;
+    public static final int MENU = 1;
+    public static final int SUBTITLE = 2;
 
-    private View view;
+    private int code;
 
-    public ControllerMessage(View view){
-        this.view = view;
+    public ControllerMessage(int code){
+        this.code = code;
     }
 
-    public View getView() {
-        return view;
+    public int getCode() {
+        return code;
     }
 
-    public void setView(View view) {
-        this.view = view;
+    public void setCode(int code) {
+        this.code = code;
     }
 }

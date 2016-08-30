@@ -2,8 +2,6 @@ package com.studyjams.mdvideo.Adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +27,6 @@ import java.util.TimeZone;
 public class VideoLocalCursorAdapter extends RecyclerViewCursorAdapter<VideoLocalCursorAdapter.VideoViewHolder> {
 
     private static final String TAG = "LocalVideoCursorAdapter";
-    public static final Uri LOCAL_VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
     private List<VideoBean> mVideoData;
     private SimpleDateFormat mDateFormat;
     /**
@@ -45,6 +42,11 @@ public class VideoLocalCursorAdapter extends RecyclerViewCursorAdapter<VideoLoca
         /**Format time**/
         mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
     }
 
     /**
@@ -102,15 +104,6 @@ public class VideoLocalCursorAdapter extends RecyclerViewCursorAdapter<VideoLoca
         @Override
         public void bindCursor(Cursor cursor) {
             VideoBean video = new VideoBean();
-//            int id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
-//            String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));
-//            String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.ALBUM));
-//            String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.ARTIST));
-//            String displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME));
-//            String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE));
-//            String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
-//            long duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
-//            long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
 
             int id = cursor.getInt(cursor.getColumnIndexOrThrow(Tables.Video_id));
             String title = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_title));

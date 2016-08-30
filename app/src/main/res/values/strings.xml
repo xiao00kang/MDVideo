@@ -1,7 +1,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!--BLACK&#9733;ROCK SHOOTER-->
-    <string name="app_name" translatable="false">MDVideo</string>
+    <string name="app_name" translatable="false">BLACK&#9733;ROCK SHOOTER</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -11,6 +11,7 @@
     <!--导航菜单-->
     <string name="menu_video_local">本地视频</string>
     <string name="menu_video_history">播放记录</string>
+    <string name="menu_video_subtitle">字幕文件</string>
     <string name="menu_video_display" translatable="false">显示样式</string>
     <string name="menu_video_setting" translatable="false">设置</string>
     <string name="menu_video_share">分享给好友</string>
@@ -33,6 +34,7 @@
     <!--playerDemo-->
     <!--格式例子：下午 3：40 -->
     <string name="player_system_time">aa&#160;&#160;h:mm</string>
+    <string name="player_time_separator">/</string>
 
     <string name="player_play">play</string>
     <string name="player_pause">pause</string>
@@ -53,5 +55,4 @@
     <string name="error_querying_decoders">Unable to query device decoders</string>
     <string name="error_instantiating_decoder">Unable to instantiate decoder <xliff:g id="decoder_name">%1$s</xliff:g></string>
     <string name="storage_permission_denied">Permission to access storage was denied</string>
-
 </resources>

@@ -8,7 +8,14 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <!--处理黑白屏问题-->
+    <style name="StartActivityTransparent" parent="@android:style/Theme.NoTitleBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
     <style name="AppTheme" parent="@style/BaseAppTheme"/>
+
     <style name="DrawerLayoutTheme" parent="AppTheme"/>
 
     <!--定义播放器Activity样式，隐藏statusBar-->
@@ -46,34 +53,10 @@
     <!--播放页面ImageView的样式-->
     <style name="stylePlayerImageView">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:scaleType">fitXY</item>
-    </style>
-
-    <!--顶部的菜单-->
-    <style name="playerPopupTopImageView" parent="stylePlayerImageView">
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-    </style>
-    <!--底部的菜单-->
-    <style name="playerPopupBottomImageView" parent="stylePlayerImageView">
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:layout_marginRight">16dp</item>
-    </style>
-
-    <!--播放页面文字样式-->
-    <style name="playerPopupTextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:textColor">@color/light_white</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:typeface">monospace</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
     </style>
 
     <style name="FileChooserDialog" parent="Theme.AppCompat.Light.Dialog">

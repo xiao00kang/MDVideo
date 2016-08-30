@@ -10,6 +10,7 @@ import com.studyjams.mdvideo.R;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -48,5 +49,12 @@ public class Tools {
     /**判断SD卡是否存在**/
     public static boolean checkSDCardExists(){
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+
+    /**合并两个数组**/
+    public static <T> T[] concat(T[] first, T[] second) {
+        T[] result = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
     }
 }

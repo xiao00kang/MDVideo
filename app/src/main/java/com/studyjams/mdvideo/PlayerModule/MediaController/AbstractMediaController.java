@@ -13,4 +13,5 @@ public abstract class AbstractMediaController {
     abstract boolean isShowing();
     abstract void hide();
     abstract void show(int timeout);
+    abstract void setTitle(String videoName);
 }

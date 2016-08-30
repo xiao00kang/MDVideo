@@ -23,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
      * */
     @Override
     public void onCreate(SQLiteDatabase db) {
-    // 创建Video数据表
+        // 创建Video数据表
         String table_video = "create table if not exists " + Tables.TABLE_VIDEO_NAME + " ( "
                 + Tables.Video_id + " integer primary key autoincrement,"
                 + Tables.Video_title + " text not null, "
@@ -32,12 +32,26 @@ public class DBHelper extends SQLiteOpenHelper {
                 + Tables.Video_displayName + " text, "
                 + Tables.Video_mimeType + " text, "
                 + Tables.Video_path + " text, "
+                + Tables.Video_date + " text, "
+                + Tables.Video_subtitlePath + " text, "
+                + Tables.Video_screenOrientation + " integer, "
+                + Tables.Video_bitrate + " integer, "
                 + Tables.Video_size + " integer, "
                 + Tables.Video_duration + " integer, "
                 + Tables.Video_playDuration + " integer,"
                 + Tables.Video_createdDate + " timestamp default (datetime('now', 'localtime')));";
-        Log.d(TAG, "onCreate() called with: " + "table_video = [" + table_video + "]");
+
+        String table_subtitle = "create table if not exists " + Tables.TABLE_SUBTITLE + " ( "
+                + Tables.Subtitle_id + " integer primary key autoincrement,"
+                + Tables.Subtitle_name + " text not null, "
+                + Tables.Subtitle_path + " text, "
+                + Tables.Subtitle_date + " text,"
+                + Tables.Subtitle_size + " text, "
+                + Tables.Subtitle_mimeType + " text, "
+                + Tables.Subtitle_createdDate + " timestamp default (datetime('now', 'localtime')));";
+        Log.d(TAG, "onCreate() called with: " + "table_video = [" + table_video + "]" + "table_subtitle = [" + table_subtitle + "]");
         db.execSQL(table_video);
+        db.execSQL(table_subtitle);
     }
 
     /**如果VERSION值增加,系统发现现有数据库版本不同,即会调用onUpgrade**/
@@ -50,6 +64,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //完全删除已存数据重新建表
         db.execSQL("drop table if exists " + Tables.TABLE_VIDEO_NAME);
+        db.execSQL("drop table if exists " + Tables.TABLE_SUBTITLE);
         onCreate(db);
     }
 

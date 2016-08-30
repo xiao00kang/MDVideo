@@ -16,14 +16,12 @@
 package com.studyjams.mdvideo.PlayerModule.Renderer.Dash;
 
 import android.annotation.TargetApi;
-import android.media.MediaDrm.KeyRequest;
-import android.media.MediaDrm.ProvisionRequest;
 import android.text.TextUtils;
 
+import com.google.android.exoplayer.drm.ExoMediaDrm;
 import com.google.android.exoplayer.drm.MediaDrmCallback;
 import com.google.android.exoplayer.util.Util;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -33,7 +31,7 @@ import java.util.UUID;
 public class WidevineTestMediaDrmCallback implements MediaDrmCallback {
 
   private static final String WIDEVINE_GTS_DEFAULT_BASE_URI =
-      "https://proxy.uat.widevine.com/proxy";
+          "https://proxy.uat.widevine.com/proxy";
 
   private final String defaultUri;
 
@@ -43,13 +41,7 @@ public class WidevineTestMediaDrmCallback implements MediaDrmCallback {
   }
 
   @Override
-  public byte[] executeProvisionRequest(UUID uuid, ProvisionRequest request) throws IOException {
-    String url = request.getDefaultUrl() + "&signedRequest=" + new String(request.getData());
-    return Util.executePost(url, null, null);
-  }
-
-  @Override
-  public byte[] executeKeyRequest(UUID uuid, KeyRequest request) throws IOException {
+  public byte[] executeKeyRequest(UUID uuid, ExoMediaDrm.KeyRequest request) throws Exception {
     String url = request.getDefaultUrl();
     if (TextUtils.isEmpty(url)) {
       url = defaultUri;
@@ -57,4 +49,9 @@ public class WidevineTestMediaDrmCallback implements MediaDrmCallback {
     return Util.executePost(url, request.getData(), null);
   }
 
+  @Override
+  public byte[] executeProvisionRequest(UUID uuid, ExoMediaDrm.ProvisionRequest request) throws Exception {
+    String url = request.getDefaultUrl() + "&signedRequest=" + new String(request.getData());
+    return Util.executePost(url, null, null);
+  }
 }

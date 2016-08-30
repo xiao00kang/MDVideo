@@ -24,10 +24,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.studyjams.mdvideo.Adapter.VideoLocalCursorAdapter;
-import com.studyjams.mdvideo.DatabaseHelper.VideoProvider;
+import com.studyjams.mdvideo.DatabaseHelper.DataSourceProvider;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
+import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemDivider;
 
 import java.lang.ref.WeakReference;
 
@@ -110,10 +111,11 @@ public class VideoLocalListFragment extends Fragment implements LoaderManager.Lo
 
         mRecyclerView = (RecyclerView) parent.findViewById(R.id.local_video_list_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        //设置布局管理器
-        mRecyclerView.setLayoutManager(layoutManager);
         //设置为垂直布局，这也是默认的
         layoutManager.setOrientation(OrientationHelper.VERTICAL);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.addItemDecoration(new RecyclerViewItemDivider(getActivity(), RecyclerViewItemDivider.VERTICAL_LIST));
 
         mLocalVideoCursorAdapter = new VideoLocalCursorAdapter(getActivity());
         mRecyclerView.setAdapter(mLocalVideoCursorAdapter);
@@ -133,7 +135,7 @@ public class VideoLocalListFragment extends Fragment implements LoaderManager.Lo
     public void onResume() {
         super.onResume();
         //注册数据库变化监听
-        getActivity().getContentResolver().registerContentObserver(VideoProvider.VIDEO_CHANGE_URI, true, mVideoObserver);
+        getActivity().getContentResolver().registerContentObserver(DataSourceProvider.VIDEO_CHANGE_URI, true, mVideoObserver);
     }
 
     @Override
@@ -168,7 +170,7 @@ public class VideoLocalListFragment extends Fragment implements LoaderManager.Lo
             case LOCAL_VIDEO_LOADER:
                 return new CursorLoader(
                         getActivity(),
-                        VideoProvider.VIDEO_PLAY_HISTORY_URI,
+                        DataSourceProvider.VIDEO_PLAY_HISTORY_URI,
                         null,
                         null,
                         null,

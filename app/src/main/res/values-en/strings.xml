@@ -6,7 +6,7 @@
     <!--导航菜单-->
     <string name="menu_video_local">Local</string>
     <string name="menu_video_history" translatable="false">History</string>
-
+    <string name="menu_video_subtitle">subtitle</string>
 
     <string name="menu_video_share">Share</string>
     <string name="menu_video_send">FeedBack</string>
