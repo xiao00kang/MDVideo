@@ -225,11 +225,12 @@ public class ExtractorMediaController extends AbstractMediaController implements
                 break;
             case R.id.player_subtitle:
                 //字幕加载
-                EventBus.getDefault().post(new ControllerMessage(v));
+                EventBus.getDefault().post(new ControllerMessage(ControllerMessage.SUBTITLE));
                 Log.d(TAG, "onClick: subtitle");
                 break;
             case R.id.player_more:
                 //菜单
+                EventBus.getDefault().post(new ControllerMessage(ControllerMessage.MENU));
                 Log.d(TAG, "onClick: more");
                 break;
 

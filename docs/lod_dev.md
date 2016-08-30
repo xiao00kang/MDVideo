@@ -112,3 +112,9 @@
 - 增加 MediaController 上播放文件名的显示
 - 修复选择播放器打开文件时，因已播放时长字符串转换引起的bug
 - 添加一个声源文件，打算 APP 改个名字...
+
+2016.8.30
+- 添加一个透明的 Activity 做启动页，解决应用启动过程中的黑白屏问题
+- 删除悬浮的 FloatingActionButton 文件自己遍历后，这个按钮没有更多存在的价值了，暂时先不显示
+- 定制了一个 Controller 专用的 Message 类型，便于 EventBus 调用
+- 新建一个 VideoMenuDialog 用来在播放页面选择要切换视频（只是新建了一个类，还没完善功能）

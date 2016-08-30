@@ -21,24 +21,19 @@ import android.media.MediaCodec;
 import android.net.Uri;
 import android.os.Handler;
 
-import com.google.android.exoplayer.C;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.MediaCodecSelector;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
-import com.google.android.exoplayer.MediaFormat;
-import com.google.android.exoplayer.SingleSampleSource;
 import com.google.android.exoplayer.TrackRenderer;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.extractor.Extractor;
 import com.google.android.exoplayer.extractor.ExtractorSampleSource;
 import com.google.android.exoplayer.text.TextTrackRenderer;
-import com.google.android.exoplayer.text.tx3g.Tx3gParser;
 import com.google.android.exoplayer.upstream.Allocator;
 import com.google.android.exoplayer.upstream.DataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.google.android.exoplayer.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer.upstream.DefaultUriDataSource;
-import com.google.android.exoplayer.util.MimeTypes;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
 
@@ -89,18 +84,16 @@ public class ExtractorRendererBuilder implements RendererBuilder {
 
     //实验一下
 //    Uri textUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.test);
-
-    Uri textUri = Uri.parse("file:///storage/emulated/0/Download/test.srt");
 //
-    MediaFormat mediaFormat = MediaFormat.createTextFormat(String.valueOf(MediaFormat.NO_VALUE), MimeTypes.APPLICATION_SUBRIP,
-            MediaFormat.NO_VALUE, C.MATCH_LONGEST_US, null);
-    DataSource textDataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
-    SingleSampleSource textSampleSource = new SingleSampleSource(textUri, textDataSource, mediaFormat);
-
-    TrackRenderer textRenderer = new TextTrackRenderer(textSampleSource, player, mainHandler.getLooper(),new Tx3gParser());
+//    MediaFormat mediaFormat = MediaFormat.createTextFormat(String.valueOf(MediaFormat.NO_VALUE), MimeTypes.APPLICATION_SUBRIP,
+//            MediaFormat.NO_VALUE, C.MATCH_LONGEST_US, null);
+//    DataSource textDataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
+//    SingleSampleSource textSampleSource = new SingleSampleSource(textUri, textDataSource, mediaFormat);
+//
+//    TrackRenderer textRenderer = new TextTrackRenderer(textSampleSource, player, mainHandler.getLooper(),new Tx3gParser());
 
     //文本轨道渲染
-//    TrackRenderer textRenderer = new TextTrackRenderer(sampleSource, player, mainHandler.getLooper());
+    TrackRenderer textRenderer = new TextTrackRenderer(sampleSource, player, mainHandler.getLooper());
 
     // Invoke the callback.
     TrackRenderer[] renderers = new TrackRenderer[DemoPlayer.RENDERER_COUNT];

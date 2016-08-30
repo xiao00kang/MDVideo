@@ -191,7 +191,6 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         setIntent(intent);
     }
 
-    //为什么大于23的版本在onStart中onShown();
     @Override
     public void onStart() {
         super.onStart();
@@ -509,8 +508,15 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
      */
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 0, sticky = false)
     public void handleEvent(ControllerMessage msg) {
-//       toggleControlsVisibility();
-
+        switch (msg.getCode()){
+            case ControllerMessage.SUBTITLE:
+                Toast.makeText(this,"外挂字幕功能暂未开通",Toast.LENGTH_SHORT).show();
+                break;
+            case ControllerMessage.MENU:
+                Toast.makeText(this,"菜单测试",Toast.LENGTH_SHORT).show();
+                break;
+            default:break;
+        }
     }
 
     private boolean haveTracks(int type) {

@@ -2,8 +2,6 @@ package com.studyjams.mdvideo.Adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +27,6 @@ import java.util.TimeZone;
 public class VideoLocalCursorAdapter extends RecyclerViewCursorAdapter<VideoLocalCursorAdapter.VideoViewHolder> {
 
     private static final String TAG = "LocalVideoCursorAdapter";
-    public static final Uri LOCAL_VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
     private List<VideoBean> mVideoData;
     private SimpleDateFormat mDateFormat;
     /**
@@ -45,6 +42,11 @@ public class VideoLocalCursorAdapter extends RecyclerViewCursorAdapter<VideoLoca
         /**Format time**/
         mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
     }
 
     /**

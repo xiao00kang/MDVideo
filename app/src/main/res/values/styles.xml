@@ -8,6 +8,12 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <!--处理黑白屏问题-->
+    <style name="StartActivityTransparent" parent="@android:style/Theme.NoTitleBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
     <style name="AppTheme" parent="@style/BaseAppTheme"/>
 
     <style name="DrawerLayoutTheme" parent="AppTheme"/>

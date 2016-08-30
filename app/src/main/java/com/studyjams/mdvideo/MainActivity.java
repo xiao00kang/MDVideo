@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -21,7 +20,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.android.exoplayer.util.Util;
 import com.studyjams.mdvideo.Adapter.MainPagerAdapter;
@@ -76,7 +74,7 @@ public class MainActivity extends AppCompatActivity
         mData = new ArrayList<>();
         mData.add(getResources().getString(R.string.menu_video_local));
         mData.add(getResources().getString(R.string.menu_video_history));
-        mData.add(getResources().getString(R.string.menu_video_subtitle));
+//        mData.add(getResources().getString(R.string.menu_video_subtitle));
 
 
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         mIntentFilter.addAction(PLAY_HISTORY_ACTION);
         mLocalBroadcastManager.registerReceiver(mMyReceiver,mIntentFilter);
 
-        refreshData();
+//        refreshData();
     }
 
     @Override
@@ -103,13 +101,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.main_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fileChooser();
-            }
-        });
+
+//        final FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.main_fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                fileChooser();
+//            }
+//        });
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -125,23 +124,23 @@ public class MainActivity extends AppCompatActivity
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(),mData);
         mViewpager.setAdapter(mainPagerAdapter);
         tabLayout.setupWithViewPager(mViewpager);
-        mViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                /**切换页面时显示文件打开**/
-                fab.show();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+//        mViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//                /**切换页面时显示文件打开**/
+//                fab.show();
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//
+//            }
+//        });
     }
 
     @Override
@@ -278,16 +277,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fileChooser(){
-        playSound();
-
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("video/*");
-//        intent.addCategory(Intent.CATEGORY_OPENABLE);
-//        if (intent.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(Intent.createChooser(intent, getString(R.string.menu_folder_title)), REQUEST_CODE);
-//        }else{
-//            // Potentially direct the user to the Market with a Toast
-//            Toast.makeText(this, getString(R.string.menu_folder_desc), Toast.LENGTH_SHORT).show();
-//        }
+//        playSound();
     }
 }
