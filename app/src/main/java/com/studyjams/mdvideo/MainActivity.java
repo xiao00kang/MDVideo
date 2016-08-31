@@ -5,8 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -29,7 +27,6 @@ import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -56,18 +53,6 @@ public class MainActivity extends AppCompatActivity
         initData();
         initView();
 
-    }
-
-    private void playSound(){
-        //参数：1、Map中取值   2、当前音量     3、最大音量  4、优先级   5、重播次数   6、播放速度
-        SoundPool soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
-        HashMap<Integer, Integer> soundPoolMap = new HashMap<>();
-        soundPoolMap.put(1, soundPool.load(this, R.raw.black_rock_shooter, 1));
-        AudioManager mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
-        float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
-        float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        float volume = streamVolumeCurrent/streamVolumeMax;
-        soundPool.play(soundPoolMap.get(1), volume, volume, 1, 0, 1f);
     }
 
     private void initData(){
@@ -100,7 +85,6 @@ public class MainActivity extends AppCompatActivity
     private void initView(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
 //        final FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.main_fab);
 //        fab.setOnClickListener(new View.OnClickListener() {

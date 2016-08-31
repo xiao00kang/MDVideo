@@ -17,7 +17,6 @@ package com.studyjams.mdvideo.PlayerModule;
 
 import android.Manifest.permission;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,6 +24,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -65,6 +65,7 @@ import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
 import com.studyjams.mdvideo.PlayerModule.MediaController.ExtractorMediaController;
+import com.studyjams.mdvideo.PlayerModule.MediaController.VideoMenuDialog;
 import com.studyjams.mdvideo.PlayerModule.Renderer.Dash.DashRendererBuilder;
 import com.studyjams.mdvideo.PlayerModule.Renderer.Dash.WidevineTestMediaDrmCallback;
 import com.studyjams.mdvideo.PlayerModule.Renderer.Extractor.ExtractorRendererBuilder;
@@ -87,9 +88,9 @@ import java.util.Locale;
 /**
  * An activity that plays media using {@link DemoPlayer}.
  */
-public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
+public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.Callback,
         DemoPlayer.Listener, DemoPlayer.CaptionListener, DemoPlayer.Id3MetadataListener,
-        AudioCapabilitiesReceiver.Listener {
+        AudioCapabilitiesReceiver.Listener ,VideoMenuDialog.VideoSelected{
 
     // For use within demo app code.
     public static final String CONTENT_ID_EXTRA = "content_id";
@@ -182,6 +183,12 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
         audioCapabilitiesReceiver.register();
 
         EventBus.getDefault().register(this);
+    }
+
+    //从MenuDialog里传入的数据，一个数据传输通道
+    @Override
+    public void onVideoSelected(Intent intent) {
+        onNewIntent(intent);
     }
 
     @Override
@@ -388,7 +395,6 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
             player.addListener(eventLogger);
             player.setInfoListener(eventLogger);
             player.setInternalErrorListener(eventLogger);
-//            debugViewHelper = new DebugTextViewHelper(player, debugTextView);
 //            debugViewHelper.start();
         }
         if (playerNeedsPrepare) {
@@ -513,7 +519,11 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback,
                 Toast.makeText(this,"外挂字幕功能暂未开通",Toast.LENGTH_SHORT).show();
                 break;
             case ControllerMessage.MENU:
-                Toast.makeText(this,"菜单测试",Toast.LENGTH_SHORT).show();
+                if (mediaController.isShowing()) {
+                    mediaController.hide();
+                }
+                VideoMenuDialog videoMenuDialog = VideoMenuDialog.newInstance();
+                videoMenuDialog.show(getSupportFragmentManager(),"");
                 break;
             default:break;
         }

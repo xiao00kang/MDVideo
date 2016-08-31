@@ -11,7 +11,7 @@
 		android:rotation="90">
 		<path
 			android:name="v"
-			android:fillColor="#000000"
+			android:fillColor="#2196F3"
 			android:pathData="@string/path_play"/>
 	</group>
 </vector>

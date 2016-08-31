@@ -1,7 +1,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!--BLACK&#9733;ROCK SHOOTER-->
-    <string name="app_name" translatable="false">BLACK&#9733;ROCK SHOOTER</string>
+    <string name="app_name">黑&#9733;岩</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -35,6 +35,7 @@
     <!--格式例子：下午 3：40 -->
     <string name="player_system_time">aa&#160;&#160;h:mm</string>
     <string name="player_time_separator">/</string>
+    <string name="player_menu_title">视频列表</string>
 
     <string name="player_play">play</string>
     <string name="player_pause">pause</string>
