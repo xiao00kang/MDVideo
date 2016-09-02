@@ -41,8 +41,7 @@ Email: artharyoungcn@gmail.com
 - [Adapter](https://github.com/hongyangAndroid/baseAdapter)
 - [RecyclerViewCursorAdapter](https://github.com/androidessence/RecyclerViewCursorAdapter)
 - [MaterialDesignExample](https://github.com/chenyangcun/MaterialDesignExample)
-- [android-support-23.2-sample](https://github.com/liaohuqiu/android-support-23.2-sample)
-- [AnotherEChan](https://github.com/fython/AnotherEChan)
+- [todo-mvp-contentproviders](https://github.com/googlesamples/android-architecture/tree/todo-mvp-contentproviders/)
 
 ## License
 MDVideo is licensed under the terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)

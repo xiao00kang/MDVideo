@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.studyjams.mdvideo.Bean.VideoBean;
@@ -14,7 +13,6 @@ import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorAdapter;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorViewHolder;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by syamiadmin on 2016/8/31.
@@ -22,14 +20,15 @@ import java.util.List;
 public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVideoMenuAdapter.VideoViewHolder> {
 
     private static final String TAG = "DialogVideoMenuAdapter";
-    private List<VideoBean> mVideoData;
+    private ArrayList<VideoBean> mVideoData;
+    private String selected;
     /**
      * Constructor.
      * @param context The Context the Adapter is displayed in.
      */
-    public DialogVideoMenuAdapter(Context context) {
+    public DialogVideoMenuAdapter(Context context, String defaultId) {
         super(context);
-
+        selected = defaultId;
         setupCursorAdapter(null, 0, R.layout.dialogfragment_video_list_item, false);
         mVideoData = new ArrayList<>();
     }
@@ -62,6 +61,7 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
      */
     @Override
     public void onBindViewHolder(VideoViewHolder holder, int position) {
+
         // Move cursor to this position
         mCursorAdapter.getCursor().moveToPosition(position);
 
@@ -78,13 +78,10 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
     public class VideoViewHolder extends RecyclerViewCursorViewHolder {
 
         public final TextView mTitle;
-        public final ImageButton mImageButton;
-
         public VideoViewHolder(View view) {
             super(view);
 
             mTitle = (TextView) view.findViewById(R.id.dialog_list_item_title);
-            mImageButton = (ImageButton)view.findViewById(R.id.dialog_list_item_play);
         }
 
         @Override
@@ -102,6 +99,10 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
             long duration = cursor.getInt(cursor.getColumnIndexOrThrow(Tables.Video_duration));
             long size = cursor.getLong(cursor.getColumnIndexOrThrow(Tables.Video_size));
             String createdDate = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_createdDate));
+
+            if(id == Integer.valueOf(selected)){
+                mTitle.setTextColor(mContext.getResources().getColor(R.color.accent));
+            }
 
             video.setId(id);
             video.setTitle(title);

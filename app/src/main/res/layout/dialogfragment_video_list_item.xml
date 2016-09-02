@@ -5,6 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:gravity="center_vertical"
+    android:background="?android:attr/selectableItemBackground"
+    android:focusable="true"
+    android:clickable="true"
     android:orientation="horizontal">
 
     <TextView
@@ -20,11 +23,5 @@
         android:textColor="@color/primary"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         tools:text="video title"/>
-
-    <ImageButton
-        android:id="@+id/dialog_list_item_play"
-        style="@style/stylePlayerImageView"
-        android:src="@drawable/ic_play_vector"
-        tools:ignore="contentDescription"/>
 
 </LinearLayout>

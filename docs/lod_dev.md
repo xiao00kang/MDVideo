@@ -118,3 +118,8 @@
 - 删除悬浮的 FloatingActionButton 文件自己遍历后，这个按钮没有更多存在的价值了，暂时先不显示
 - 定制了一个 Controller 专用的 Message 类型，便于 EventBus 调用
 - 新建一个 VideoMenuDialog 用来在播放页面选择要切换视频（只是新建了一个类，还没完善功能）
+
+2016.9.2
+- 添加列表 item 点击后的水纹效果
+- 完善 VideoMenuDialog 的业务逻辑
+- 参照官方MVP框架着手改写整个项目结构。

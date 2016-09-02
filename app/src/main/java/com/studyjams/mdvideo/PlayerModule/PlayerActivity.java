@@ -189,12 +189,15 @@ public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void onVideoSelected(Intent intent) {
         onNewIntent(intent);
+        onShown();
+        if (!mediaController.isShowing()) {
+            mediaController.show(1000);
+        }
     }
 
     @Override
     public void onNewIntent(Intent intent) {
         releasePlayer();
-//        playerPosition = 0;
         setIntent(intent);
     }
 
@@ -516,14 +519,14 @@ public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.C
     public void handleEvent(ControllerMessage msg) {
         switch (msg.getCode()){
             case ControllerMessage.SUBTITLE:
-                Toast.makeText(this,"外挂字幕功能暂未开通",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Subtitle is not support now",Toast.LENGTH_SHORT).show();
                 break;
             case ControllerMessage.MENU:
                 if (mediaController.isShowing()) {
                     mediaController.hide();
                 }
                 VideoMenuDialog videoMenuDialog = VideoMenuDialog.newInstance();
-                videoMenuDialog.show(getSupportFragmentManager(),"");
+                videoMenuDialog.show(getSupportFragmentManager(),contentId);
                 break;
             default:break;
         }
