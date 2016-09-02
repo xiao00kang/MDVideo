@@ -11,7 +11,6 @@ public class WelcomeActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
         SyncService.startActionCheck(this);
         SyncService.startActionTraversal(this);
         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);

@@ -50,6 +50,11 @@
         <item name="android:windowExitAnimation">@anim/popup_top_out</item>
     </style>
 
+    <!--播放菜单的动画-->
+    <style name="DialogMenuAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/dialog_end_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_end_out</item>
+    </style>
     <!--播放页面ImageView的样式-->
     <style name="stylePlayerImageView">
         <item name="android:layout_width">wrap_content</item>
@@ -59,23 +64,6 @@
         <item name="android:paddingEnd">8dp</item>
     </style>
 
-    <style name="FileChooserDialog" parent="Theme.AppCompat.Light.Dialog">
 
-        <!--
-        <item name="android:windowBackground"> @color/light_white</item>
-        -->
-        <!--Dialog边框
-        <item name="android:windowFrame">@null</item>
-        -->
-        <!--背景是否模糊显示  -->
-        <item name="android:backgroundDimEnabled">false</item>
-
-        <!--
-       <item name="android:windowIsTranslucent">true</item>
-       <item name="android:windowNoTitle">true</item>
-
-       <item name="android:windowContentOverlay">@null</item>
-       -->
-    </style>
 
 </resources>

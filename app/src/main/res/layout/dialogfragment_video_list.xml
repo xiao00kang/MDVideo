@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/player_menu_title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="@color/primary"/>
+
+        <ImageButton
+            android:id="@+id/dialog_menu_exit"
+            style="@style/stylePlayerImageView"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_play_menu_back"/>
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+
+        android:id="@+id/dialog_fragment_video_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/layout_margin_8">
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

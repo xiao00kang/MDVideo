@@ -65,6 +65,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
                 android:gravity="center_vertical"
+                android:textColor="@color/primary"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
             <TextView
@@ -72,6 +73,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="@string/player_time_separator"
+                android:textColor="@color/primary"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
             <TextView
@@ -80,6 +82,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="16dp"
                 android:gravity="center_vertical"
+                android:textColor="@color/primary"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
         </LinearLayout>
