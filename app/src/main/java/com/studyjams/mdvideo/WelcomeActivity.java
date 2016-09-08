@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.studyjams.mdvideo.DatabaseHelper.SyncService;
+import com.studyjams.mdvideo.Data.source.remote.SyncService;
 
 public class WelcomeActivity extends Activity {
 

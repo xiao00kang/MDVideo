@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.DatabaseHelper;
+package com.studyjams.mdvideo.Data.source.remote;
 
 import android.app.IntentService;
 import android.content.ContentUris;
@@ -10,8 +10,9 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Environment;
 
-import com.studyjams.mdvideo.DatabaseHelper.FileTraversal.FileItem;
-import com.studyjams.mdvideo.DatabaseHelper.FileTraversal.VideoFileFilter;
+import com.studyjams.mdvideo.Data.source.SamplesProvider;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.SubtitleEntry;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoEntry;
 import com.studyjams.mdvideo.Util.Tools;
 
 import java.io.File;
@@ -97,13 +98,13 @@ public class SyncService extends IntentService {
             String filePath = file.getPath();
             if(!filePath.endsWith("srt")) {
 
-                queryThenInsert(Tables.Video_path,filePath,DataSourceProvider.VIDEO_PLAY_HISTORY_URI,getContentValues(file));
+                queryThenInsert(VideoEntry.COLUMN_VIDEO_PATH,filePath, SamplesProvider.VIDEO_PLAY_HISTORY_URI,getContentValues(file));
             }else{
 
-                queryThenInsert(Tables.Subtitle_path,filePath,DataSourceProvider.SUBTITLE_URI,getSubtitleContentValues(file));
+                queryThenInsert(SubtitleEntry.COLUMN_SUBTITLE_PATH,filePath, SamplesProvider.SUBTITLE_URI,getSubtitleContentValues(file));
             }
         }
-        getContentResolver().notifyChange(DataSourceProvider.VIDEO_CHANGE_URI,null);
+        getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
     }
 
     /**
@@ -112,8 +113,8 @@ public class SyncService extends IntentService {
      */
     private void handleActionCheck() {
 
-        queryThenDelete(DataSourceProvider.VIDEO_PLAY_HISTORY_URI,Tables.Video_path);
-        queryThenDelete(DataSourceProvider.SUBTITLE_URI,Tables.Subtitle_path);
+        queryThenDelete(SamplesProvider.VIDEO_PLAY_HISTORY_URI,VideoEntry.COLUMN_VIDEO_PATH);
+        queryThenDelete(SamplesProvider.SUBTITLE_URI,SubtitleEntry.COLUMN_SUBTITLE_PATH);
     }
 
     /**
@@ -121,13 +122,13 @@ public class SyncService extends IntentService {
      */
     private void handleActionUpdate(String id, String playDuration, String createdDate) {
         ContentValues values = new ContentValues();
-        values.put(Tables.Video_playDuration, playDuration);
-        values.put(Tables.Video_createdDate, createdDate);
-        Uri updateUri = ContentUris.withAppendedId(DataSourceProvider.VIDEO_PLAY_HISTORY_URI, Long.valueOf(id));
+        values.put(VideoEntry.COLUMN_VIDEO_PLAY_DURATION, playDuration);
+        values.put(VideoEntry.COLUMN_VIDEO_CREATED_DATE, createdDate);
+        Uri updateUri = ContentUris.withAppendedId(SamplesProvider.VIDEO_PLAY_HISTORY_URI, Long.valueOf(id));
 
         getContentResolver().update(updateUri, values, null,
-                new String[]{Tables.Video_playDuration, Tables.Video_createdDate});
-        getContentResolver().notifyChange(DataSourceProvider.VIDEO_CHANGE_URI,null);
+                new String[]{VideoEntry.COLUMN_VIDEO_PLAY_DURATION, VideoEntry.COLUMN_VIDEO_CREATED_DATE});
+        getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
     }
 
     /**
@@ -176,11 +177,11 @@ public class SyncService extends IntentService {
      */
     private ContentValues getSubtitleContentValues(FileItem fileItem){
         ContentValues values = new ContentValues();
-        values.put(Tables.Subtitle_name,fileItem.getName());
-        values.put(Tables.Subtitle_path,fileItem.getPath());
-        values.put(Tables.Subtitle_date,fileItem.getDate());
-        values.put(Tables.Subtitle_size,fileItem.getSize());
-        values.put(Tables.Subtitle_createdDate, Tools.getCurrentTimeMillis());
+        values.put(SubtitleEntry.COLUMN_SUBTITLE_NAME,fileItem.getName());
+        values.put(SubtitleEntry.COLUMN_SUBTITLE_PATH,fileItem.getPath());
+        values.put(SubtitleEntry.COLUMN_SUBTITLE_DATE,fileItem.getDate());
+        values.put(SubtitleEntry.COLUMN_SUBTITLE_SIZE,fileItem.getSize());
+        values.put(SubtitleEntry.COLUMN_SUBTITLE_CREATED_DATE, Tools.getCurrentTimeMillis());
         return values;
     }
 
@@ -204,19 +205,19 @@ public class SyncService extends IntentService {
         String height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);//高
         String bitrate = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE);//平均比特率
 
-        values.put(Tables.Video_title, fileItem.getName());
-        values.put(Tables.Video_album, album);
-        values.put(Tables.Video_artist, artist);
-        values.put(Tables.Video_displayName, displayName);
-        values.put(Tables.Video_mimeType, mimeType);
-        values.put(Tables.Video_path, fileItem.getPath());
-        values.put(Tables.Video_size, fileItem.getSize());
-        values.put(Tables.Video_duration, duration);
-        values.put(Tables.Video_playDuration, -1);
-        values.put(Tables.Video_createdDate, date);
-        values.put(Tables.Video_date,fileItem.getDate());
-        values.put(Tables.Video_screenOrientation,Integer.valueOf(width) > Integer.valueOf(height) ? 1:0);
-        values.put(Tables.Video_bitrate,bitrate);
+        values.put(VideoEntry.COLUMN_VIDEO_TITLE, fileItem.getName());
+        values.put(VideoEntry.COLUMN_VIDEO_ALBUM, album);
+        values.put(VideoEntry.COLUMN_VIDEO_ARTIST, artist);
+        values.put(VideoEntry.COLUMN_VIDEO_DISPLAY_NAME, displayName);
+        values.put(VideoEntry.COLUMN_VIDEO_MIME_TYPE, mimeType);
+        values.put(VideoEntry.COLUMN_VIDEO_PATH, fileItem.getPath());
+        values.put(VideoEntry.COLUMN_VIDEO_SIZE, fileItem.getSize());
+        values.put(VideoEntry.COLUMN_VIDEO_DURATION, duration);
+        values.put(VideoEntry.COLUMN_VIDEO_PLAY_DURATION, -1);
+        values.put(VideoEntry.COLUMN_VIDEO_CREATED_DATE, date);
+        values.put(VideoEntry.COLUMN_VIDEO_DATE,fileItem.getDate());
+        values.put(VideoEntry.COLUMN_VIDEO_SCREEN_ORIENTATION,Integer.valueOf(width) > Integer.valueOf(height) ? 1:0);
+        values.put(VideoEntry.COLUMN_VIDEO_BITRATE,bitrate);
         return values;
     }
 
@@ -259,7 +260,7 @@ public class SyncService extends IntentService {
                 }
             }
             cursor.close();
-            getContentResolver().notifyChange(DataSourceProvider.VIDEO_CHANGE_URI,null);
+            getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
         }
     }
 }

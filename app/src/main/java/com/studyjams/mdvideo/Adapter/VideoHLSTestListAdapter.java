@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.studyjams.mdvideo.ApiConstant.Samples;
-import com.studyjams.mdvideo.ApiConstant.Samples.Sample;
+import com.studyjams.mdvideo.Data.Samples;
+import com.studyjams.mdvideo.Data.Samples.Sample;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.Util.Tools;

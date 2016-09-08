@@ -21,8 +21,8 @@ import android.view.MenuItem;
 
 import com.google.android.exoplayer.util.Util;
 import com.studyjams.mdvideo.Adapter.MainPagerAdapter;
-import com.studyjams.mdvideo.DatabaseHelper.SyncService;
-import com.studyjams.mdvideo.DatabaseHelper.Tables;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
+import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 
@@ -144,9 +144,9 @@ public class MainActivity extends AppCompatActivity
             if(intent.getAction().equals(PLAY_HISTORY_ACTION)) {
 
                 SyncService.startActionUpdate(MainActivity.this,
-                        intent.getStringExtra(Tables.Video_id),
-                        intent.getStringExtra(Tables.Video_playDuration),
-                        intent.getStringExtra(Tables.Video_createdDate));
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry._ID),
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION),
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE));
             }
         }
     }

@@ -8,8 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.studyjams.mdvideo.Bean.VideoBean;
-import com.studyjams.mdvideo.DatabaseHelper.Tables;
+import com.studyjams.mdvideo.Data.Video;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.Util.Tools;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorAdapter;
@@ -27,7 +26,7 @@ import java.util.TimeZone;
 public class VideoPlayHistoryCursorAdapter extends RecyclerViewCursorAdapter<VideoPlayHistoryCursorAdapter.VideoViewHolder> {
 
     private static final String TAG = "LocalVideoCursorAdapter";
-    private List<VideoBean> mVideoData;
+    private List<Video> mVideoData;
     private SimpleDateFormat mDateFormat;
     /**
      * Constructor.
@@ -49,7 +48,7 @@ public class VideoPlayHistoryCursorAdapter extends RecyclerViewCursorAdapter<Vid
      * @param position
      * @return
      */
-    public VideoBean getItemData(int position){
+    public Video getItemData(int position){
 
         return mVideoData.get(position);
     }
@@ -101,48 +100,23 @@ public class VideoPlayHistoryCursorAdapter extends RecyclerViewCursorAdapter<Vid
 
         @Override
         public void bindCursor(Cursor cursor) {
-            VideoBean video = new VideoBean();
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow(Tables.Video_id));
-            String title = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_title));
-            String album = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_album));
-            String artist = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_artist));
-            String displayName = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_displayName));
-            String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_mimeType));
-            String path = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_path));
-            long playDuration = cursor.getLong(cursor.getColumnIndexOrThrow(Tables.Video_playDuration));
-            long duration = cursor.getInt(cursor.getColumnIndexOrThrow(Tables.Video_duration));
-            long size = cursor.getLong(cursor.getColumnIndexOrThrow(Tables.Video_size));
-            String createdDate = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_createdDate));
 
-//            Log.d(TAG, "bindCursor: " + "id=" + id + "\ntitle=" + title + "\nalbum=" + album
-//            + "\nartist=" + artist + "\ndisplayName=" + displayName + "\nmimeType=" + mimeType
-//            + "\npath=" + path + "\nduration=" + duration + "\nsize=" + size);
+            Video video = Video.from(cursor);
 
-            video.setId(id);
-            video.setTitle(title);
-            video.setAlbum(album);
-            video.setArtist(artist);
-            video.setDisplayName(displayName);
-            video.setMimeType(mimeType);
-            video.setPath(path);
-            video.setDuration(duration);
-            video.setPlayDuration(playDuration);
-            video.setSize(size);
-            video.setCreatedDate(createdDate);
             /**save data for click event**/
             mVideoData.add(getAdapterPosition(),video);
             String str;
-            if(playDuration == duration){
+            if(video.isPlayCompleted()){
                 str = mContext.getResources().getString(R.string.player_play_end);
             }else{
-                str = mContext.getResources().getString(R.string.player_play_history) + mDateFormat.format(playDuration);
+                str = mContext.getResources().getString(R.string.player_play_history) + mDateFormat.format(video.getPlayDuration());
             }
 
-            mTitle.setText(title);
+            mTitle.setText(video.getTitle());
             mInfo.setText(str);
-            mSize.setText(Formatter.formatFileSize(mContext,size));
-            mDate.setText(createdDate);
-            Tools.LoadNormalImage(mContext,path,mThumbnail);
+            mSize.setText(Formatter.formatFileSize(mContext,video.getSize()));
+            mDate.setText(video.getCreatedDate());
+            Tools.LoadNormalImage(mContext,video.getPath(),mThumbnail);
         }
     }
 }
