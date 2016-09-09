@@ -11,7 +11,7 @@ import com.studyjams.mdvideo.BuildConfig;
  */
 public final class SamplesPersistenceContract {
 
-    private static final String CONTENT_AUTHORITY = BuildConfig.APPLICATION_ID;
+    public static final String CONTENT_AUTHORITY = BuildConfig.APPLICATION_ID;
     private static final String CONTENT_SCHEME = "content://";
     private static final String SEPARATOR = "/";
     private static final String POINT = ".";
@@ -31,13 +31,13 @@ public final class SamplesPersistenceContract {
     public static final String CONTENT_SUBTITLE_TYPE = CONTENT_TYPE_DIR + CONTENT_AUTHORITY + SEPARATOR + SubtitleEntry.TABLE_SUBTITLE_NAME;
     public static final String CONTENT_SUBTITLE_ITEM_TYPE = CONTENT_TYPE_ITEM + CONTENT_AUTHORITY + SEPARATOR + SubtitleEntry.TABLE_SUBTITLE_NAME;
 
-    public static Uri getBaseVideoUri(String taskId) {
-        return Uri.parse(CONTENT_SCHEME + CONTENT_VIDEO_ITEM_TYPE + SEPARATOR + taskId);
+    public static Uri getBaseUri() {
+        return BASE_CONTENT_URI;
     }
 
     public static abstract class VideoEntry implements BaseColumns {
 
-        public static final String TABLE_VIDEO_NAME = "video";//数据表名
+        public static final String TABLE_VIDEO_NAME = "video";
         public static final String COLUMN_VIDEO_ENTRY_ID = "entry_id";
         public static final String COLUMN_VIDEO_TITLE="title";
         public static final String COLUMN_VIDEO_ALBUM="album";
@@ -48,11 +48,19 @@ public final class SamplesPersistenceContract {
         public static final String COLUMN_VIDEO_SIZE="size";
         public static final String COLUMN_VIDEO_DURATION="duration";
         public static final String COLUMN_VIDEO_PLAY_DURATION="playDuration";
-        public static final String COLUMN_VIDEO_CREATED_DATE="createdDate";//文件存入或在数据库更新的日期
-        public static final String COLUMN_VIDEO_DATE="last_date";//文件最后修改日期
-        public static final String COLUMN_VIDEO_SCREEN_ORIENTATION="screenOrientation";//判断视频是横屏还是竖屏
-        public static final String COLUMN_VIDEO_BITRATE="bitrate";//平均比特率
-        public static final String COLUMN_VIDEO_SUBTITLE_PATH="subtitle";//关联的字幕地址
+        //文件存入或在数据库更新的日期
+        public static final String COLUMN_VIDEO_CREATED_DATE="createdDate";
+        //文件最后修改日期
+        public static final String COLUMN_VIDEO_DATE="last_date";
+        //视频宽
+        public static final String COLUMN_VIDEO_SCREEN_WIDTH="width";
+        //视频高
+        public static final String COLUMN_VIDEO_SCREEN_HEIGHT="height";
+
+        //平均比特率
+        public static final String COLUMN_VIDEO_BITRATE="bitrate";
+        //关联的字幕地址
+        public static final String COLUMN_VIDEO_SUBTITLE_PATH="subtitle";
 
         public static final Uri CONTENT_VIDEO_URI = BASE_CONTENT_URI.buildUpon().appendPath(TABLE_VIDEO_NAME).build();
 
@@ -70,7 +78,8 @@ public final class SamplesPersistenceContract {
                 VideoEntry.COLUMN_VIDEO_PLAY_DURATION,
                 VideoEntry.COLUMN_VIDEO_CREATED_DATE,
                 VideoEntry.COLUMN_VIDEO_DATE,
-                VideoEntry.COLUMN_VIDEO_SCREEN_ORIENTATION,
+                VideoEntry.COLUMN_VIDEO_SCREEN_WIDTH,
+                VideoEntry.COLUMN_VIDEO_SCREEN_HEIGHT,
                 VideoEntry.COLUMN_VIDEO_BITRATE,
                 VideoEntry.COLUMN_VIDEO_SUBTITLE_PATH
         };

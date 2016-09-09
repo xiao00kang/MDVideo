@@ -3,6 +3,7 @@ package com.studyjams.mdvideo.Data.source;
 import android.support.annotation.NonNull;
 
 import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.source.remote.FileItem;
 
 import java.util.List;
 
@@ -29,19 +30,15 @@ public interface VideoDataSource {
 
     void getVideo(@NonNull String videoId, @NonNull GetVideoCallback callback);
 
+    void saveVideo(@NonNull FileItem fileItem);
+
     void saveVideo(@NonNull Video video);
 
     void updateVideo(@NonNull Video video);
 
-    void updateVideo(@NonNull String videoId);
+    void updateVideo(@NonNull String videoId, String playDuration, String createdDate);
 
-    void activateTask(@NonNull Video video);
-
-    void activateTask(@NonNull String videoId);
-
-    void clearCompletedTasks();
-
-    void deleteAllVideos();
+    void clearNotExistsVideos();
 
     void deleteVideo(@NonNull String videoId);
 }

@@ -24,7 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.studyjams.mdvideo.Adapter.VideoLocalCursorAdapter;
-import com.studyjams.mdvideo.Data.source.SamplesProvider;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
@@ -135,7 +135,7 @@ public class VideoLocalListFragment extends Fragment implements LoaderManager.Lo
     public void onResume() {
         super.onResume();
         //注册数据库变化监听
-        getActivity().getContentResolver().registerContentObserver(SamplesProvider.VIDEO_CHANGE_URI, true, mVideoObserver);
+        getActivity().getContentResolver().registerContentObserver(SamplesPersistenceContract.VideoEntry.buildVideosUri(), true, mVideoObserver);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class VideoLocalListFragment extends Fragment implements LoaderManager.Lo
             case LOCAL_VIDEO_LOADER:
                 return new CursorLoader(
                         getActivity(),
-                        SamplesProvider.VIDEO_PLAY_HISTORY_URI,
+                        SamplesPersistenceContract.VideoEntry.buildVideosUri(),
                         null,
                         null,
                         null,

@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
             if(intent.getAction().equals(PLAY_HISTORY_ACTION)) {
 
                 SyncService.startActionUpdate(MainActivity.this,
-                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry._ID),
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID),
                         intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION),
                         intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE));
             }

@@ -1,7 +1,6 @@
 package com.studyjams.mdvideo.Data.source.remote;
 
 import android.app.IntentService;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +9,8 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Environment;
 
-import com.studyjams.mdvideo.Data.source.SamplesProvider;
+import com.studyjams.mdvideo.Data.source.SamplesRepository;
+import com.studyjams.mdvideo.Data.source.local.SamplesLocalDataSource;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.SubtitleEntry;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoEntry;
 import com.studyjams.mdvideo.Util.Tools;
@@ -97,14 +97,14 @@ public class SyncService extends IntentService {
         for (FileItem file:list){
             String filePath = file.getPath();
             if(!filePath.endsWith("srt")) {
-
-                queryThenInsert(VideoEntry.COLUMN_VIDEO_PATH,filePath, SamplesProvider.VIDEO_PLAY_HISTORY_URI,getContentValues(file));
+                SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).saveVideo(file);
+//                queryThenInsert(VideoEntry.COLUMN_VIDEO_PATH,filePath, SamplesProvider.VIDEO_PLAY_HISTORY_URI,getContentValues(file));
             }else{
-
-                queryThenInsert(SubtitleEntry.COLUMN_SUBTITLE_PATH,filePath, SamplesProvider.SUBTITLE_URI,getSubtitleContentValues(file));
+                SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).saveSubtitle(file);
+//                queryThenInsert(SubtitleEntry.COLUMN_SUBTITLE_PATH,filePath, SamplesProvider.SUBTITLE_URI,getSubtitleContentValues(file));
             }
         }
-        getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
+//        getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
     }
 
     /**
@@ -113,22 +113,27 @@ public class SyncService extends IntentService {
      */
     private void handleActionCheck() {
 
-        queryThenDelete(SamplesProvider.VIDEO_PLAY_HISTORY_URI,VideoEntry.COLUMN_VIDEO_PATH);
-        queryThenDelete(SamplesProvider.SUBTITLE_URI,SubtitleEntry.COLUMN_SUBTITLE_PATH);
+//        queryThenDelete(SamplesProvider.VIDEO_PLAY_HISTORY_URI,VideoEntry.COLUMN_VIDEO_PATH);
+//        queryThenDelete(SamplesProvider.SUBTITLE_URI,SubtitleEntry.COLUMN_SUBTITLE_PATH);
+        SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).clearNotExistsVideos();
+        SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).clearNotExistsSubtitles();
     }
 
     /**
      * 更新播放历史
      */
     private void handleActionUpdate(String id, String playDuration, String createdDate) {
-        ContentValues values = new ContentValues();
-        values.put(VideoEntry.COLUMN_VIDEO_PLAY_DURATION, playDuration);
-        values.put(VideoEntry.COLUMN_VIDEO_CREATED_DATE, createdDate);
-        Uri updateUri = ContentUris.withAppendedId(SamplesProvider.VIDEO_PLAY_HISTORY_URI, Long.valueOf(id));
+//        ContentValues values = new ContentValues();
+//        values.put(VideoEntry.COLUMN_VIDEO_PLAY_DURATION, playDuration);
+//        values.put(VideoEntry.COLUMN_VIDEO_CREATED_DATE, createdDate);
+//        Uri updateUri = ContentUris.withAppendedId(SamplesProvider.VIDEO_PLAY_HISTORY_URI, Long.valueOf(id));
+//
+//        getContentResolver().update(updateUri, values, null,
+//                new String[]{VideoEntry.COLUMN_VIDEO_PLAY_DURATION, VideoEntry.COLUMN_VIDEO_CREATED_DATE});
+//        getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
 
-        getContentResolver().update(updateUri, values, null,
-                new String[]{VideoEntry.COLUMN_VIDEO_PLAY_DURATION, VideoEntry.COLUMN_VIDEO_CREATED_DATE});
-        getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
+        SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).updateVideo(id,playDuration,createdDate);
+//        getContentResolver().notifyChange(SamplesPersistenceContract.getBaseUri(),null);
     }
 
     /**
@@ -216,7 +221,7 @@ public class SyncService extends IntentService {
         values.put(VideoEntry.COLUMN_VIDEO_PLAY_DURATION, -1);
         values.put(VideoEntry.COLUMN_VIDEO_CREATED_DATE, date);
         values.put(VideoEntry.COLUMN_VIDEO_DATE,fileItem.getDate());
-        values.put(VideoEntry.COLUMN_VIDEO_SCREEN_ORIENTATION,Integer.valueOf(width) > Integer.valueOf(height) ? 1:0);
+//        values.put(VideoEntry.COLUMN_VIDEO_SCREEN_ORIENTATION,Integer.valueOf(width) > Integer.valueOf(height) ? 1:0);
         values.put(VideoEntry.COLUMN_VIDEO_BITRATE,bitrate);
         return values;
     }
@@ -260,7 +265,7 @@ public class SyncService extends IntentService {
                 }
             }
             cursor.close();
-            getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
+//            getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
         }
     }
 }

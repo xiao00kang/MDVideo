@@ -1,39 +1,67 @@
 package com.studyjams.mdvideo.Data.source.local;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.source.SamplesValues;
 import com.studyjams.mdvideo.Data.source.SubtitleDataSource;
 import com.studyjams.mdvideo.Data.source.VideoDataSource;
+import com.studyjams.mdvideo.Data.source.remote.FileItem;
+
+import java.io.File;
 
 /**
- * Created by syamiadmin on 2016/9/8.
+ * Concrete implementation of a data source as a db.
  */
 public class SamplesLocalDataSource implements VideoDataSource,SubtitleDataSource {
 
-    @Override
-    public void activateTask(@NonNull Video video) {
+    private static final String TAG = "SamplesLocalDataSource";
 
+    private static SamplesLocalDataSource INSTANCE;
+    private ContentResolver mContentResolver;
+    // Prevent direct instantiation.
+    private SamplesLocalDataSource(@NonNull ContentResolver contentResolver) {
+        mContentResolver = contentResolver;
+    }
+
+    public static SamplesLocalDataSource getInstance(@NonNull ContentResolver contentResolver) {
+        if (INSTANCE == null) {
+            INSTANCE = new SamplesLocalDataSource(contentResolver);
+        }
+        return INSTANCE;
     }
 
     @Override
-    public void activateTask(@NonNull String videoId) {
+    public void clearNotExistsVideos() {
 
-    }
-
-    @Override
-    public void clearCompletedTasks() {
-
-    }
-
-    @Override
-    public void deleteAllVideos() {
-
+        Cursor cursor = mContentResolver.query(SamplesPersistenceContract.VideoEntry.buildVideosUri(),
+                new String[]{SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PATH},
+                null,
+                null,
+                null);
+        if(cursor != null) {
+            while (!cursor.moveToPosition(0) && cursor.moveToNext()) {
+                String path = cursor.getString(cursor.getColumnIndexOrThrow(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PATH));
+                File file = new File(path);
+                if (!file.exists()) {
+                    String selection = SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PATH + " LIKE ?";
+                    String[] selectionArgs = {path};
+                    mContentResolver.delete(SamplesPersistenceContract.VideoEntry.buildVideosUri(), selection, selectionArgs);
+                }
+            }
+            cursor.close();
+        }
     }
 
     @Override
     public void deleteVideo(@NonNull String videoId) {
-
+        String selection = SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID + " LIKE ?";
+        String[] selectionArgs = {videoId};
+        mContentResolver.delete(SamplesPersistenceContract.VideoEntry.buildVideosUri(),selection,selectionArgs);
     }
 
     @Override
@@ -47,17 +75,76 @@ public class SamplesLocalDataSource implements VideoDataSource,SubtitleDataSourc
     }
 
     @Override
-    public void saveVideo(@NonNull Video video) {
+    public void saveVideo(@NonNull FileItem fileItem) {
+        ContentValues values = SamplesValues.videoFrom(fileItem);
+        mContentResolver.insert(SamplesPersistenceContract.VideoEntry.buildVideosUri(), values);
+    }
 
+    @Override
+    public void saveVideo(@NonNull Video video) {
+        ContentValues values = SamplesValues.videoFrom(video);
+        mContentResolver.insert(SamplesPersistenceContract.VideoEntry.buildVideosUri(), values);
     }
 
     @Override
     public void updateVideo(@NonNull Video video) {
+        ContentValues values = new ContentValues();
+        values.put(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION, video.getPlayDuration());
+        values.put(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE, video.getCreatedDate());
+
+        String selection = SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(video.getId())};
+
+        mContentResolver.update(SamplesPersistenceContract.VideoEntry.buildVideosUri(), values, selection, selectionArgs);
+    }
+
+    @Override
+    public void updateVideo(@NonNull String videoId, String playDuration, String createdDate) {
+
+        ContentValues values = new ContentValues();
+        values.put(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION, playDuration);
+        values.put(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE, createdDate);
+
+        String selection = SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID + " LIKE ?";
+        String[] selectionArgs = new String[]{videoId};
+        Log.d(TAG, "=======updateVideo: " + videoId);
+        mContentResolver.update(SamplesPersistenceContract.VideoEntry.buildVideosUri(), values, selection, selectionArgs);
+    }
+
+    @Override
+    public void clearNotExistsSubtitles() {
+        Cursor cursor = mContentResolver.query(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(),
+                new String[]{SamplesPersistenceContract.SubtitleEntry.TABLE_SUBTITLE_NAME},
+                null,
+                null,
+                null);
+        if(cursor != null) {
+            while (!cursor.moveToPosition(0) && cursor.moveToNext()) {
+                String path = cursor.getString(cursor.getColumnIndexOrThrow(SamplesPersistenceContract.SubtitleEntry.COLUMN_SUBTITLE_PATH));
+                File file = new File(path);
+                if (!file.exists()) {
+                    String selection = SamplesPersistenceContract.SubtitleEntry.COLUMN_SUBTITLE_PATH + " LIKE ?";
+                    String[] selectionArgs = {path};
+                    mContentResolver.delete(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(), selection, selectionArgs);
+                }
+            }
+            cursor.close();
+        }
+    }
+
+    @Override
+    public void getSubtitle(@NonNull String subtitleId, @NonNull GetSubtitleCallback callback) {
 
     }
 
     @Override
-    public void updateVideo(@NonNull String videoId) {
+    public void getSubtitles(@NonNull GetSubtitlesCallback callback) {
 
+    }
+
+    @Override
+    public void saveSubtitle(@NonNull FileItem fileItem) {
+        ContentValues values = SamplesValues.subtitleFrom(fileItem);
+        mContentResolver.insert(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(), values);
     }
 }

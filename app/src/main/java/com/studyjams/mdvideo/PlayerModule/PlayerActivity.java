@@ -294,7 +294,7 @@ public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.C
             long playDuration = player.getPlayerControl().getCurrentPosition();
             Log.d(TAG, "================upDateHistory: " + playDuration);
             Intent intent = new Intent(MainActivity.PLAY_HISTORY_ACTION);
-            intent.putExtra(SamplesPersistenceContract.VideoEntry._ID,contentId);
+            intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID,contentId);
             intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION,String.valueOf(playDuration));
             intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE,Tools.getCurrentTimeMillis());
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

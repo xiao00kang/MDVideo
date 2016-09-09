@@ -1,7 +1,6 @@
 package com.studyjams.mdvideo.Data.source;
 
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -10,167 +9,238 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.studyjams.mdvideo.BuildConfig;
 import com.studyjams.mdvideo.Data.source.local.SamplesDbHelper;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.SubtitleEntry;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoEntry;
 
 public class SamplesProvider extends ContentProvider {
     private static final String TAG = "DataSourceProvider";
-    private static final UriMatcher matcher;
-    private SamplesDbHelper helper;
-    private SQLiteDatabase db;
 
-    /**
-     * com.your-company.VideoProvider 授权信息
-     */
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID;
     private static final int VIDEO_ALL = 0;
     private static final int VIDEO_ONE = 1;
     private static final int SUBTITLE_ALL = 2;
     private static final int SUBTITLE_ONE = 3;
 
-    /**
-     * MIME类型vnd.android.cursor.item/content-type
-     */
-    public static final String CONTENT_TYPE_VIDEO = "vnd.android.cursor.dir/" + VideoEntry.TABLE_VIDEO_NAME;
-    public static final String CONTENT_ITEM_TYPE_VIDEO = "vnd.android.cursor.item/" + VideoEntry.TABLE_VIDEO_NAME;
-    public static final String CONTENT_TYPE_SUBTITLE = "vnd.android.cursor.dir/" + SubtitleEntry.TABLE_SUBTITLE_NAME;
-    public static final String CONTENT_ITEM_TYPE_SUBTITLE = "vnd.android.cursor.item/" + SubtitleEntry.TABLE_SUBTITLE_NAME;
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
+    private SamplesDbHelper mSamplesDbHelper;
 
-    static {
-        /**常量UriMatcher.NO_MATCH表示不匹配任何路径的返回码**/
-        matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        /**如果match方法匹配路径，返回匹配码为0**/
-        matcher.addURI(AUTHORITY, VideoEntry.TABLE_VIDEO_NAME, VIDEO_ALL);   //匹配记录集合
-        /**如果match方法匹配路径，返回匹配码为1**/
-        matcher.addURI(AUTHORITY, VideoEntry.TABLE_VIDEO_NAME + "/#", VIDEO_ONE); //匹配单条记录
-        /**如果match方法匹配路径，返回匹配码为0**/
-        matcher.addURI(AUTHORITY, SubtitleEntry.TABLE_SUBTITLE_NAME, SUBTITLE_ALL);   //匹配记录集合
-        /**如果match方法匹配路径，返回匹配码为1**/
-        matcher.addURI(AUTHORITY, SubtitleEntry.TABLE_SUBTITLE_NAME + "/#", SUBTITLE_ONE); //匹配单条记录
+    private static UriMatcher buildUriMatcher() {
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        final String authority = SamplesPersistenceContract.CONTENT_AUTHORITY;
+
+        matcher.addURI(authority, VideoEntry.TABLE_VIDEO_NAME, VIDEO_ALL);
+        matcher.addURI(authority, VideoEntry.TABLE_VIDEO_NAME + "/*", VIDEO_ONE);
+        matcher.addURI(authority,SubtitleEntry.TABLE_SUBTITLE_NAME, SUBTITLE_ALL);
+        matcher.addURI(authority,SubtitleEntry.TABLE_SUBTITLE_NAME + "/*", SUBTITLE_ONE);
+        return matcher;
     }
-
-    /**
-     * 操作使用的uri
-     */
-    public static final Uri VIDEO_PLAY_HISTORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VideoEntry.TABLE_VIDEO_NAME);
-    public static final Uri SUBTITLE_URI = Uri.parse("content://" + AUTHORITY + "/" + SubtitleEntry.TABLE_SUBTITLE_NAME);
-    /**注册监听使用的uri**/
-    public static final Uri VIDEO_CHANGE_URI = Uri.parse("content://" + AUTHORITY);
 
     @Override
     public boolean onCreate() {
-        helper = new SamplesDbHelper(getContext());
+        mSamplesDbHelper = new SamplesDbHelper(getContext());
         return true;
     }
 
     @Override
     public String getType(@NonNull Uri uri) {
         Log.d(TAG, "getType: " + uri);
-        switch (matcher.match(uri)) {
+        switch (sUriMatcher.match(uri)) {
             case VIDEO_ALL:
-                return CONTENT_TYPE_VIDEO;
+                return SamplesPersistenceContract.CONTENT_VIDEO_TYPE;
             case VIDEO_ONE:
-                return CONTENT_ITEM_TYPE_VIDEO;
+                return SamplesPersistenceContract.CONTENT_VIDEO_ITEM_TYPE;
             case SUBTITLE_ALL:
-                return CONTENT_TYPE_SUBTITLE;
+                return SamplesPersistenceContract.CONTENT_SUBTITLE_TYPE;
             case SUBTITLE_ONE:
-                return CONTENT_ITEM_TYPE_SUBTITLE;
+                return SamplesPersistenceContract.CONTENT_SUBTITLE_ITEM_TYPE;
             default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
+                throw new UnsupportedOperationException("Unknown URI: " + uri);
         }
     }
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         Log.d(TAG, "delete: " + uri);
-        db = helper.getWritableDatabase();
-        switch (matcher.match(uri)) {
+        final SQLiteDatabase db = mSamplesDbHelper.getWritableDatabase();
+        int rowsDeleted;
+        switch (sUriMatcher.match(uri)) {
             case VIDEO_ALL:
-                //doesn't need any code in my provider.
-                return db.delete(VideoEntry.TABLE_VIDEO_NAME, selection, selectionArgs);
-            case VIDEO_ONE:
-                //删除某一条数据
-                selection = "_id = ?";
-                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.delete(VideoEntry.TABLE_VIDEO_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(VideoEntry.TABLE_VIDEO_NAME, selection, selectionArgs);
+                break;
             case SUBTITLE_ALL:
-                //doesn't need any code in my provider.
-                return db.delete(SubtitleEntry.TABLE_SUBTITLE_NAME, selection, selectionArgs);
-            case SUBTITLE_ONE:
-                //删除某一条数据
-                selection = "_id = ?";
-                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.delete(SubtitleEntry.TABLE_SUBTITLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(SubtitleEntry.TABLE_SUBTITLE_NAME, selection, selectionArgs);
+                break;
             default:
-                throw new IllegalArgumentException("Wrong URI: " + uri);
+                throw new UnsupportedOperationException("Wrong URI: " + uri);
         }
+
+        if (selection == null || rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
         Log.d(TAG, "insert: " + uri);
-        db = helper.getWritableDatabase();
-        switch (matcher.match(uri)){
+        final SQLiteDatabase db = mSamplesDbHelper.getWritableDatabase();
+        Uri returnUri;
+        Cursor exists;
+        switch (sUriMatcher.match(uri)){
             case VIDEO_ALL:
-                return ContentUris.withAppendedId(uri, db.insert(VideoEntry.TABLE_VIDEO_NAME, null, values));
+                exists = db.query(
+                        VideoEntry.TABLE_VIDEO_NAME,
+                        new String[]{VideoEntry.COLUMN_VIDEO_PATH},
+                        VideoEntry.COLUMN_VIDEO_PATH + " = ?",
+                        new String[]{values.getAsString(VideoEntry.COLUMN_VIDEO_PATH)},
+                        null,
+                        null,
+                        null
+                );
+                if (exists.moveToLast()) {
+                    long _id = db.update(
+                            VideoEntry.TABLE_VIDEO_NAME, values,
+                            VideoEntry.COLUMN_VIDEO_PATH + " = ?",
+                            new String[]{values.getAsString(VideoEntry.COLUMN_VIDEO_PATH)}
+                    );
+                    if (_id > 0) {
+                        returnUri = VideoEntry.buildVideosUriWith(_id);
+                    } else {
+                        throw new android.database.SQLException("Failed to insert row into " + uri);
+                    }
+                } else {
+                    long _id = db.insert(VideoEntry.TABLE_VIDEO_NAME, null, values);
+                    if (_id > 0) {
+                        returnUri = VideoEntry.buildVideosUriWith(_id);
+                    } else {
+                        throw new android.database.SQLException("Failed to insert row into " + uri);
+                    }
+                }
+                exists.close();
+                break;
             case SUBTITLE_ALL:
-                return ContentUris.withAppendedId(uri, db.insert(SubtitleEntry.TABLE_SUBTITLE_NAME, null, values));
+                exists = db.query(
+                        SubtitleEntry.TABLE_SUBTITLE_NAME,
+                        new String[]{SubtitleEntry.COLUMN_SUBTITLE_PATH},
+                        SubtitleEntry.COLUMN_SUBTITLE_PATH + " = ?",
+                        new String[]{values.getAsString(SubtitleEntry.COLUMN_SUBTITLE_PATH)},
+                        null,
+                        null,
+                        null
+                );
+                if (exists.moveToLast()) {
+                    long _id = db.update(
+                            SubtitleEntry.TABLE_SUBTITLE_NAME, values,
+                            SubtitleEntry.COLUMN_SUBTITLE_PATH + " = ?",
+                            new String[]{values.getAsString(SubtitleEntry.COLUMN_SUBTITLE_PATH)}
+                    );
+                    if (_id > 0) {
+                        returnUri = SubtitleEntry.buildSubtitlesUriWith(_id);
+                    } else {
+                        throw new android.database.SQLException("Failed to insert row into " + uri);
+                    }
+                } else {
+                    long _id = db.insert(SubtitleEntry.TABLE_SUBTITLE_NAME, null, values);
+                    if (_id > 0) {
+                        returnUri = SubtitleEntry.buildSubtitlesUriWith(_id);
+                    } else {
+                        throw new android.database.SQLException("Failed to insert row into " + uri);
+                    }
+                }
+                exists.close();
+                break;
             default:
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Log.d(TAG, "query: " + uri);
-        db = helper.getReadableDatabase();
-        switch (matcher.match(uri)) {
+        final SQLiteDatabase db = mSamplesDbHelper.getWritableDatabase();
+        Cursor retCursor;
+        String[] where = {uri.getLastPathSegment()};
+        switch (sUriMatcher.match(uri)) {
             case VIDEO_ALL:
-                //doesn't need any code in my provider.
-                return db.query(VideoEntry.TABLE_VIDEO_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                retCursor = db.query(
+                        VideoEntry.TABLE_VIDEO_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
             case VIDEO_ONE:
-                selection = "_id = ?";
-                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.query(VideoEntry.TABLE_VIDEO_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+
+                retCursor = db.query(
+                        VideoEntry.TABLE_VIDEO_NAME,
+                        projection,
+                        VideoEntry.COLUMN_VIDEO_ENTRY_ID + " = ?",
+                        where,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+
             case SUBTITLE_ALL:
-                //doesn't need any code in my provider.
-                return db.query(SubtitleEntry.TABLE_SUBTITLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                retCursor = db.query(
+                        SubtitleEntry.TABLE_SUBTITLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
             case SUBTITLE_ONE:
-                selection = "_id = ?";
-                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.query(SubtitleEntry.TABLE_SUBTITLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                retCursor = db.query(
+                        SubtitleEntry.TABLE_SUBTITLE_NAME,
+                        projection,
+                        SubtitleEntry.COLUMN_SUBTITLE_ENTRY_ID + " = ?",
+                        where,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return retCursor;
     }
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         Log.d(TAG, "update: " + uri);
-        db = helper.getWritableDatabase();
-        switch (matcher.match(uri)) {
+        final SQLiteDatabase db = mSamplesDbHelper.getWritableDatabase();
+        int rowsUpdated;
+        switch (sUriMatcher.match(uri)) {
             case VIDEO_ALL:
-                //doesn't need any code in my provider.
-                return db.update(VideoEntry.TABLE_VIDEO_NAME, values, selection, selectionArgs);
+
+                rowsUpdated = db.update(VideoEntry.TABLE_VIDEO_NAME, values, selection, selectionArgs);
+                break;
             case VIDEO_ONE:
-
-                selection = "_id = ?";
-                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.update(VideoEntry.TABLE_VIDEO_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(VideoEntry.TABLE_VIDEO_NAME, values, selection, selectionArgs);
+                break;
             case SUBTITLE_ALL:
-                //doesn't need any code in my provider.
-                return db.update(SubtitleEntry.TABLE_SUBTITLE_NAME, values, selection, selectionArgs);
-            case SUBTITLE_ONE:
-
-                selection = "_id = ?";
-                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.update(SubtitleEntry.TABLE_SUBTITLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(SubtitleEntry.TABLE_SUBTITLE_NAME, values, selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
-
+        if (rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        Log.d(TAG, "======update: " + rowsUpdated);
+        return rowsUpdated;
     }
 }

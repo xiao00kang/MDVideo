@@ -1,6 +1,7 @@
 package com.studyjams.mdvideo.Data;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoEntry;
 
@@ -10,6 +11,7 @@ import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoE
 
 public class Video {
 
+    private static final String TAG = "Video";
     private int mId;
     private String mTitle;
     private String mAlbum;
@@ -20,7 +22,15 @@ public class Video {
     private long mDuration;
     private String mMimeType;
     private long mPlayDuration;
+    //记录观看历史
     private String mCreatedDate;
+    //文件创建日期
+    private String mDate;
+    private String mBitrate;
+    //关联字幕地址
+    private String mSubtitlePath;
+    private String mWidth;
+    private String mHeight;
 
     public String getCreatedDate() {
         return mCreatedDate;
@@ -110,12 +120,52 @@ public class Video {
         mPlayDuration = playDuration;
     }
 
+    public String getBitrate() {
+        return mBitrate;
+    }
+
+    public void setBitrate(String bitrate) {
+        mBitrate = bitrate;
+    }
+
+    public String getDate() {
+        return mDate;
+    }
+
+    public void setDate(String date) {
+        mDate = date;
+    }
+
+    public String getHeight() {
+        return mHeight;
+    }
+
+    public void setHeight(String height) {
+        mHeight = height;
+    }
+
+    public String getSubtitlePath() {
+        return mSubtitlePath;
+    }
+
+    public void setSubtitlePath(String subtitlePath) {
+        mSubtitlePath = subtitlePath;
+    }
+
+    public String getWidth() {
+        return mWidth;
+    }
+
+    public void setWidth(String width) {
+        mWidth = width;
+    }
+
     /**
      * create a new videoBean
      */
     public Video(int id, String title, String album, String artist, String displayName,
                  String mimeType, String path, long playDuration, long duration, long size,
-                 String createdDate){
+                 String createdDate,String date,String bitrate,String subtitlePath,String width,String height){
         mId = id;
         mTitle = title;
         mAlbum = album;
@@ -127,6 +177,11 @@ public class Video {
         mDuration = duration;
         mSize = size;
         mCreatedDate = createdDate;
+        mDate = date;
+        mBitrate = bitrate;
+        mSubtitlePath = subtitlePath;
+        mWidth = width;
+        mHeight = height;
     }
 
     /**
@@ -135,7 +190,7 @@ public class Video {
      * @return
      */
     public static Video from(Cursor cursor){
-        int id = cursor.getInt(cursor.getColumnIndexOrThrow(VideoEntry._ID));
+        int id = cursor.getInt(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_ENTRY_ID));
         String title = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_TITLE));
         String album = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_ALBUM));
         String artist = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_ARTIST));
@@ -146,8 +201,15 @@ public class Video {
         long duration = cursor.getInt(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_DURATION));
         long size = cursor.getLong(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_SIZE));
         String createdDate = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_CREATED_DATE));
+        String date = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_DATE));
+        String bitrate = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_BITRATE));
+        String subtitlePath = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_SUBTITLE_PATH));
+        String width = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_SCREEN_WIDTH));
+        String height = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_SCREEN_HEIGHT));
 
-        return new Video(id,title,album,artist,displayName,mimeType,path,playDuration,duration,size,createdDate);
+        Log.d(TAG, "========from: " + id);
+        return new Video(id,title,album,artist,displayName,mimeType,
+                path,playDuration,duration,size,createdDate,date,bitrate,subtitlePath,width,height);
     }
 
     /**

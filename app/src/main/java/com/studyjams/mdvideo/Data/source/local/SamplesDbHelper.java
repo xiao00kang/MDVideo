@@ -35,7 +35,8 @@ public class SamplesDbHelper extends SQLiteOpenHelper {
                     SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PATH + TEXT_TYPE + COMMA_SEP +
                     SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_DATE + TEXT_TYPE + COMMA_SEP +
                     SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SUBTITLE_PATH + TEXT_TYPE + COMMA_SEP +
-                    SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SCREEN_ORIENTATION + BOOLEAN_TYPE + COMMA_SEP +
+                    SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SCREEN_WIDTH + TEXT_TYPE + COMMA_SEP +
+                    SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SCREEN_HEIGHT + TEXT_TYPE + COMMA_SEP +
                     SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_BITRATE + INTEGER_TYPE + COMMA_SEP +
                     SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SIZE + INTEGER_TYPE + COMMA_SEP +
                     SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_DURATION + INTEGER_TYPE + COMMA_SEP +
