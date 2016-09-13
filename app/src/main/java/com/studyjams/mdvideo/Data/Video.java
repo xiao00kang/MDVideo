@@ -12,7 +12,7 @@ import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoE
 public class Video {
 
     private static final String TAG = "Video";
-    private int mId;
+    private String mId;
     private String mTitle;
     private String mAlbum;
     private String mArtist;
@@ -72,11 +72,11 @@ public class Video {
         mDuration = duration;
     }
 
-    public int getId() {
+    public String getId() {
         return mId;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         mId = id;
     }
 
@@ -163,7 +163,7 @@ public class Video {
     /**
      * create a new videoBean
      */
-    public Video(int id, String title, String album, String artist, String displayName,
+    public Video(String id, String title, String album, String artist, String displayName,
                  String mimeType, String path, long playDuration, long duration, long size,
                  String createdDate,String date,String bitrate,String subtitlePath,String width,String height){
         mId = id;
@@ -190,7 +190,7 @@ public class Video {
      * @return
      */
     public static Video from(Cursor cursor){
-        int id = cursor.getInt(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_ENTRY_ID));
+        String id = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_ENTRY_ID));
         String title = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_TITLE));
         String album = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_ALBUM));
         String artist = cursor.getString(cursor.getColumnIndexOrThrow(VideoEntry.COLUMN_VIDEO_ARTIST));

@@ -88,7 +88,7 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
 
             Video video = Video.from(cursor);
 
-            if(video.getId() == Integer.valueOf(selected)){
+            if(selected.equals(video.getId())){
                 mTitle.setTextColor(mContext.getResources().getColor(R.color.accent));
             }
 

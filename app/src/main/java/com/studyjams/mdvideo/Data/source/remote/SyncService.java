@@ -1,19 +1,11 @@
 package com.studyjams.mdvideo.Data.source.remote;
 
 import android.app.IntentService;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Environment;
 
-import com.studyjams.mdvideo.Data.source.SamplesRepository;
 import com.studyjams.mdvideo.Data.source.local.SamplesLocalDataSource;
-import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.SubtitleEntry;
-import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoEntry;
-import com.studyjams.mdvideo.Util.Tools;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -97,14 +89,11 @@ public class SyncService extends IntentService {
         for (FileItem file:list){
             String filePath = file.getPath();
             if(!filePath.endsWith("srt")) {
-                SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).saveVideo(file);
-//                queryThenInsert(VideoEntry.COLUMN_VIDEO_PATH,filePath, SamplesProvider.VIDEO_PLAY_HISTORY_URI,getContentValues(file));
+                SamplesLocalDataSource.getInstance(getContentResolver()).saveVideo(file);
             }else{
-                SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).saveSubtitle(file);
-//                queryThenInsert(SubtitleEntry.COLUMN_SUBTITLE_PATH,filePath, SamplesProvider.SUBTITLE_URI,getSubtitleContentValues(file));
+                SamplesLocalDataSource.getInstance(getContentResolver()).saveSubtitle(file);
             }
         }
-//        getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
     }
 
     /**
@@ -113,27 +102,16 @@ public class SyncService extends IntentService {
      */
     private void handleActionCheck() {
 
-//        queryThenDelete(SamplesProvider.VIDEO_PLAY_HISTORY_URI,VideoEntry.COLUMN_VIDEO_PATH);
-//        queryThenDelete(SamplesProvider.SUBTITLE_URI,SubtitleEntry.COLUMN_SUBTITLE_PATH);
-        SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).clearNotExistsVideos();
-        SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).clearNotExistsSubtitles();
+        SamplesLocalDataSource.getInstance(getContentResolver()).clearNotExistsVideos();
+        SamplesLocalDataSource.getInstance(getContentResolver()).clearNotExistsSubtitles();
     }
 
     /**
      * 更新播放历史
      */
     private void handleActionUpdate(String id, String playDuration, String createdDate) {
-//        ContentValues values = new ContentValues();
-//        values.put(VideoEntry.COLUMN_VIDEO_PLAY_DURATION, playDuration);
-//        values.put(VideoEntry.COLUMN_VIDEO_CREATED_DATE, createdDate);
-//        Uri updateUri = ContentUris.withAppendedId(SamplesProvider.VIDEO_PLAY_HISTORY_URI, Long.valueOf(id));
-//
-//        getContentResolver().update(updateUri, values, null,
-//                new String[]{VideoEntry.COLUMN_VIDEO_PLAY_DURATION, VideoEntry.COLUMN_VIDEO_CREATED_DATE});
-//        getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
 
-        SamplesRepository.getInstance(SamplesLocalDataSource.getInstance(getContentResolver())).updateVideo(id,playDuration,createdDate);
-//        getContentResolver().notifyChange(SamplesPersistenceContract.getBaseUri(),null);
+        SamplesLocalDataSource.getInstance(getContentResolver()).updateVideo(id,playDuration,createdDate);
     }
 
     /**
@@ -173,99 +151,5 @@ public class SyncService extends IntentService {
             }
         }
         return list;
-    }
-
-    /**
-     * 存储外挂字幕文件信息
-     * @param fileItem
-     * @return
-     */
-    private ContentValues getSubtitleContentValues(FileItem fileItem){
-        ContentValues values = new ContentValues();
-        values.put(SubtitleEntry.COLUMN_SUBTITLE_NAME,fileItem.getName());
-        values.put(SubtitleEntry.COLUMN_SUBTITLE_PATH,fileItem.getPath());
-        values.put(SubtitleEntry.COLUMN_SUBTITLE_DATE,fileItem.getDate());
-        values.put(SubtitleEntry.COLUMN_SUBTITLE_SIZE,fileItem.getSize());
-        values.put(SubtitleEntry.COLUMN_SUBTITLE_CREATED_DATE, Tools.getCurrentTimeMillis());
-        return values;
-    }
-
-    /**
-     * 读取视频文件信息
-     * @param fileItem
-     * @return
-     */
-    private ContentValues getContentValues(FileItem fileItem){
-        ContentValues values = new ContentValues();
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(fileItem.getPath());
-        String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-        String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-        String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);//艺术家
-        String displayName = "";
-        String mimeType = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);//类型
-        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);//时长(毫秒)
-        String date = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);//日期
-        String width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);//宽
-        String height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);//高
-        String bitrate = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE);//平均比特率
-
-        values.put(VideoEntry.COLUMN_VIDEO_TITLE, fileItem.getName());
-        values.put(VideoEntry.COLUMN_VIDEO_ALBUM, album);
-        values.put(VideoEntry.COLUMN_VIDEO_ARTIST, artist);
-        values.put(VideoEntry.COLUMN_VIDEO_DISPLAY_NAME, displayName);
-        values.put(VideoEntry.COLUMN_VIDEO_MIME_TYPE, mimeType);
-        values.put(VideoEntry.COLUMN_VIDEO_PATH, fileItem.getPath());
-        values.put(VideoEntry.COLUMN_VIDEO_SIZE, fileItem.getSize());
-        values.put(VideoEntry.COLUMN_VIDEO_DURATION, duration);
-        values.put(VideoEntry.COLUMN_VIDEO_PLAY_DURATION, -1);
-        values.put(VideoEntry.COLUMN_VIDEO_CREATED_DATE, date);
-        values.put(VideoEntry.COLUMN_VIDEO_DATE,fileItem.getDate());
-//        values.put(VideoEntry.COLUMN_VIDEO_SCREEN_ORIENTATION,Integer.valueOf(width) > Integer.valueOf(height) ? 1:0);
-        values.put(VideoEntry.COLUMN_VIDEO_BITRATE,bitrate);
-        return values;
-    }
-
-    /**
-     * 查询比较是否插入
-     * @param tableName
-     * @param filePath
-     * @param uri
-     * @param contentValues
-     */
-    private void queryThenInsert(String tableName,String filePath,Uri uri,ContentValues contentValues){
-
-        Cursor cursor = getContentResolver().query(uri, null,
-                tableName + " like '" + filePath + "'",
-                null,
-                null);
-        if (cursor != null) {
-            if (!cursor.moveToPosition(0)) {
-
-                getContentResolver().insert(uri, contentValues);
-            }
-            cursor.close();
-        }
-    }
-
-    /**
-     * 查询检查是否存在，不存在则删除
-     * @param uri
-     * @param tableName
-     */
-    private void queryThenDelete(Uri uri,String tableName){
-        Cursor cursor = getContentResolver().query(uri, new String[]{tableName},
-                null,null,null);
-        if(cursor != null) {
-            while (!cursor.moveToPosition(0) && cursor.moveToNext()) {
-                String path = cursor.getString(cursor.getColumnIndexOrThrow(tableName));
-                File file = new File(path);
-                if (!file.exists()) {
-                    getContentResolver().delete(uri, tableName + " like '" + path + "'", null);
-                }
-            }
-            cursor.close();
-//            getContentResolver().notifyChange(SamplesProvider.VIDEO_CHANGE_URI,null);
-        }
     }
 }

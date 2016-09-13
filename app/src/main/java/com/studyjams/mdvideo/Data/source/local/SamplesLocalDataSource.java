@@ -77,7 +77,24 @@ public class SamplesLocalDataSource implements VideoDataSource,SubtitleDataSourc
     @Override
     public void saveVideo(@NonNull FileItem fileItem) {
         ContentValues values = SamplesValues.videoFrom(fileItem);
-        mContentResolver.insert(SamplesPersistenceContract.VideoEntry.buildVideosUri(), values);
+        String[] projection = new String[]{SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PATH};
+        String selection = SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PATH + " LIKE ?";
+        String[] selectionArgs = new String[]{values.getAsString(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PATH)};
+
+        Cursor cursor = mContentResolver.query(SamplesPersistenceContract.VideoEntry.buildVideosUri(),
+                projection,
+                selection,
+                selectionArgs,
+                null);
+
+        if (cursor != null) {
+            if (!cursor.moveToPosition(0)) {
+
+                mContentResolver.insert(SamplesPersistenceContract.VideoEntry.buildVideosUri(), values);
+            }
+            cursor.close();
+        }
+        mContentResolver.notifyChange(SamplesPersistenceContract.VideoEntry.buildVideosUri(), null);
     }
 
     @Override
@@ -106,15 +123,15 @@ public class SamplesLocalDataSource implements VideoDataSource,SubtitleDataSourc
         values.put(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE, createdDate);
 
         String selection = SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID + " LIKE ?";
-        String[] selectionArgs = new String[]{videoId};
-        Log.d(TAG, "=======updateVideo: " + videoId);
+        String[] selectionArgs = {videoId};
+        Log.d(TAG, "=========updateVideo: " + videoId);
         mContentResolver.update(SamplesPersistenceContract.VideoEntry.buildVideosUri(), values, selection, selectionArgs);
     }
 
     @Override
     public void clearNotExistsSubtitles() {
         Cursor cursor = mContentResolver.query(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(),
-                new String[]{SamplesPersistenceContract.SubtitleEntry.TABLE_SUBTITLE_NAME},
+                new String[]{SamplesPersistenceContract.SubtitleEntry.COLUMN_SUBTITLE_PATH},
                 null,
                 null,
                 null);
@@ -145,6 +162,24 @@ public class SamplesLocalDataSource implements VideoDataSource,SubtitleDataSourc
     @Override
     public void saveSubtitle(@NonNull FileItem fileItem) {
         ContentValues values = SamplesValues.subtitleFrom(fileItem);
-        mContentResolver.insert(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(), values);
+
+        String[] projection = new String[]{SamplesPersistenceContract.SubtitleEntry.COLUMN_SUBTITLE_PATH};
+        String selection = SamplesPersistenceContract.SubtitleEntry.COLUMN_SUBTITLE_PATH + " LIKE ?";
+        String[] selectionArgs = new String[]{values.getAsString(SamplesPersistenceContract.SubtitleEntry.COLUMN_SUBTITLE_PATH)};
+
+        Cursor cursor = mContentResolver.query(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(),
+                projection,
+                selection,
+                selectionArgs,
+                null);
+
+        if (cursor != null) {
+            if (!cursor.moveToPosition(0)) {
+
+                mContentResolver.insert(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(), values);
+            }
+            cursor.close();
+        }
+        mContentResolver.notifyChange(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(), null);
     }
 }

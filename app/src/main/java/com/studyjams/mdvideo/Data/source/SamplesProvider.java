@@ -15,7 +15,7 @@ import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.Subtit
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoEntry;
 
 public class SamplesProvider extends ContentProvider {
-    private static final String TAG = "DataSourceProvider";
+    private static final String TAG = "SamplesProvider";
 
     private static final int VIDEO_ALL = 0;
     private static final int VIDEO_ONE = 1;
@@ -87,74 +87,28 @@ public class SamplesProvider extends ContentProvider {
         Log.d(TAG, "insert: " + uri);
         final SQLiteDatabase db = mSamplesDbHelper.getWritableDatabase();
         Uri returnUri;
-        Cursor exists;
-        switch (sUriMatcher.match(uri)){
+        long _id;
+        switch (sUriMatcher.match(uri)) {
             case VIDEO_ALL:
-                exists = db.query(
-                        VideoEntry.TABLE_VIDEO_NAME,
-                        new String[]{VideoEntry.COLUMN_VIDEO_PATH},
-                        VideoEntry.COLUMN_VIDEO_PATH + " = ?",
-                        new String[]{values.getAsString(VideoEntry.COLUMN_VIDEO_PATH)},
-                        null,
-                        null,
-                        null
-                );
-                if (exists.moveToLast()) {
-                    long _id = db.update(
-                            VideoEntry.TABLE_VIDEO_NAME, values,
-                            VideoEntry.COLUMN_VIDEO_PATH + " = ?",
-                            new String[]{values.getAsString(VideoEntry.COLUMN_VIDEO_PATH)}
-                    );
-                    if (_id > 0) {
-                        returnUri = VideoEntry.buildVideosUriWith(_id);
-                    } else {
-                        throw new android.database.SQLException("Failed to insert row into " + uri);
-                    }
+                _id = db.insert(VideoEntry.TABLE_VIDEO_NAME, null, values);
+                if (_id > 0) {
+                    returnUri = VideoEntry.buildVideosUriWith(_id);
                 } else {
-                    long _id = db.insert(VideoEntry.TABLE_VIDEO_NAME, null, values);
-                    if (_id > 0) {
-                        returnUri = VideoEntry.buildVideosUriWith(_id);
-                    } else {
-                        throw new android.database.SQLException("Failed to insert row into " + uri);
-                    }
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
-                exists.close();
                 break;
             case SUBTITLE_ALL:
-                exists = db.query(
-                        SubtitleEntry.TABLE_SUBTITLE_NAME,
-                        new String[]{SubtitleEntry.COLUMN_SUBTITLE_PATH},
-                        SubtitleEntry.COLUMN_SUBTITLE_PATH + " = ?",
-                        new String[]{values.getAsString(SubtitleEntry.COLUMN_SUBTITLE_PATH)},
-                        null,
-                        null,
-                        null
-                );
-                if (exists.moveToLast()) {
-                    long _id = db.update(
-                            SubtitleEntry.TABLE_SUBTITLE_NAME, values,
-                            SubtitleEntry.COLUMN_SUBTITLE_PATH + " = ?",
-                            new String[]{values.getAsString(SubtitleEntry.COLUMN_SUBTITLE_PATH)}
-                    );
-                    if (_id > 0) {
-                        returnUri = SubtitleEntry.buildSubtitlesUriWith(_id);
-                    } else {
-                        throw new android.database.SQLException("Failed to insert row into " + uri);
-                    }
+
+                _id = db.insert(SubtitleEntry.TABLE_SUBTITLE_NAME, null, values);
+                if (_id > 0) {
+                    returnUri = SubtitleEntry.buildSubtitlesUriWith(_id);
                 } else {
-                    long _id = db.insert(SubtitleEntry.TABLE_SUBTITLE_NAME, null, values);
-                    if (_id > 0) {
-                        returnUri = SubtitleEntry.buildSubtitlesUriWith(_id);
-                    } else {
-                        throw new android.database.SQLException("Failed to insert row into " + uri);
-                    }
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
-                exists.close();
                 break;
             default:
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }
 
@@ -240,7 +194,6 @@ public class SamplesProvider extends ContentProvider {
         if (rowsUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        Log.d(TAG, "======update: " + rowsUpdated);
         return rowsUpdated;
     }
 }
