@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo;
+package com.studyjams.mdvideo.MainFrame;
 
 import android.app.Activity;
 import android.content.Intent;

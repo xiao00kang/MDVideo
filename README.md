@@ -17,6 +17,8 @@ MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作
 - 熟悉APP的整体开发流程，以及性能调试与测试。
 - 培养良好的代码风格
 
+活动在 2016 八月份结束，但我觉得这个项目不应该就此终结。在工作之余仍会投入精力开发。
+
 [**开发文档**](https://github.com/AndroidTips/MDVideo/tree/master/docs)
 ## Features
 
@@ -30,8 +32,6 @@ MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作
 ## Remark
 Please feel free to [report bugs](https://github.com/AndroidTips/MDVideo/issues) or ask for help via email.
 
-QQ Group:309677099
-
 Email: artharyoungcn@gmail.com
 
 ## Thanks
@@ -42,6 +42,7 @@ Email: artharyoungcn@gmail.com
 - [RecyclerViewCursorAdapter](https://github.com/androidessence/RecyclerViewCursorAdapter)
 - [MaterialDesignExample](https://github.com/chenyangcun/MaterialDesignExample)
 - [todo-mvp-contentproviders](https://github.com/googlesamples/android-architecture/tree/todo-mvp-contentproviders/)
+- [dev-todo-mvp-tablet](https://github.com/googlesamples/android-architecture/tree/dev-todo-mvp-tablet)
 
 ## License
 MDVideo is licensed under the terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)

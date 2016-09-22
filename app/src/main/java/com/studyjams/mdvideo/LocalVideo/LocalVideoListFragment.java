@@ -1,5 +1,4 @@
-package com.studyjams.mdvideo.Fragment;
-
+package com.studyjams.mdvideo.LocalVideo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,8 +22,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.studyjams.mdvideo.Adapter.VideoPlayHistoryCursorAdapter;
+import com.studyjams.mdvideo.Data.Video;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
+import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
@@ -32,30 +32,76 @@ import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemDivider;
 
 import java.lang.ref.WeakReference;
 
-public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        RecyclerViewItemClickListener.OnItemClickListener{
-    private static final String TAG = "HistoryFragment";
+/**
+ * Created by zwx on 2016/7/9.
+ */
+
+public class LocalVideoListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        RecyclerViewItemClickListener.OnItemClickListener,LocalVideoContract.View{
+
+    private LocalVideoContract.Presenter mPresenter;
+
+    private static final String TAG = "LocalVideoListFragment";
     private static final String ARG_PARAM = "param";
 
     private String mParam;
 
     private RecyclerView mRecyclerView;
-    private VideoPlayHistoryCursorAdapter mVideoPlayHistoryCursorAdapter;
+    private View mNoVideoView;
+    private View mVideoView;
 
-    /**历史记录Loader的编号**/
-    private static final int VIDEO_PLAY_HISTORY_LOADER = 1;
+    //本地视频的loader编号
+    private static final int LOCAL_VIDEO_LOADER = 0;
+    private LocalVideoCursorAdapter mLocalVideoCursorAdapter;
     /**Loader管理器**/
     private LoaderManager mLoaderManager;
     private VideoObserver mVideoObserver;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    public VideoPlayHistoryFragment() {
+    /**在Adapter中设置点击事件的回调接口**/
+    public interface VideoItemListener{
+        void OnClick(Video video);
+        void OnLongClick(Video video);
+    }
+
+    private VideoItemListener mVideoItemListener = new VideoItemListener() {
+        @Override
+        public void OnClick(Video video) {
+            mPresenter.playVideo(video);
+        }
+
+        @Override
+        public void OnLongClick(Video video) {
+            mPresenter.playVideo(video);
+        }
+    };
+
+    @Override
+    public void showVideos(Cursor cursor) {
+        mLocalVideoCursorAdapter.swapCursor(cursor);
+        mNoVideoView.setVisibility(View.GONE);
+        mVideoView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showNoVideos() {
+        mNoVideoView.setVisibility(View.VISIBLE);
+        mVideoView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setPresenter(LocalVideoContract.Presenter presenter) {
+        Log.d(TAG, "===========setPresenter: " + presenter);
+        mPresenter = presenter;
+    }
+
+    public LocalVideoListFragment() {
         // Required empty public constructor
     }
 
-    public static VideoPlayHistoryFragment newInstance(String param) {
-        VideoPlayHistoryFragment fragment = new VideoPlayHistoryFragment();
+    public static LocalVideoListFragment newInstance(String param) {
+        LocalVideoListFragment fragment = new LocalVideoListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM, param);
         fragment.setArguments(args);
@@ -70,27 +116,40 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
         }
     }
 
+    public void refreshData(){
+
+        SyncService.startActionCheck(getActivity());
+        SyncService.startActionTraversal(getActivity());
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View parent = inflater.inflate(R.layout.fragment_video_play_history, container, false);
-        mSwipeRefreshLayout = (SwipeRefreshLayout)parent.findViewById(R.id.video_play_history_SwipeRefreshLayout);
+        View parent = inflater.inflate(R.layout.fragment_video_local_list, container, false);
+        mSwipeRefreshLayout = (SwipeRefreshLayout)parent.findViewById(R.id.local_video_list_SwipeRefreshLayout);
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.white);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorIcon);
         mSwipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mLoaderManager.restartLoader(VIDEO_PLAY_HISTORY_LOADER,null,VideoPlayHistoryFragment.this);
+                refreshData();
             }
         });
-        mRecyclerView = (RecyclerView) parent.findViewById(R.id.video_play_history_recycler_view);
+
+        mRecyclerView = (RecyclerView) parent.findViewById(R.id.local_video_list_recycler_view);
+        mVideoView = parent.findViewById(R.id.local_show_video);
+        mNoVideoView = parent.findViewById(R.id.local_no_video);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(layoutManager);
+        //设置为垂直布局，这也是默认的
         layoutManager.setOrientation(OrientationHelper.VERTICAL);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new RecyclerViewItemDivider(getActivity(), RecyclerViewItemDivider.VERTICAL_LIST));
-        mVideoPlayHistoryCursorAdapter = new VideoPlayHistoryCursorAdapter(getActivity());
-        mRecyclerView.setAdapter(mVideoPlayHistoryCursorAdapter);
+
+        mLocalVideoCursorAdapter = new LocalVideoCursorAdapter(getActivity());
+        mRecyclerView.setAdapter(mLocalVideoCursorAdapter);
         mRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(getActivity(), this));
         return parent;
     }
@@ -99,13 +158,16 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mLoaderManager = getActivity().getSupportLoaderManager();
-        mLoaderManager.initLoader(VIDEO_PLAY_HISTORY_LOADER, null, this);
+        mLoaderManager.initLoader(LOCAL_VIDEO_LOADER, null, this);
         mVideoObserver = new VideoObserver(new MyHandler(getActivity()));
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "=======onResume: " + mPresenter);
+//        mPresenter.start();
+
         //注册数据库变化监听
         getActivity().getContentResolver().registerContentObserver(SamplesPersistenceContract.VideoEntry.buildVideosUri(), true, mVideoObserver);
     }
@@ -118,24 +180,34 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mPresenter.result(requestCode,resultCode);
+        if(requestCode == getActivity().RESULT_OK){
+
+        }
+    }
+
+    @Override
     public void onItemClick(View view, int position) {
-        Intent intent = new Intent(getActivity(), PlayerActivity.class)
-                .setData(Uri.parse(mVideoPlayHistoryCursorAdapter.getItemData(position).getPath()))
-                .putExtra(PlayerActivity.CONTENT_ID_EXTRA, String.valueOf(mVideoPlayHistoryCursorAdapter.getItemData(position).getId()))
-                .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, mVideoPlayHistoryCursorAdapter.getItemData(position).getMimeType())
-                .putExtra(PlayerActivity.PROVIDER_EXTRA,String.valueOf(mVideoPlayHistoryCursorAdapter.getItemData(position).getPlayDuration()));
-        getActivity().startActivity(intent);
+
+            Intent intent = new Intent(getActivity(), PlayerActivity.class)
+                    .setData(Uri.parse(mLocalVideoCursorAdapter.getItemData(position).getPath()))
+                    .putExtra(PlayerActivity.CONTENT_ID_EXTRA, String.valueOf(mLocalVideoCursorAdapter.getItemData(position).getId()))
+                    .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, mLocalVideoCursorAdapter.getItemData(position).getMimeType())
+                    .putExtra(PlayerActivity.PROVIDER_EXTRA,"0");
+            getActivity().startActivity(intent);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch(id) {
-            case VIDEO_PLAY_HISTORY_LOADER:
+            case LOCAL_VIDEO_LOADER:
                 return new CursorLoader(
                         getActivity(),
                         SamplesPersistenceContract.VideoEntry.buildVideosUri(),
                         null,
-                        SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION + " > -1",
+                        null,
                         null,
                         null
                 );
@@ -147,8 +219,8 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch(loader.getId()) {
-            case VIDEO_PLAY_HISTORY_LOADER:
-                mVideoPlayHistoryCursorAdapter.swapCursor(null);
+            case LOCAL_VIDEO_LOADER:
+                mLocalVideoCursorAdapter.swapCursor(null);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown loader id: " + loader.getId());
@@ -158,12 +230,13 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch(loader.getId()) {
-            case VIDEO_PLAY_HISTORY_LOADER:
-                mVideoPlayHistoryCursorAdapter.swapCursor(data);
+            case LOCAL_VIDEO_LOADER:
+                mLocalVideoCursorAdapter.swapCursor(data);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown loader id: " + loader.getId());
         }
+
         /**如果数据刷新完成，隐藏下拉刷新**/
         if (mSwipeRefreshLayout.isRefreshing()) {
 
@@ -173,15 +246,15 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
 
     private class VideoObserver extends ContentObserver {
 
-        public VideoObserver(Handler handler) {
+        /*package*/ VideoObserver(Handler handler) {
             super(handler);
         }
 
         @Override
         public void onChange(boolean selfChange) {
-            Log.d(TAG, "===============onChange: 更新播放历史");
+            Log.d(TAG, "===============onChange: 数据变更");
             //此处可以进行相应的业务处理
-            mLoaderManager.restartLoader(VIDEO_PLAY_HISTORY_LOADER,null,VideoPlayHistoryFragment.this);
+            mLoaderManager.restartLoader(LOCAL_VIDEO_LOADER,null,LocalVideoListFragment.this);
         }
     }
 

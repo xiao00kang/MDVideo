@@ -60,7 +60,7 @@ import com.google.android.exoplayer.util.MimeTypes;
 import com.google.android.exoplayer.util.Util;
 import com.google.android.exoplayer.util.VerboseLogUtil;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
-import com.studyjams.mdvideo.MainActivity;
+import com.studyjams.mdvideo.MainFrame.MainActivity;
 import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;

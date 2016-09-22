@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo;
+package com.studyjams.mdvideo.MainFrame;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -16,21 +16,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.exoplayer.util.Util;
-import com.studyjams.mdvideo.Adapter.MainPagerAdapter;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.Data.source.remote.SyncService;
-import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
+import com.studyjams.mdvideo.LocalVideo.LocalVideoListFragment;
+import com.studyjams.mdvideo.LocalVideo.LocalVideoPresenter;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
+import com.studyjams.mdvideo.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,VideoLocalListFragment.OnVideoRefreshListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE = 1;
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity
     private IntentFilter mIntentFilter;
 
     private DrawerLayout drawer;
+
+    private LocalVideoPresenter mLocalVideosPresenter;
 
     //定义进程内广播管理，比全局广播更高效
     private LocalBroadcastManager mLocalBroadcastManager;
@@ -67,19 +71,6 @@ public class MainActivity extends AppCompatActivity
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(PLAY_HISTORY_ACTION);
         mLocalBroadcastManager.registerReceiver(mMyReceiver,mIntentFilter);
-
-//        refreshData();
-    }
-
-    @Override
-    public void onVideoRefresh() {
-        refreshData();
-    }
-
-    public void refreshData(){
-
-        SyncService.startActionCheck(this);
-        SyncService.startActionTraversal(this);
     }
 
     private void initView(){
@@ -106,8 +97,17 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout)findViewById(R.id.main_view_table);
         ViewPager mViewpager = (ViewPager)findViewById(R.id.main_view_pager);
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(),mData);
+
+        //init local video presenter
+        LocalVideoListFragment localVideoListFragment = (LocalVideoListFragment) mainPagerAdapter.getItem(0);
+        Log.d(TAG, "==========initView: " + localVideoListFragment);
+
+        mLocalVideosPresenter = new LocalVideoPresenter(getSupportLoaderManager(),localVideoListFragment);
+        localVideoListFragment.setPresenter(mLocalVideosPresenter);
+
         mViewpager.setAdapter(mainPagerAdapter);
         tabLayout.setupWithViewPager(mViewpager);
+
 //        mViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 //            @Override
 //            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -258,9 +258,5 @@ public class MainActivity extends AppCompatActivity
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
-    }
-
-    private void fileChooser(){
-//        playSound();
     }
 }

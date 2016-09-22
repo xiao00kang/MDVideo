@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.Adapter;
+package com.studyjams.mdvideo.HlsTestVideo;
 
 import android.content.Context;
 import android.content.Intent;

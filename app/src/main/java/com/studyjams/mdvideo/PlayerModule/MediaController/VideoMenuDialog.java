@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
 
-import com.studyjams.mdvideo.Adapter.DialogVideoMenuAdapter;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;

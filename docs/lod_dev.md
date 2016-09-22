@@ -135,3 +135,9 @@
 2016.9.13
 - oh shit! 使用UUID生成全局唯一标识时，id应该定义为String的。没有注意生成字符串的格式，没办法直接转成int.导致了id一直是0.可以参考[全局唯一ID设计](http://www.androidchina.net/4744.html)
 - 调试model层的接口，完善功能
+
+2016.9.22
+- 对于P和V的思考持续了两周左右，相关的文章也看了一些，思想是把 View 的展示和业务、事件分离出来，将Activity和Fragment转成一个View。仔细审视了这个项目的操作逻辑与业务接口
+中间犯了一个错误。在思考提取Presenter接口的同时，总是伴随着加入一些新功能和交互的想法，而功能与交互逻辑的加入不可避免的就会思考各种方案并权衡。导致在这上面花费了很多时间。慢慢意识到这个问题后，决定着手写代码了。
+- 参考官方的架构 to-do-mvp-loader 把 model 层封装好后，发现 P-V层的架构与这个demo并不一样。因为项目中使用了ViewPager来作为视图的层级框架。在ViewPager中Fragment的生命周期
+和直接自己管理的时序有些不同，在onResume的时候presenter为null。在issues里搜了一下，与table相关的mvp实现居然有另一个demo......

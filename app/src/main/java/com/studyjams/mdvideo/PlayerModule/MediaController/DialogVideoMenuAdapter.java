@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.Adapter;
+package com.studyjams.mdvideo.PlayerModule.MediaController;
 
 import android.content.Context;
 import android.database.Cursor;
