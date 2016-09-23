@@ -141,3 +141,13 @@
 中间犯了一个错误。在思考提取Presenter接口的同时，总是伴随着加入一些新功能和交互的想法，而功能与交互逻辑的加入不可避免的就会思考各种方案并权衡。导致在这上面花费了很多时间。慢慢意识到这个问题后，决定着手写代码了。
 - 参考官方的架构 to-do-mvp-loader 把 model 层封装好后，发现 P-V层的架构与这个demo并不一样。因为项目中使用了ViewPager来作为视图的层级框架。在ViewPager中Fragment的生命周期
 和直接自己管理的时序有些不同，在onResume的时候presenter为null。在issues里搜了一下，与table相关的mvp实现居然有另一个demo......
+
+2016.9.23
+- 关于ViewPager + Fragment 的问题，官方源码还是三个月之前提交的，而且跟todo-mvp-provider一样的。自己想了一下，在 Activity 里初始化 Presenter 但不能保证传递
+到Fragment(遇到start的时候空指针)。改在Fragment里初始化问题得以解决。
+- 在官方的实践中，LoadManager的初始化是在 Presenter 的start 中进行的，而start在onResume中回调，搜索了一下 [issues](https://github.com/googlesamples/android-architecture/pull/198) 果然有因此问题提交PR的.
+我把start回调改到了onActivityCreated中。
+- 项目改写到这里，本地视频的加载流程改写完毕。对MVP有了重新的认识，在这里小小的总结一下。
+- 从官方的实践中学习到的包结构和类的封装。这个称得上最佳实践，很多类遵循着单一职责这一原则，这其实是一个说起来简单但实践起来非常考验编程能力的原则。
+- model层的封装，这也从中学到了很多。以后编程的习惯估计都用这个模版了。
+- P-V层的接口调用以及业务逻辑的流程，虽然也清晰但感觉绕的好远。不好评价，在实践中再慢慢对比吧。

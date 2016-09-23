@@ -4,15 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -24,10 +20,7 @@ import android.view.ViewGroup;
 
 import com.studyjams.mdvideo.Data.Video;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
-import com.studyjams.mdvideo.Data.source.remote.SyncService;
-import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
-import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemDivider;
 
 import java.lang.ref.WeakReference;
@@ -36,8 +29,7 @@ import java.lang.ref.WeakReference;
  * Created by zwx on 2016/7/9.
  */
 
-public class LocalVideoListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        RecyclerViewItemClickListener.OnItemClickListener,LocalVideoContract.View{
+public class LocalVideoListFragment extends Fragment implements LocalVideoContract.View{
 
     private LocalVideoContract.Presenter mPresenter;
 
@@ -50,11 +42,7 @@ public class LocalVideoListFragment extends Fragment implements LoaderManager.Lo
     private View mNoVideoView;
     private View mVideoView;
 
-    //本地视频的loader编号
-    private static final int LOCAL_VIDEO_LOADER = 0;
     private LocalVideoCursorAdapter mLocalVideoCursorAdapter;
-    /**Loader管理器**/
-    private LoaderManager mLoaderManager;
     private VideoObserver mVideoObserver;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -79,6 +67,13 @@ public class LocalVideoListFragment extends Fragment implements LoaderManager.Lo
 
     @Override
     public void showVideos(Cursor cursor) {
+
+        /**如果数据刷新完成，隐藏下拉刷新**/
+        if (mSwipeRefreshLayout.isRefreshing()) {
+
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+
         mLocalVideoCursorAdapter.swapCursor(cursor);
         mNoVideoView.setVisibility(View.GONE);
         mVideoView.setVisibility(View.VISIBLE);
@@ -86,13 +81,13 @@ public class LocalVideoListFragment extends Fragment implements LoaderManager.Lo
 
     @Override
     public void showNoVideos() {
+        mLocalVideoCursorAdapter.swapCursor(null);
         mNoVideoView.setVisibility(View.VISIBLE);
         mVideoView.setVisibility(View.GONE);
     }
 
     @Override
     public void setPresenter(LocalVideoContract.Presenter presenter) {
-        Log.d(TAG, "===========setPresenter: " + presenter);
         mPresenter = presenter;
     }
 
@@ -116,12 +111,6 @@ public class LocalVideoListFragment extends Fragment implements LoaderManager.Lo
         }
     }
 
-    public void refreshData(){
-
-        SyncService.startActionCheck(getActivity());
-        SyncService.startActionTraversal(getActivity());
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -133,7 +122,7 @@ public class LocalVideoListFragment extends Fragment implements LoaderManager.Lo
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshData();
+                mPresenter.loadVideos();
             }
         });
 
@@ -148,25 +137,24 @@ public class LocalVideoListFragment extends Fragment implements LoaderManager.Lo
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new RecyclerViewItemDivider(getActivity(), RecyclerViewItemDivider.VERTICAL_LIST));
 
-        mLocalVideoCursorAdapter = new LocalVideoCursorAdapter(getActivity());
+        mLocalVideoCursorAdapter = new LocalVideoCursorAdapter(getActivity(), mVideoItemListener);
         mRecyclerView.setAdapter(mLocalVideoCursorAdapter);
-        mRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(getActivity(), this));
         return parent;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mLoaderManager = getActivity().getSupportLoaderManager();
-        mLoaderManager.initLoader(LOCAL_VIDEO_LOADER, null, this);
         mVideoObserver = new VideoObserver(new MyHandler(getActivity()));
+        //init local video presenter
+        new LocalVideoPresenter(getActivity(),getActivity().getSupportLoaderManager(),this);
+
+        mPresenter.start();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "=======onResume: " + mPresenter);
-//        mPresenter.start();
 
         //注册数据库变化监听
         getActivity().getContentResolver().registerContentObserver(SamplesPersistenceContract.VideoEntry.buildVideosUri(), true, mVideoObserver);
@@ -183,65 +171,6 @@ public class LocalVideoListFragment extends Fragment implements LoaderManager.Lo
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mPresenter.result(requestCode,resultCode);
-        if(requestCode == getActivity().RESULT_OK){
-
-        }
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-
-            Intent intent = new Intent(getActivity(), PlayerActivity.class)
-                    .setData(Uri.parse(mLocalVideoCursorAdapter.getItemData(position).getPath()))
-                    .putExtra(PlayerActivity.CONTENT_ID_EXTRA, String.valueOf(mLocalVideoCursorAdapter.getItemData(position).getId()))
-                    .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, mLocalVideoCursorAdapter.getItemData(position).getMimeType())
-                    .putExtra(PlayerActivity.PROVIDER_EXTRA,"0");
-            getActivity().startActivity(intent);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch(id) {
-            case LOCAL_VIDEO_LOADER:
-                return new CursorLoader(
-                        getActivity(),
-                        SamplesPersistenceContract.VideoEntry.buildVideosUri(),
-                        null,
-                        null,
-                        null,
-                        null
-                );
-            default:
-                throw new UnsupportedOperationException("Unknown loader id: " + id);
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        switch(loader.getId()) {
-            case LOCAL_VIDEO_LOADER:
-                mLocalVideoCursorAdapter.swapCursor(null);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown loader id: " + loader.getId());
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        switch(loader.getId()) {
-            case LOCAL_VIDEO_LOADER:
-                mLocalVideoCursorAdapter.swapCursor(data);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown loader id: " + loader.getId());
-        }
-
-        /**如果数据刷新完成，隐藏下拉刷新**/
-        if (mSwipeRefreshLayout.isRefreshing()) {
-
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
     }
 
     private class VideoObserver extends ContentObserver {
@@ -254,7 +183,7 @@ public class LocalVideoListFragment extends Fragment implements LoaderManager.Lo
         public void onChange(boolean selfChange) {
             Log.d(TAG, "===============onChange: 数据变更");
             //此处可以进行相应的业务处理
-            mLoaderManager.restartLoader(LOCAL_VIDEO_LOADER,null,LocalVideoListFragment.this);
+            mPresenter.refreshData();
         }
     }
 

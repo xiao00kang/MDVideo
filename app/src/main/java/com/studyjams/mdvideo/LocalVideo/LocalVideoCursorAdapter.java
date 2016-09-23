@@ -15,8 +15,6 @@ import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorAdapter;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorViewHolder;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -26,35 +24,26 @@ import java.util.TimeZone;
 public class LocalVideoCursorAdapter extends RecyclerViewCursorAdapter<LocalVideoCursorAdapter.VideoViewHolder> {
 
     private static final String TAG = "LocalVideoCursorAdapter";
-    private List<Video> mVideoData;
     private SimpleDateFormat mDateFormat;
+    private LocalVideoListFragment.VideoItemListener mVideoItemListener;
     /**
      * Constructor.
      * @param context The Context the Adapter is displayed in.
      */
-    public LocalVideoCursorAdapter(Context context) {
+    public LocalVideoCursorAdapter(Context context, LocalVideoListFragment.VideoItemListener videoItemListener) {
         super(context);
 
         setupCursorAdapter(null, 0, R.layout.video_local_list_item, false);
-        mVideoData = new ArrayList<>();
 
         /**Format time**/
         mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+        mVideoItemListener = videoItemListener;
     }
 
     @Override
     public int getItemViewType(int position) {
         return super.getItemViewType(position);
-    }
-
-    /**
-     * 返回单个item的数据
-     * @param position
-     * @return
-     */
-    public Video getItemData(int position){
-        return mVideoData.get(position);
     }
 
     /**
@@ -90,10 +79,12 @@ public class LocalVideoCursorAdapter extends RecyclerViewCursorAdapter<LocalVide
         public final TextView mTitle;
         public final TextView mInfo;
         public final TextView mSize;
+        public final View mParent;
 
         public VideoViewHolder(View view) {
             super(view);
 
+            mParent = view;
             mThumbnail = (ImageView) view.findViewById(R.id.local_list_item_image);
             mTitle = (TextView) view.findViewById(R.id.local_list_item_title);
             mInfo = (TextView) view.findViewById(R.id.local_list_item_info);
@@ -105,8 +96,19 @@ public class LocalVideoCursorAdapter extends RecyclerViewCursorAdapter<LocalVide
 
             final Video video = Video.from(cursor);
 
-            /**save data for click event**/
-            mVideoData.add(getAdapterPosition(),video);
+            mParent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mVideoItemListener.OnClick(video);
+                }
+            });
+            mParent.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mVideoItemListener.OnLongClick(video);
+                    return true;
+                }
+            });
 
             mTitle.setText(video.getTitle());
             mInfo.setText(mDateFormat.format(video.getDuration()));
