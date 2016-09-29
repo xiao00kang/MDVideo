@@ -1,12 +1,12 @@
-package com.studyjams.mdvideo.Adapter;
+package com.studyjams.mdvideo.MainFrame;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.studyjams.mdvideo.Fragment.VideoPlayHistoryFragment;
-import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
-import com.studyjams.mdvideo.Fragment.VideoHLSTestListFragment;
+import com.studyjams.mdvideo.RecordVideo.VideoPlayHistoryFragment;
+import com.studyjams.mdvideo.LocalVideo.LocalVideoListFragment;
+import com.studyjams.mdvideo.HlsTestVideo.VideoHLSTestListFragment;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
             case 2:
                 return VideoHLSTestListFragment.newInstance(mData.get(position));
             case 0:
-                return VideoLocalListFragment.newInstance(mData.get(position));
+                return LocalVideoListFragment.newInstance(mData.get(position));
             default:
                 return VideoPlayHistoryFragment.newInstance(mData.get(position));
         }

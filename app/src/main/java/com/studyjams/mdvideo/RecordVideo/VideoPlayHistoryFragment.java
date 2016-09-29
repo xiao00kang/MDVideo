@@ -1,19 +1,14 @@
-package com.studyjams.mdvideo.Fragment;
+package com.studyjams.mdvideo.RecordVideo;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -23,33 +18,81 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.studyjams.mdvideo.Adapter.VideoPlayHistoryCursorAdapter;
-import com.studyjams.mdvideo.DatabaseHelper.Tables;
-import com.studyjams.mdvideo.DatabaseHelper.DataSourceProvider;
-import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
+import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.R;
-import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemDivider;
 
 import java.lang.ref.WeakReference;
 
-public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        RecyclerViewItemClickListener.OnItemClickListener{
+public class VideoPlayHistoryFragment extends Fragment implements VideoPlayHistoryContract.View{
+
+    private VideoPlayHistoryContract.Presenter mPresenter;
+
     private static final String TAG = "HistoryFragment";
     private static final String ARG_PARAM = "param";
 
     private String mParam;
 
     private RecyclerView mRecyclerView;
+    private View mNoVideoView;
+    private View mVideoView;
+
     private VideoPlayHistoryCursorAdapter mVideoPlayHistoryCursorAdapter;
 
-    /**历史记录Loader的编号**/
-    private static final int VIDEO_PLAY_HISTORY_LOADER = 1;
-    /**Loader管理器**/
-    private LoaderManager mLoaderManager;
     private VideoObserver mVideoObserver;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    /**在Adapter中设置点击事件的回调接口**/
+    public interface VideoItemListener{
+        void OnClick(Video video);
+        void OnLongClick(Video video);
+    }
+
+    private VideoPlayHistoryFragment.VideoItemListener mVideoItemListener = new VideoPlayHistoryFragment.VideoItemListener() {
+        @Override
+        public void OnClick(Video video) {
+            mPresenter.playVideo(video);
+        }
+
+        @Override
+        public void OnLongClick(Video video) {
+            mPresenter.playVideo(video);
+        }
+    };
+
+    @Override
+    public void showNoVideos() {
+        /**如果数据刷新完成，隐藏下拉刷新**/
+        if (mSwipeRefreshLayout.isRefreshing()) {
+
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+        mVideoPlayHistoryCursorAdapter.swapCursor(null);
+
+        mNoVideoView.setVisibility(View.VISIBLE);
+        mVideoView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showVideos(Cursor cursor) {
+        /**如果数据刷新完成，隐藏下拉刷新**/
+        if (mSwipeRefreshLayout.isRefreshing()) {
+
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+
+        mNoVideoView.setVisibility(View.GONE);
+        mVideoView.setVisibility(View.VISIBLE);
+
+        mVideoPlayHistoryCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void setPresenter(VideoPlayHistoryContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
 
     public VideoPlayHistoryFragment() {
         // Required empty public constructor
@@ -82,25 +125,28 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mLoaderManager.restartLoader(VIDEO_PLAY_HISTORY_LOADER,null,VideoPlayHistoryFragment.this);
+                mPresenter.refreshData();
             }
         });
+
+        mNoVideoView = parent.findViewById(R.id.record_no_video);
+        mVideoView = parent.findViewById(R.id.record_show_video);
+
         mRecyclerView = (RecyclerView) parent.findViewById(R.id.video_play_history_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
         layoutManager.setOrientation(OrientationHelper.VERTICAL);
         mRecyclerView.addItemDecoration(new RecyclerViewItemDivider(getActivity(), RecyclerViewItemDivider.VERTICAL_LIST));
-        mVideoPlayHistoryCursorAdapter = new VideoPlayHistoryCursorAdapter(getActivity());
+        mVideoPlayHistoryCursorAdapter = new VideoPlayHistoryCursorAdapter(getActivity(),mVideoItemListener);
         mRecyclerView.setAdapter(mVideoPlayHistoryCursorAdapter);
-        mRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(getActivity(), this));
         return parent;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mLoaderManager = getActivity().getSupportLoaderManager();
-        mLoaderManager.initLoader(VIDEO_PLAY_HISTORY_LOADER, null, this);
+        new VideoPlayHistoryPresenter(getActivity(),getActivity().getSupportLoaderManager(),this);
+        mPresenter.start();
         mVideoObserver = new VideoObserver(new MyHandler(getActivity()));
     }
 
@@ -108,7 +154,7 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
     public void onResume() {
         super.onResume();
         //注册数据库变化监听
-        getActivity().getContentResolver().registerContentObserver(DataSourceProvider.VIDEO_CHANGE_URI, true, mVideoObserver);
+        getActivity().getContentResolver().registerContentObserver(SamplesPersistenceContract.VideoEntry.buildVideosUri(), true, mVideoObserver);
     }
 
     @Override
@@ -118,59 +164,7 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
         getActivity().getContentResolver().unregisterContentObserver(mVideoObserver);
     }
 
-    @Override
-    public void onItemClick(View view, int position) {
-        Intent intent = new Intent(getActivity(), PlayerActivity.class)
-                .setData(Uri.parse(mVideoPlayHistoryCursorAdapter.getItemData(position).getPath()))
-                .putExtra(PlayerActivity.CONTENT_ID_EXTRA, String.valueOf(mVideoPlayHistoryCursorAdapter.getItemData(position).getId()))
-                .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, mVideoPlayHistoryCursorAdapter.getItemData(position).getMimeType())
-                .putExtra(PlayerActivity.PROVIDER_EXTRA,String.valueOf(mVideoPlayHistoryCursorAdapter.getItemData(position).getPlayDuration()));
-        getActivity().startActivity(intent);
-    }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch(id) {
-            case VIDEO_PLAY_HISTORY_LOADER:
-                return new CursorLoader(
-                        getActivity(),
-                        DataSourceProvider.VIDEO_PLAY_HISTORY_URI,
-                        null,
-                        Tables.Video_playDuration + " > -1",
-                        null,
-                        null
-                );
-            default:
-                throw new UnsupportedOperationException("Unknown loader id: " + id);
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        switch(loader.getId()) {
-            case VIDEO_PLAY_HISTORY_LOADER:
-                mVideoPlayHistoryCursorAdapter.swapCursor(null);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown loader id: " + loader.getId());
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        switch(loader.getId()) {
-            case VIDEO_PLAY_HISTORY_LOADER:
-                mVideoPlayHistoryCursorAdapter.swapCursor(data);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown loader id: " + loader.getId());
-        }
-        /**如果数据刷新完成，隐藏下拉刷新**/
-        if (mSwipeRefreshLayout.isRefreshing()) {
-
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
-    }
 
     private class VideoObserver extends ContentObserver {
 
@@ -182,7 +176,7 @@ public class VideoPlayHistoryFragment extends Fragment implements LoaderManager.
         public void onChange(boolean selfChange) {
             Log.d(TAG, "===============onChange: 更新播放历史");
             //此处可以进行相应的业务处理
-            mLoaderManager.restartLoader(VIDEO_PLAY_HISTORY_LOADER,null,VideoPlayHistoryFragment.this);
+            mPresenter.refreshData();
         }
     }
 

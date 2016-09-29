@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.Adapter;
+package com.studyjams.mdvideo.PlayerModule.MediaController;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,8 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.studyjams.mdvideo.Bean.VideoBean;
-import com.studyjams.mdvideo.DatabaseHelper.Tables;
+import com.studyjams.mdvideo.Data.Video;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorAdapter;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorViewHolder;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVideoMenuAdapter.VideoViewHolder> {
 
     private static final String TAG = "DialogVideoMenuAdapter";
-    private ArrayList<VideoBean> mVideoData;
+    private ArrayList<Video> mVideoData;
     private String selected;
     /**
      * Constructor.
@@ -43,7 +42,7 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
      * @param position
      * @return
      */
-    public VideoBean getItemData(int position){
+    public Video getItemData(int position){
         return mVideoData.get(position);
     }
 
@@ -86,39 +85,16 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
 
         @Override
         public void bindCursor(Cursor cursor) {
-            VideoBean video = new VideoBean();
 
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow(Tables.Video_id));
-            String title = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_title));
-            String album = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_album));
-            String artist = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_artist));
-            String displayName = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_displayName));
-            String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_mimeType));
-            String path = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_path));
-            long playDuration = cursor.getLong(cursor.getColumnIndexOrThrow(Tables.Video_playDuration));
-            long duration = cursor.getInt(cursor.getColumnIndexOrThrow(Tables.Video_duration));
-            long size = cursor.getLong(cursor.getColumnIndexOrThrow(Tables.Video_size));
-            String createdDate = cursor.getString(cursor.getColumnIndexOrThrow(Tables.Video_createdDate));
+            Video video = Video.from(cursor);
 
-            if(id == Integer.valueOf(selected)){
+            if(selected.equals(video.getId())){
                 mTitle.setTextColor(mContext.getResources().getColor(R.color.accent));
             }
 
-            video.setId(id);
-            video.setTitle(title);
-            video.setAlbum(album);
-            video.setArtist(artist);
-            video.setDisplayName(displayName);
-            video.setMimeType(mimeType);
-            video.setPath(path);
-            video.setDuration(duration);
-            video.setSize(size);
-            video.setPlayDuration(playDuration);
-            video.setCreatedDate(createdDate);
-
             /**save data for click event**/
             mVideoData.add(getAdapterPosition(),video);
-            mTitle.setText(title);
+            mTitle.setText(video.getTitle());
         }
     }
 }

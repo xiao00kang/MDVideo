@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo;
+package com.studyjams.mdvideo.MainFrame;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -20,17 +20,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.exoplayer.util.Util;
-import com.studyjams.mdvideo.Adapter.MainPagerAdapter;
-import com.studyjams.mdvideo.DatabaseHelper.SyncService;
-import com.studyjams.mdvideo.DatabaseHelper.Tables;
-import com.studyjams.mdvideo.Fragment.VideoLocalListFragment;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
+import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
+import com.studyjams.mdvideo.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,VideoLocalListFragment.OnVideoRefreshListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE = 1;
@@ -67,19 +66,6 @@ public class MainActivity extends AppCompatActivity
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(PLAY_HISTORY_ACTION);
         mLocalBroadcastManager.registerReceiver(mMyReceiver,mIntentFilter);
-
-//        refreshData();
-    }
-
-    @Override
-    public void onVideoRefresh() {
-        refreshData();
-    }
-
-    public void refreshData(){
-
-        SyncService.startActionCheck(this);
-        SyncService.startActionTraversal(this);
     }
 
     private void initView(){
@@ -106,8 +92,10 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout)findViewById(R.id.main_view_table);
         ViewPager mViewpager = (ViewPager)findViewById(R.id.main_view_pager);
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(),mData);
+
         mViewpager.setAdapter(mainPagerAdapter);
         tabLayout.setupWithViewPager(mViewpager);
+
 //        mViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 //            @Override
 //            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -144,9 +132,9 @@ public class MainActivity extends AppCompatActivity
             if(intent.getAction().equals(PLAY_HISTORY_ACTION)) {
 
                 SyncService.startActionUpdate(MainActivity.this,
-                        intent.getStringExtra(Tables.Video_id),
-                        intent.getStringExtra(Tables.Video_playDuration),
-                        intent.getStringExtra(Tables.Video_createdDate));
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID),
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION),
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE));
             }
         }
     }
@@ -258,9 +246,5 @@ public class MainActivity extends AppCompatActivity
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
-    }
-
-    private void fileChooser(){
-//        playSound();
     }
 }

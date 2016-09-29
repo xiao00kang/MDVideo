@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.Fragment;
+package com.studyjams.mdvideo.HlsTestVideo;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.studyjams.mdvideo.Adapter.VideoHLSTestListAdapter;
 import com.studyjams.mdvideo.R;
 
 

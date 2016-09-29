@@ -123,3 +123,35 @@
 - 添加列表 item 点击后的水纹效果
 - 完善 VideoMenuDialog 的业务逻辑
 - 参照官方MVP框架着手改写整个项目结构。
+
+2016.9.7
+- 更改Data部分的项目结构，打算先从这一块起构建MVP的框架
+- 规范数据表的命名，等开发告一段落后一定加入checkStyle
+
+2016.9.9
+- 规范化 Model 部分的业务逻辑与接口（勉强先跟整体凑上了，但是历史记录监听不到数据的变更了。查了1个小时发现是通过UUID生成的主键一直是0导致的。很好奇MVP Demo中为何不使用_id作为主键）
+- 有一个疑问是数据的id是否定义成 String（而不是 int ） 的格式比较好，这样在使用SQL语句的时候就不用转换了，希望改完之后查看整体的逻辑能找到答案。
+
+2016.9.13
+- oh shit! 使用UUID生成全局唯一标识时，id应该定义为String的。没有注意生成字符串的格式，没办法直接转成int.导致了id一直是0.可以参考[全局唯一ID设计](http://www.androidchina.net/4744.html)
+- 调试model层的接口，完善功能
+
+2016.9.22
+- 对于P和V的思考持续了两周左右，相关的文章也看了一些，思想是把 View 的展示和业务、事件分离出来，将Activity和Fragment转成一个View。仔细审视了这个项目的操作逻辑与业务接口
+中间犯了一个错误。在思考提取Presenter接口的同时，总是伴随着加入一些新功能和交互的想法，而功能与交互逻辑的加入不可避免的就会思考各种方案并权衡。导致在这上面花费了很多时间。慢慢意识到这个问题后，决定着手写代码了。
+- 参考官方的架构 to-do-mvp-loader 把 model 层封装好后，发现 P-V层的架构与这个demo并不一样。因为项目中使用了ViewPager来作为视图的层级框架。在ViewPager中Fragment的生命周期
+和直接自己管理的时序有些不同，在onResume的时候presenter为null。在issues里搜了一下，与table相关的mvp实现居然有另一个demo......
+
+2016.9.23
+- 关于ViewPager + Fragment 的问题，官方源码还是三个月之前提交的，而且跟todo-mvp-provider一样的。自己想了一下，在 Activity 里初始化 Presenter 但不能保证传递
+到Fragment(遇到start的时候空指针)。改在Fragment里初始化问题得以解决。
+- 在官方的实践中，LoadManager的初始化是在 Presenter 的start 中进行的，而start在onResume中回调，搜索了一下 [issues](https://github.com/googlesamples/android-architecture/pull/198) 果然有因此问题提交PR的.
+我把start回调改到了onActivityCreated中。
+- 项目改写到这里，本地视频的加载流程改写完毕。对MVP有了重新的认识，在这里小小的总结一下。
+- 从官方的实践中学习到的包结构和类的封装。这个称得上最佳实践，很多类遵循着单一职责这一原则，这其实是一个说起来简单但实践起来非常考验编程能力的原则。
+- model层的封装，这也从中学到了很多。以后编程的习惯估计都用这个模版了。
+- P-V层的接口调用以及业务逻辑的流程，虽然也清晰但感觉绕的好远。不好评价，在实践中再慢慢对比吧。
+
+2016.9.29
+- 完善播放记录页面的p-v接口分离。
+- 尝试更新2.x版本ExoPlayer发现这个版本的MediaController绑定在SimpleExoPlayerView里了，要替换还需要自己实现一个然后替换掉controller,容我先熟悉一下2.x版本

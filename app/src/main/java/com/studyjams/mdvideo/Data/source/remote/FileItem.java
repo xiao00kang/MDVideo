@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.DatabaseHelper.FileTraversal;
+package com.studyjams.mdvideo.Data.source.remote;
 
 import android.support.annotation.NonNull;
 

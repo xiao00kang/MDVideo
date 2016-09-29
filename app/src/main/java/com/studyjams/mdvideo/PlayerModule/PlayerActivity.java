@@ -59,8 +59,8 @@ import com.google.android.exoplayer.text.SubtitleLayout;
 import com.google.android.exoplayer.util.MimeTypes;
 import com.google.android.exoplayer.util.Util;
 import com.google.android.exoplayer.util.VerboseLogUtil;
-import com.studyjams.mdvideo.DatabaseHelper.Tables;
-import com.studyjams.mdvideo.MainActivity;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
+import com.studyjams.mdvideo.MainFrame.MainActivity;
 import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayer.DemoPlayer.RendererBuilder;
@@ -294,9 +294,9 @@ public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.C
             long playDuration = player.getPlayerControl().getCurrentPosition();
             Log.d(TAG, "================upDateHistory: " + playDuration);
             Intent intent = new Intent(MainActivity.PLAY_HISTORY_ACTION);
-            intent.putExtra(Tables.Video_id,contentId);
-            intent.putExtra(Tables.Video_playDuration,String.valueOf(playDuration));
-            intent.putExtra(Tables.Video_createdDate,Tools.getCurrentTimeMillis());
+            intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID,contentId);
+            intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION,String.valueOf(playDuration));
+            intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE,Tools.getCurrentTimeMillis());
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }
     }

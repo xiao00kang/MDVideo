@@ -22,8 +22,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
 
-import com.studyjams.mdvideo.Adapter.DialogVideoMenuAdapter;
-import com.studyjams.mdvideo.DatabaseHelper.DataSourceProvider;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
@@ -138,7 +137,7 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
             case DIALOG_LOADER:
                 return new CursorLoader(
                         getActivity(),
-                        DataSourceProvider.VIDEO_PLAY_HISTORY_URI,
+                        SamplesPersistenceContract.VideoEntry.buildVideosUri(),
                         null,
                         null,
                         null,

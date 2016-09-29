@@ -7,6 +7,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings" translatable="false">设置</string>
+    <!--local-->
+    <string name="local_no_video">没有可播放的视频~</string>
+    <string name="record_no_video">没有观看记录~</string>
+
 
     <!--导航菜单-->
     <string name="menu_video_local">本地视频</string>
