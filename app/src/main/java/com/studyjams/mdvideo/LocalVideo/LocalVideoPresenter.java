@@ -114,7 +114,13 @@ public class LocalVideoPresenter implements LocalVideoContract.Presenter, Loader
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch(loader.getId()) {
             case LOCAL_VIDEO_LOADER:
-                mVideosView.showVideos(data);
+                if (data.moveToLast()) {
+
+                    mVideosView.showVideos(data);
+                } else {
+
+                    mVideosView.showNoVideos();
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown loader id: " + loader.getId());

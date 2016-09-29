@@ -4,7 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.studyjams.mdvideo.HistoryVideo.VideoPlayHistoryFragment;
+import com.studyjams.mdvideo.RecordVideo.VideoPlayHistoryFragment;
 import com.studyjams.mdvideo.LocalVideo.LocalVideoListFragment;
 import com.studyjams.mdvideo.HlsTestVideo.VideoHLSTestListFragment;
 

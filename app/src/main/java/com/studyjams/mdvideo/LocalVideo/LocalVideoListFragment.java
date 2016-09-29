@@ -81,6 +81,11 @@ public class LocalVideoListFragment extends Fragment implements LocalVideoContra
 
     @Override
     public void showNoVideos() {
+        /**如果数据刷新完成，隐藏下拉刷新**/
+        if (mSwipeRefreshLayout.isRefreshing()) {
+
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
         mLocalVideoCursorAdapter.swapCursor(null);
         mNoVideoView.setVisibility(View.VISIBLE);
         mVideoView.setVisibility(View.GONE);
@@ -133,6 +138,7 @@ public class LocalVideoListFragment extends Fragment implements LocalVideoContra
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         //设置为垂直布局，这也是默认的
         layoutManager.setOrientation(OrientationHelper.VERTICAL);
+//        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         //设置布局管理器
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new RecyclerViewItemDivider(getActivity(), RecyclerViewItemDivider.VERTICAL_LIST));
