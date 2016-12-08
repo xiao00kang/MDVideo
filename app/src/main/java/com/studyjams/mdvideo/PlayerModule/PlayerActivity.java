@@ -301,16 +301,6 @@ public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.C
         }
     }
 
-    // OnClickListener methods
-
-//    @Override
-//    public void onClick(View view) {
-//        if (view == retryButton) {
-//            preparePlayer(true);
-//        }
-//    }
-
-    // AudioCapabilitiesReceiver.Listener methods
 
     @Override
     public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {

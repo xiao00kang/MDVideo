@@ -5,7 +5,7 @@
     <string name="app_name">BLACK&#9733;ROCK</string>
     <!--导航菜单-->
     <string name="menu_video_local">Local</string>
-    <string name="menu_video_history" translatable="false">History</string>
+    <string name="menu_video_history" translatable="false">Record</string>
     <string name="menu_video_subtitle">subtitle</string>
 
     <string name="menu_video_share">Share</string>
@@ -14,6 +14,10 @@
     <string name="menu_title">A simple player</string>
     <string name="menu_folder_title">Please select the video you want to open</string>
     <string name="menu_folder_desc">Please install the File Manager</string>
+
+    <!--local-->
+    <string name="local_no_video">There is no playable video~</string>
+    <string name="record_no_video">No record~</string>
 
     <!--分享与反馈-->
     <string name="send_share_title">Share with friends~</string>

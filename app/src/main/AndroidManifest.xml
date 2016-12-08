@@ -56,6 +56,34 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainFrame.MainActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/MyTheme.FullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="video/*"/>
+                <data android:mimeType="audio/*"/>
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:scheme="content"/>
+                <data android:scheme="asset"/>
+                <data android:scheme="file"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="video/*"/>
+            </intent-filter>
+        </activity>
+
         <!-- 用来存储视频信息的provider -->
         <provider
             android:name=".Data.source.SamplesProvider"
