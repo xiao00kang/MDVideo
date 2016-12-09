@@ -20,7 +20,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusable="true"
+    android:background="@android:color/black"
     android:keepScreenOn="true">
 
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
@@ -31,37 +31,11 @@
         app:use_texture_view="true"
         android:focusable="true"/>
 
-    <LinearLayout
+    <com.studyjams.mdvideo.PlayerModule.ui.MediaControlView
+        android:id="@+id/player_control"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#88000000"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/debug_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:textSize="10sp"
-            tools:ignore="SmallSp"/>
-
-        <LinearLayout
-            android:id="@+id/controls_root"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <Button
-                android:id="@+id/retry_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/retry"
-                android:visibility="gone"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+    </com.studyjams.mdvideo.PlayerModule.ui.MediaControlView>
 </FrameLayout>

@@ -26,36 +26,6 @@
 
         </activity>
 
-        <!-- 测试版本不固定界面，方便测试横竖屏切换时是否有问题  android:screenOrientation="landscape" -->
-        <activity
-            android:name=".PlayerModule.PlayerActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
-            android:launchMode="singleTop"
-            android:parentActivityName=".MainFrame.MainActivity"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@style/MyTheme.FullScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-
-                <data android:mimeType="video/*"/>
-                <data android:mimeType="audio/*"/>
-                <data android:scheme="http"/>
-                <data android:scheme="https"/>
-                <data android:scheme="content"/>
-                <data android:scheme="asset"/>
-                <data android:scheme="file"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-
-                <data android:mimeType="video/*"/>
-            </intent-filter>
-        </activity>
-
         <activity
             android:name="com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
@@ -98,7 +68,8 @@
             android:exported="false">
         </service>
         <!--最先启动的activity，用于解决烦人的黑白屏问题-->
-        <activity android:name=".MainFrame.WelcomeActivity"
+        <activity
+            android:name=".MainFrame.WelcomeActivity"
             android:theme="@style/StartActivityTransparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

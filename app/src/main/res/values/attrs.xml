@@ -9,4 +9,11 @@
         <attr name="metaButtonBarButtonStyle" format="reference"/>
     </declare-styleable>
 
+    <!-- mediaControlView的自定义属性 -->
+    <declare-styleable name="MediaControlView">
+        <attr name="show_timeout"/>
+        <attr name="rewind_increment"/>
+        <attr name="fastforward_increment"/>
+    </declare-styleable>
+
 </resources>
