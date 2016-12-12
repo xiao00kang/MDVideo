@@ -56,7 +56,6 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedT
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelections;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.DebugTextViewHelper;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -130,7 +129,7 @@ public class PlayerActivityV2 extends Activity implements ExoPlayer.EventListene
     private SimpleExoPlayer player;
     private MappingTrackSelector trackSelector;
     private TrackSelectionHelper trackSelectionHelper;
-    private DebugTextViewHelper debugViewHelper;
+//    private DebugTextViewHelper debugViewHelper;
     private boolean playerNeedsSource;
 
     private boolean shouldAutoPlay;
@@ -395,8 +394,8 @@ public class PlayerActivityV2 extends Activity implements ExoPlayer.EventListene
 
     private void releasePlayer() {
         if (player != null) {
-            debugViewHelper.stop();
-            debugViewHelper = null;
+//            debugViewHelper.stop();
+//            debugViewHelper = null;
             shouldAutoPlay = player.getPlayWhenReady();
             playerWindow = player.getCurrentWindowIndex();
             playerPosition = C.TIME_UNSET;

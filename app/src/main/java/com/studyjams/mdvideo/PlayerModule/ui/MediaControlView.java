@@ -22,6 +22,7 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -85,6 +86,10 @@ public class MediaControlView extends FrameLayout {
   private final View topBar;
   private final View bottomBar;
 
+  //手势检测器
+  private GestureDetector mDetector;
+
+
   private ExoPlayer player;
   private VisibilityListener visibilityListener;
 
@@ -147,17 +152,18 @@ public class MediaControlView extends FrameLayout {
     progressBar.setMax(PROGRESS_BAR_MAX);
     playButton = (ImageButton) findViewById(R.id.player_play);
     playButton.setOnClickListener(componentListener);
-    previousButton = findViewById(R.id.prev);
+    previousButton = findViewById(R.id.player_prev);
     previousButton.setOnClickListener(componentListener);
-    nextButton = findViewById(R.id.next);
+    nextButton = findViewById(R.id.player_next);
     nextButton.setOnClickListener(componentListener);
-    rewindButton = findViewById(R.id.rew);
+    rewindButton = findViewById(R.id.player_rew);
     rewindButton.setOnClickListener(componentListener);
-    fastForwardButton = findViewById(R.id.ffwd);
+    fastForwardButton = findViewById(R.id.player_ffwd);
     fastForwardButton.setOnClickListener(componentListener);
 
     topBar = findViewById(R.id.control_top);
     bottomBar = findViewById(R.id.control_bottom);
+    mDetector = new GestureDetector(context, mGestureListener);
   }
 
   /**
@@ -253,12 +259,13 @@ public class MediaControlView extends FrameLayout {
 //    hideAfterTimeout();
 //  }
 
+
   public void show(){
 
-    if (topBar.getVisibility() == INVISIBLE | bottomBar.getVisibility() == INVISIBLE) {
+    if (topBar.getVisibility() == INVISIBLE) {
 
       if (visibilityListener != null) {
-        visibilityListener.onVisibilityChange(topBar.getVisibility()|bottomBar.getVisibility());
+        visibilityListener.onVisibilityChange(topBar.getVisibility());
       }
 
       Animation animTopIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_in);
@@ -277,15 +284,13 @@ public class MediaControlView extends FrameLayout {
     hideAfterTimeout();
   }
 
-  public void hide(){
-    if (topBar.getVisibility() == VISIBLE | bottomBar.getVisibility() == VISIBLE) {
+  public void hide() {
+    if (topBar.getVisibility() == VISIBLE) {
 
-      if (visibilityListener != null) {
-        visibilityListener.onVisibilityChange(topBar.getVisibility()|bottomBar.getVisibility());
-      }
-
-      Animation animTopOut = AnimationUtils.loadAnimation(getContext(),R.anim.popup_top_out);
-      Animation animBottomOut = AnimationUtils.loadAnimation(getContext(),R.anim.popup_bottom_out);
+      Animation animTopOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_out);
+      Animation animBottomOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_out);
+      animTopOut.setFillAfter(true);
+      animBottomOut.setFillAfter(true);
       topBar.setAnimation(animTopOut);
       bottomBar.setAnimation(animBottomOut);
       animTopOut.start();
@@ -293,6 +298,10 @@ public class MediaControlView extends FrameLayout {
 
       topBar.setVisibility(INVISIBLE);
       bottomBar.setVisibility(INVISIBLE);
+      if (visibilityListener != null) {
+        visibilityListener.onVisibilityChange(topBar.getVisibility());
+      }
+
       removeCallbacks(updateProgressAction);
       removeCallbacks(hideAction);
       hideAtMs = C.TIME_UNSET;
@@ -319,7 +328,9 @@ public class MediaControlView extends FrameLayout {
    * Returns whether the controller is currently visible.
    */
   public boolean isVisible() {
-    return getVisibility() == VISIBLE;
+//    return getVisibility() == VISIBLE;
+
+    return topBar.getVisibility() == VISIBLE;
   }
 
   private void hideAfterTimeout() {
@@ -514,11 +525,78 @@ public class MediaControlView extends FrameLayout {
     removeCallbacks(hideAction);
   }
 
+//  @Override
+//  public boolean onInterceptTouchEvent(MotionEvent ev) {
+//    //拦截事件
+//    return true;
+//  }
+
+  /*package*/ GestureDetector.OnGestureListener mGestureListener = new GestureDetector.OnGestureListener() {
+    @Override
+    public boolean onDown(MotionEvent motionEvent) {
+      Log.d(TAG, "onDown: ");
+      return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent motionEvent) {
+      return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+      return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float velocityX, float velocityY) {
+
+      Log.d(TAG, "onFling: ");
+
+      float minMove = 20;         //最小滑动距离
+      float minVelocity = 0;      //最小滑动速度
+      float beginX = motionEvent.getX();
+      float endX = motionEvent1.getX();
+      float beginY = motionEvent.getY();
+      float endY = motionEvent1.getY();
+
+      if (beginX - endX > minMove && Math.abs(velocityX) > minVelocity) {   //左滑
+        Log.d(TAG, "onFling: 左滑");
+      } else if (endX - beginX > minMove && Math.abs(velocityX) > minVelocity) {   //右滑
+        Log.d(TAG, "onFling: 右滑");
+      } else if (beginY - endY > minMove && Math.abs(velocityY) > minVelocity) {   //上滑
+        Log.d(TAG, "onFling: 上滑");
+      } else if (endY - beginY > minMove && Math.abs(velocityY) > minVelocity) {   //下滑
+        Log.d(TAG, "onFling: 下滑");
+      }
+
+      return true;
+    }
+  };
+
+  @Override
+  public boolean dispatchTouchEvent(MotionEvent event) {
+    //消除冲突
+    if (mDetector.onTouchEvent(event)) {
+      event.setAction(MotionEvent.ACTION_CANCEL);
+    }
+    return super.dispatchTouchEvent(event);
+  }
+
   @Override
   public boolean onTouchEvent(MotionEvent event) {
 
-    Log.d(TAG, "===================dispatchKeyEvent: 111111");
-    return super.onTouchEvent(event);
+    return mDetector.onTouchEvent(event);
   }
 
   @Override
