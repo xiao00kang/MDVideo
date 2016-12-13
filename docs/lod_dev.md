@@ -171,3 +171,10 @@
 前提是view已经被添加至window中。
 - 关于自定义UI的取舍，在v2的dev分支中，已经提供了替换mediaController布局文件的方法调用，并且在官方的博客中说了将在2.0.5版本中放出。
 考虑到UI的更改会比较大，于是决定还是直接全部替换吧。为了保持以后的版本也能及时跟上版本的迭代。simpleExoPlayerView也从源码中拷贝出来，方便进行更改和自定义。
+
+2016.12.13
+- 切换到v2版本的exoplayer。
+- 更改mediaController适配新的播放器
+- 修改暂停/播放的动画，解决VectorDrawable cannot be cast to Animatable的bug
+- 调整弹出列表，兼容v2版本
+- mediaController动画暂时注释掉（基本动画真不可靠）

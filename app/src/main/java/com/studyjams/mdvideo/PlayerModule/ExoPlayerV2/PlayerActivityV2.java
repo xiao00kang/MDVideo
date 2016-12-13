@@ -15,12 +15,13 @@
  */
 package com.studyjams.mdvideo.PlayerModule.ExoPlayerV2;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -63,8 +64,17 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
+import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
+import com.studyjams.mdvideo.MainFrame.MainActivity;
+import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
+import com.studyjams.mdvideo.PlayerModule.MediaController.VideoMenuDialog;
 import com.studyjams.mdvideo.PlayerModule.ui.MediaControlView;
 import com.studyjams.mdvideo.R;
+import com.studyjams.mdvideo.Util.Tools;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -79,8 +89,8 @@ import static com.studyjams.mdvideo.R.id.root;
 /**
  * An activity that plays media using {@link SimpleExoPlayer}.
  */
-public class PlayerActivityV2 extends Activity implements ExoPlayer.EventListener,
-        TrackSelector.EventListener<MappedTrackInfo>{
+public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.EventListener,
+        TrackSelector.EventListener<MappedTrackInfo>,VideoMenuDialog.VideoSelected{
 
     public static final String DRM_SCHEME_UUID_EXTRA = "drm_scheme_uuid";
     public static final String DRM_LICENSE_URL = "drm_license_url";
@@ -167,6 +177,17 @@ public class PlayerActivityV2 extends Activity implements ExoPlayer.EventListene
 
             }
         });
+        EventBus.getDefault().register(this);
+    }
+
+    //从MenuDialog里传入的数据，一个数据传输通道
+    @Override
+    public void onVideoSelected(Intent intent) {
+        onNewIntent(intent);
+        initializePlayer();
+        if (!controller.isVisible()) {
+            controller.show();
+        }
     }
 
     @Override
@@ -206,6 +227,12 @@ public class PlayerActivityV2 extends Activity implements ExoPlayer.EventListene
         if (Util.SDK_INT > 23) {
             releasePlayer();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -305,6 +332,7 @@ public class PlayerActivityV2 extends Activity implements ExoPlayer.EventListene
 
             //关联mediaController
             controller.setPlayer(player);
+            controller.setTitle(mContentUri.getLastPathSegment());
 
             if (isTimelineStatic) {
                 if (playerPosition == C.TIME_UNSET) {
@@ -396,6 +424,7 @@ public class PlayerActivityV2 extends Activity implements ExoPlayer.EventListene
         if (player != null) {
 //            debugViewHelper.stop();
 //            debugViewHelper = null;
+            upDateRecord();
             shouldAutoPlay = player.getPlayWhenReady();
             playerWindow = player.getCurrentWindowIndex();
             playerPosition = C.TIME_UNSET;
@@ -511,6 +540,45 @@ public class PlayerActivityV2 extends Activity implements ExoPlayer.EventListene
         }
         if (trackInfo.hasOnlyUnplayableTracks(C.TRACK_TYPE_AUDIO)) {
             showToast(R.string.error_unsupported_audio);
+        }
+    }
+
+    /**将已播放时长以广播的形式发出去**/
+    private void upDateRecord(){
+        if(!mContentId.equals("")) {
+            long playDuration = player.getCurrentPosition();
+            Intent intent = new Intent(MainActivity.PLAY_HISTORY_ACTION);
+            intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID,mContentId);
+            intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION,String.valueOf(playDuration));
+            intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE, Tools.getCurrentTimeMillis());
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        }
+    }
+
+    /**
+     *  threadMode回调所在线程
+     *  priority 事件优先级
+     *  sticky 是否接收粘性事件
+     * @param msg
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, priority = 0, sticky = false)
+    public void handleEvent(ControllerMessage msg) {
+        switch (msg.getCode()){
+            case ControllerMessage.EXIT:
+                finish();
+                break;
+            case ControllerMessage.SUBTITLE:
+                Toast.makeText(this,"Subtitle is not support now",Toast.LENGTH_SHORT).show();
+                break;
+            case ControllerMessage.MENU:
+                if (controller.isVisible()) {
+                    controller.hide();
+                }
+
+                VideoMenuDialog videoMenuDialog = VideoMenuDialog.newInstance();
+                videoMenuDialog.show(getSupportFragmentManager(),mContentId);
+                break;
+            default:break;
         }
     }
 

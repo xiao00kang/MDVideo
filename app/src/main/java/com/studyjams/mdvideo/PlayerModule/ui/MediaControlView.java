@@ -18,8 +18,8 @@ package com.studyjams.mdvideo.PlayerModule.ui;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.SystemClock;
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -27,8 +27,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -39,17 +37,20 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.util.Util;
+import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
 import com.studyjams.mdvideo.R;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Formatter;
 import java.util.Locale;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
-
 /**
  * A view to control video playback of an {@link ExoPlayer}.
  */
-public class MediaControlView extends FrameLayout {
+public class MediaControlView extends FrameLayout implements View.OnTouchListener{
+
+  private static final String TAG = "MediaControlView";
 
   /**
    * Listener to be notified about changes of the visibility of the UI control.
@@ -85,6 +86,14 @@ public class MediaControlView extends FrameLayout {
 
   private final View topBar;
   private final View bottomBar;
+
+  private final View backButton;
+  private final TextView titleView;
+  private final View subtitleView;
+  private final View menuView;
+
+  private final AnimatedVectorDrawableCompat compatPauseToPlay;
+  private final AnimatedVectorDrawableCompat compatPlayToPause;
 
   //手势检测器
   private GestureDetector mDetector;
@@ -164,6 +173,19 @@ public class MediaControlView extends FrameLayout {
     topBar = findViewById(R.id.control_top);
     bottomBar = findViewById(R.id.control_bottom);
     mDetector = new GestureDetector(context, mGestureListener);
+    this.setOnTouchListener(this);
+    this.setLongClickable(true);
+
+    backButton = findViewById(R.id.player_exit);
+    backButton.setOnClickListener(componentListener);
+    titleView = (TextView)findViewById(R.id.player_title);
+    subtitleView = findViewById(R.id.player_subtitle);
+    subtitleView.setOnClickListener(componentListener);
+    menuView = findViewById(R.id.player_more);
+    menuView.setOnClickListener(componentListener);
+
+    compatPauseToPlay = AnimatedVectorDrawableCompat.create(context, R.drawable.ic_pause_to_play);
+    compatPlayToPause = AnimatedVectorDrawableCompat.create(context, R.drawable.ic_play_to_pause);
   }
 
   /**
@@ -264,18 +286,22 @@ public class MediaControlView extends FrameLayout {
 
     if (topBar.getVisibility() == INVISIBLE) {
 
+      topBar.setVisibility(VISIBLE);
+      bottomBar.setVisibility(VISIBLE);
+
       if (visibilityListener != null) {
         visibilityListener.onVisibilityChange(topBar.getVisibility());
       }
 
-      Animation animTopIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_in);
-      animTopIn.setFillAfter(true);
-      Animation animBottomIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_in);
-      animBottomIn.setFillAfter(true);
-      topBar.setAnimation(animTopIn);
-      bottomBar.setAnimation(animBottomIn);
-      animTopIn.start();
-      animBottomIn.start();
+//      Animation animTopIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_in);
+//      animTopIn.setFillAfter(true);
+//      Animation animBottomIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_in);
+//      animBottomIn.setFillAfter(true);
+//      topBar.setAnimation(animTopIn);
+//      bottomBar.setAnimation(animBottomIn);
+//      animTopIn.start();
+//      animBottomIn.start();
+
 
       updateAll();
     }
@@ -287,14 +313,14 @@ public class MediaControlView extends FrameLayout {
   public void hide() {
     if (topBar.getVisibility() == VISIBLE) {
 
-      Animation animTopOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_out);
-      Animation animBottomOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_out);
-      animTopOut.setFillAfter(true);
-      animBottomOut.setFillAfter(true);
-      topBar.setAnimation(animTopOut);
-      bottomBar.setAnimation(animBottomOut);
-      animTopOut.start();
-      animBottomOut.start();
+//      Animation animTopOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_out);
+//      Animation animBottomOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_out);
+//      animTopOut.setFillAfter(true);
+//      animBottomOut.setFillAfter(true);
+//      topBar.setAnimation(animTopOut);
+//      bottomBar.setAnimation(animBottomOut);
+//      animTopOut.start();
+//      animBottomOut.start();
 
       topBar.setVisibility(INVISIBLE);
       bottomBar.setVisibility(INVISIBLE);
@@ -308,6 +334,13 @@ public class MediaControlView extends FrameLayout {
     }
   }
 
+  /**
+   * 设置标题
+   * @param title
+     */
+  public void setTitle(String title){
+     titleView.setText(title);
+  }
 
   /**
    * Hides the controller.
@@ -360,8 +393,19 @@ public class MediaControlView extends FrameLayout {
             playing ? R.string.exo_controls_pause_description : R.string.exo_controls_play_description);
     playButton.setContentDescription(contentDescription);
 //    playButton.setImageResource(playing ? R.drawable.exo_controls_pause : R.drawable.exo_controls_play);
-    playButton.setImageResource(!playing ? R.drawable.ic_pause_to_play : R.drawable.ic_play_to_pause);
-    ((AnimatedVectorDrawable) playButton.getDrawable()).start();
+//    playButton.setImageResource(!playing ? R.drawable.ic_pause_to_play : R.drawable.ic_play_to_pause);
+//    AnimationDrawable animation = (AnimationDrawable)playButton.getDrawable();
+//    animation.start();
+
+//    ((AnimatedVectorDrawable) playButton.getDrawable()).start();
+
+    if(playing){
+      playButton.setImageDrawable(compatPauseToPlay.getCurrent());
+      compatPauseToPlay.start();
+    }else{
+      playButton.setImageDrawable(compatPlayToPause.getCurrent());
+      compatPlayToPause.start();
+    }
   }
 
   private void updateNavigation() {
@@ -532,10 +576,16 @@ public class MediaControlView extends FrameLayout {
 //  }
 
   /*package*/ GestureDetector.OnGestureListener mGestureListener = new GestureDetector.OnGestureListener() {
+
     @Override
     public boolean onDown(MotionEvent motionEvent) {
-      Log.d(TAG, "onDown: ");
-      return true;
+      if (topBar.getVisibility() == VISIBLE) {
+        hide();
+      } else {
+        show();
+      }
+
+      return false;
     }
 
     @Override
@@ -561,42 +611,48 @@ public class MediaControlView extends FrameLayout {
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float velocityX, float velocityY) {
 
-      Log.d(TAG, "onFling: ");
-
-      float minMove = 20;         //最小滑动距离
-      float minVelocity = 0;      //最小滑动速度
       float beginX = motionEvent.getX();
       float endX = motionEvent1.getX();
       float beginY = motionEvent.getY();
       float endY = motionEvent1.getY();
 
-      if (beginX - endX > minMove && Math.abs(velocityX) > minVelocity) {   //左滑
-        Log.d(TAG, "onFling: 左滑");
-      } else if (endX - beginX > minMove && Math.abs(velocityX) > minVelocity) {   //右滑
-        Log.d(TAG, "onFling: 右滑");
-      } else if (beginY - endY > minMove && Math.abs(velocityY) > minVelocity) {   //上滑
-        Log.d(TAG, "onFling: 上滑");
-      } else if (endY - beginY > minMove && Math.abs(velocityY) > minVelocity) {   //下滑
-        Log.d(TAG, "onFling: 下滑");
+      if (Math.abs(velocityX) > Math.abs(velocityY)) {
+        if (beginX > endX) {
+          Log.d(TAG, "onFling: 左滑");
+        } else {
+          Log.d(TAG, "onFling: 右滑");
+        }
+      } else if (Math.abs(velocityY) > Math.abs(velocityX)) {
+        if (beginY > endY) {
+          Log.d(TAG, "onFling: 上滑");
+        } else {
+          Log.d(TAG, "onFling: 下滑");
+        }
       }
-
-      return true;
+      return false;
     }
+
   };
 
   @Override
   public boolean dispatchTouchEvent(MotionEvent event) {
     //消除冲突
-    if (mDetector.onTouchEvent(event)) {
-      event.setAction(MotionEvent.ACTION_CANCEL);
-    }
+//    if (mDetector.onTouchEvent(event)) {
+//      event.setAction(MotionEvent.ACTION_CANCEL);
+//    }
     return super.dispatchTouchEvent(event);
+  }
+
+  @Override
+  public boolean onTouch(View view, MotionEvent motionEvent) {
+
+    return mDetector.onTouchEvent(motionEvent);
   }
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
 
-    return mDetector.onTouchEvent(event);
+    return super.onTouchEvent(event);
   }
 
   @Override
@@ -700,7 +756,20 @@ public class MediaControlView extends FrameLayout {
         rewind();
       } else if (playButton == view) {
         player.setPlayWhenReady(!player.getPlayWhenReady());
+      }else if(backButton == view){
+        EventBus.getDefault().post(new ControllerMessage(ControllerMessage.EXIT));
+        Log.d(TAG, "onClick: exit");
+      }else if(subtitleView == view){
+        //字幕加载
+        EventBus.getDefault().post(new ControllerMessage(ControllerMessage.SUBTITLE));
+        Log.d(TAG, "onClick: subtitle");
+      }else if(menuView == view){
+        //菜单
+        EventBus.getDefault().post(new ControllerMessage(ControllerMessage.MENU));
+        Log.d(TAG, "onClick: more");
       }
+
+
       hideAfterTimeout();
     }
 

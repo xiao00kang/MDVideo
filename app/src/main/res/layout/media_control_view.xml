@@ -18,7 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorHalfTransparent"
+    android:background="@android:color/transparent"
     android:visibility="visible"
     android:layoutDirection="ltr"
     android:orientation="vertical">
@@ -30,7 +30,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="16dp"
         android:theme="@style/Theme.AppCompat.Light"
         app:cardBackgroundColor="@color/cardview_light_background"
         app:cardCornerRadius="3dp"
@@ -121,7 +121,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
         android:theme="@style/Theme.AppCompat.Light"
@@ -139,15 +139,16 @@
                 android:id="@+id/player_play"
                 android:contentDescription="@null"
                 style="@style/stylePlayerImageView"
-                android:src="@drawable/ic_play_vector"/>
+                app:srcCompat ="@drawable/ic_play_vector"/>
 
             <SeekBar
                 android:id="@+id/player_progress"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:focusable="true"
-                android:maxHeight="1dp"
+                android:maxHeight="6dp"
+                android:minHeight="6dp"
                 android:progressBackgroundTint="@color/primaryDark"
                 android:progressBackgroundTintMode="multiply"
                 android:progressTint="@color/accent"

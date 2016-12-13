@@ -29,7 +29,7 @@
         android:layout_height="match_parent"
         app:use_controller="false"
         app:use_texture_view="true"
-        android:focusable="true"/>
+        android:focusable="false"/>
 
     <com.studyjams.mdvideo.PlayerModule.ui.MediaControlView
         android:id="@+id/player_control"
