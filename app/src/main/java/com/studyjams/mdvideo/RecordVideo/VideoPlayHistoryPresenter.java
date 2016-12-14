@@ -10,9 +10,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
-import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
-import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
 
 /**
  * Created by syamiadmin on 2016/9/23.
@@ -35,11 +35,12 @@ public class VideoPlayHistoryPresenter implements VideoPlayHistoryContract.Prese
 
     @Override
     public void playVideo(@NonNull Video video) {
-        Intent intent = new Intent(mContext, PlayerActivity.class)
+        Intent intent = new Intent(mContext, PlayerActivityV2.class)
                 .setData(Uri.parse(video.getPath()))
-                .putExtra(PlayerActivity.CONTENT_ID_EXTRA, video.getId())
-                .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, video.getMimeType())
-                .putExtra(PlayerActivity.PROVIDER_EXTRA,video.getPlayDuration());
+                .setAction(PlayerActivityV2.ACTION_VIEW)
+                .putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, video.getId())
+                .putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, video.getMimeType())
+                .putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,video.getPlayDuration());
         mContext.startActivity(intent);
     }
 

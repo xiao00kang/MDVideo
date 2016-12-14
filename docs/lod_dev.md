@@ -155,3 +155,34 @@
 2016.9.29
 - 完善播放记录页面的p-v接口分离。
 - 尝试更新2.x版本ExoPlayer发现这个版本的MediaController绑定在SimpleExoPlayerView里了，要替换还需要自己实现一个然后替换掉controller,容我先熟悉一下2.x版本
+
+2016.12.5
+- 因工作原因一直没更新了，回头发现在ExoPlayer项目中提的关于让定制UI更简单的建议被采纳了，并且官方的博客出了一篇关于UI自定义的[文章](https://medium.com/google-exoplayer/customizing-exoplayers-ui-components-728cf55ee07a#.apkklkrac)
+是时候回来继续开发这个项目了。
+
+2016.12.8
+- 时常也会思考这个项目的开发所存在的价值，除开自己本身在项目中获得技能上的提升外。我突然想到自己参加的字幕组的翻译工作。有一部分小伙伴提出了希望能在手机上翻译的需求
+如果能加载外挂字幕，并开发一款字幕的编辑器，同时集成语音输入，解决手机打字困难的问题。一定能给大家带来便利。
+
+2016.12.9
+- ExoPlayer 更新到V2版本之后，确实比V1版本的使用精简了许多。主要是音视频轨道的解码都放到library里了，
+然后增加了playerBackView来控制播放。之前有一个疑问，为什么mediaController要用自定义view来实现而不直接使用popupWindow。
+在移植v2版本的时候才发现，popupwindow更新seekbar时必须使用handler来同步刷新ui。而View自带的post方法可以在非UI线程有效工作。
+前提是view已经被添加至window中。
+- 关于自定义UI的取舍，在v2的dev分支中，已经提供了替换mediaController布局文件的方法调用，并且在官方的博客中说了将在2.0.5版本中放出。
+考虑到UI的更改会比较大，于是决定还是直接全部替换吧。为了保持以后的版本也能及时跟上版本的迭代。simpleExoPlayerView也从源码中拷贝出来，方便进行更改和自定义。
+
+2016.12.13
+- 切换到v2版本的exoplayer。
+- 更改mediaController适配新的播放器
+- 修改暂停/播放的动画，解决VectorDrawable cannot be cast to Animatable的bug
+- 调整弹出列表，兼容v2版本
+- mediaController动画暂时注释掉（基本动画真不可靠）
+
+2016.12.14
+- 修改播放记录中时间的中英文适配
+- 修改mediaController的进出动画
+- 修改播放菜单的显示bug以及播放标识
+- 解决播放过了的视频不能从记录处继续播放的问题
+- 版本更新至1.0.1
+- 删除网络权限，firebase使用的是系统的通信。故应用本身不需要网络。

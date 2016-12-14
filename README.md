@@ -22,7 +22,7 @@ MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作
 [**开发文档**](https://github.com/AndroidTips/MDVideo/tree/master/docs)
 ## Features
 
-- 支持Android 4.4及以上
+- 支持Android API 21及以上
 - 本地视频播放支持
 - 支持FMP4, MP4, M4A, MKV, WebM, MP3, AAC, MPEG-TS, MPEG-PS, OGG, FLV, WAV格式
 

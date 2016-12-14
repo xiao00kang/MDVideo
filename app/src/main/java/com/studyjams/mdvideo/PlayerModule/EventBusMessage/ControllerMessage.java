@@ -7,6 +7,7 @@ public class ControllerMessage {
 
     public static final int MENU = 1;
     public static final int SUBTITLE = 2;
+    public static final int EXIT = 3;
 
     private int code;
 

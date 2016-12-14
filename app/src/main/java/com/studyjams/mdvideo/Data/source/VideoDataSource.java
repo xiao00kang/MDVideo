@@ -2,7 +2,7 @@ package com.studyjams.mdvideo.Data.source;
 
 import android.support.annotation.NonNull;
 
-import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.Data.source.remote.FileItem;
 
 import java.util.List;

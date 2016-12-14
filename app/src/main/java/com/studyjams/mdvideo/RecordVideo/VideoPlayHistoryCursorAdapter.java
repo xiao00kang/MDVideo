@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.Util.Tools;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorAdapter;

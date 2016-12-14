@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2016 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:visibility="visible"
+    android:layoutDirection="ltr"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/control_top"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="16dp"
+        android:theme="@style/Theme.AppCompat.Light"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/player_exit"
+                style="@style/stylePlayerImageView"
+                android:contentDescription="@null"
+                android:src="@drawable/player_icon_back"/>
+
+            <HorizontalScrollView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scrollbars="none">
+
+                <TextView
+                    android:id="@+id/player_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_vertical"
+                    android:lines="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/primary"/>
+            </HorizontalScrollView>
+
+            <TextClock
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="8dp"
+                android:format24Hour="@string/player_system_time"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/primary"/>
+
+            <ImageButton
+                android:id="@+id/player_subtitle"
+                style="@style/stylePlayerImageView"
+                android:contentDescription="@null"
+                android:src="@drawable/player_icon_subtitle"/>
+
+            <ImageButton
+                android:id="@+id/player_more"
+                style="@style/stylePlayerImageView"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@null"
+                android:src="@drawable/player_icon_list"/>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <ImageButton android:id="@+id/player_prev"
+                     android:contentDescription="@string/exo_controls_previous_description"
+                     style="@style/ExoMediaButton.Previous"/>
+
+        <ImageButton android:id="@+id/player_rew"
+                     android:contentDescription="@string/exo_controls_rewind_description"
+                     style="@style/ExoMediaButton.Rewind"/>
+
+        <ImageButton android:id="@+id/player_ffwd"
+                     android:contentDescription="@string/exo_controls_fastforward_description"
+                     style="@style/ExoMediaButton.FastForward"/>
+
+        <ImageButton android:id="@+id/player_next"
+                     android:contentDescription="@string/exo_controls_previous_description"
+                     style="@style/ExoMediaButton.Next"/>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/control_bottom"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:theme="@style/Theme.AppCompat.Light"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/player_play"
+                android:contentDescription="@null"
+                style="@style/stylePlayerImageView"
+                app:srcCompat ="@drawable/ic_play_vector"/>
+
+            <SeekBar
+                android:id="@+id/player_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:focusable="true"
+                android:maxHeight="6dp"
+                android:minHeight="6dp"
+                android:progressBackgroundTint="@color/primaryDark"
+                android:progressBackgroundTintMode="multiply"
+                android:progressTint="@color/accent"
+                android:progressTintMode="multiply"
+                android:secondaryProgressTint="@color/primary"
+                android:secondaryProgressTintMode="multiply"
+                android:thumbTint="@color/accent"/>
+
+            <TextView
+                android:id="@+id/player_time_current"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/primary"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/player_time_separator"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/primary"/>
+
+            <TextView
+                android:id="@+id/player_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/primary"/>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

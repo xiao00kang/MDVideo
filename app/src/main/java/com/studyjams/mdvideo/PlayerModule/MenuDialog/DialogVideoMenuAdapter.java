@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.PlayerModule.MediaController;
+package com.studyjams.mdvideo.PlayerModule.MenuDialog;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorAdapter;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorViewHolder;
@@ -90,6 +90,8 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
 
             if(selected.equals(video.getId())){
                 mTitle.setTextColor(mContext.getResources().getColor(R.color.accent));
+            }else{
+                mTitle.setTextColor(mContext.getResources().getColor(R.color.primary));
             }
 
             /**save data for click event**/

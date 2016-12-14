@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.PlayerModule.MediaController;
+package com.studyjams.mdvideo.PlayerModule.MenuDialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -23,7 +23,7 @@ import android.view.Window;
 import android.widget.ImageButton;
 
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
-import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemDivider;
@@ -66,6 +66,7 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
 
     @Override
     public void setupDialog(Dialog dialog, int style) {
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         Window window = dialog.getWindow();
         window.getAttributes().windowAnimations = R.style.DialogMenuAnimation;
         window.setGravity(Gravity.END);
@@ -115,11 +116,12 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
 
     @Override
     public void onItemClick(View view, int position) {
-        Intent intent = new Intent(getActivity(), PlayerActivity.class)
+        Intent intent = new Intent(getActivity(), PlayerActivityV2.class)
                 .setData(Uri.parse(mDialogVideoMenuAdapter.getItemData(position).getPath()))
-                .putExtra(PlayerActivity.CONTENT_ID_EXTRA, String.valueOf(mDialogVideoMenuAdapter.getItemData(position).getId()))
-                .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, mDialogVideoMenuAdapter.getItemData(position).getMimeType())
-                .putExtra(PlayerActivity.PROVIDER_EXTRA,"0");
+                .setAction(PlayerActivityV2.ACTION_VIEW)
+                .putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, String.valueOf(mDialogVideoMenuAdapter.getItemData(position).getId()))
+                .putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, mDialogVideoMenuAdapter.getItemData(position).getMimeType())
+                .putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,0);
         mVideoSelected.onVideoSelected(intent);
         dismiss();
     }

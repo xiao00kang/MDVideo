@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (C) 2014 The Android Open Source Project
+<!-- Copyright (C) 2016 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,35 +15,27 @@
 -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    android:focusable="true"
     android:keepScreenOn="true">
 
-    <com.google.android.exoplayer.AspectRatioFrameLayout
-        android:id="@+id/video_frame"
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center">
+        app:use_controller="false"
+        app:use_texture_view="true"
+        android:focusable="false"/>
 
-        <SurfaceView
-            android:id="@+id/surface_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"/>
-
-        <View
-            android:id="@+id/shutter"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/black"/>
-
-        <com.google.android.exoplayer.text.SubtitleLayout
-            android:id="@+id/subtitles"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </com.google.android.exoplayer.AspectRatioFrameLayout>
+    <com.studyjams.mdvideo.PlayerModule.ui.MediaControlView
+        android:id="@+id/player_control"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+    </com.studyjams.mdvideo.PlayerModule.ui.MediaControlView>
 </FrameLayout>

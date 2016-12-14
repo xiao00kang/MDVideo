@@ -19,10 +19,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.exoplayer.util.Util;
+import com.google.android.exoplayer2.C;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.Data.source.remote.SyncService;
-import com.studyjams.mdvideo.PlayerModule.PlayerActivity;
+import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
 import com.studyjams.mdvideo.R;
 
 import java.util.ArrayList;
@@ -213,11 +213,12 @@ public class MainActivity extends AppCompatActivity
 
             switch (requestCode){
                 case REQUEST_CODE:
-                    Intent intent = new Intent(this, PlayerActivity.class)
-                            .setData(data.getData())
-                            .putExtra(PlayerActivity.CONTENT_ID_EXTRA, REQUEST_CODE)
-                            .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, Util.TYPE_OTHER)
-                            .putExtra(PlayerActivity.PROVIDER_EXTRA, "0");
+                    Intent intent = new Intent(this, PlayerActivityV2.class);
+                    intent.setData(data.getData());
+                    intent.setAction(PlayerActivityV2.ACTION_VIEW);
+                    intent.putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, REQUEST_CODE);
+                    intent.putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, C.TYPE_OTHER);
+                    intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA, 0);
                     startActivity(intent);
                     break;
                 default:break;
