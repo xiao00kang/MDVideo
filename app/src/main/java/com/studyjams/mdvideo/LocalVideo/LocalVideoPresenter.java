@@ -10,7 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
-import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
@@ -70,7 +70,7 @@ public class LocalVideoPresenter implements LocalVideoContract.Presenter, Loader
         intent.setAction(PlayerActivityV2.ACTION_VIEW);
         intent.putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, video.getId());
         intent.putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, video.getMimeType());
-        intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,"0");
+        intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,0);
 
         /**
         Intent intent = new Intent(mContext, PlayerActivity.class)

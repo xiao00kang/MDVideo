@@ -178,3 +178,11 @@
 - 修改暂停/播放的动画，解决VectorDrawable cannot be cast to Animatable的bug
 - 调整弹出列表，兼容v2版本
 - mediaController动画暂时注释掉（基本动画真不可靠）
+
+2016.12.14
+- 修改播放记录中时间的中英文适配
+- 修改mediaController的进出动画
+- 修改播放菜单的显示bug以及播放标识
+- 解决播放过了的视频不能从记录处继续播放的问题
+- 版本更新至1.0.1
+- 删除网络权限，firebase使用的是系统的通信。故应用本身不需要网络。

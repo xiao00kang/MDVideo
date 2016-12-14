@@ -8,7 +8,7 @@
 
     <string name="action_settings" translatable="false">设置</string>
     <!--local-->
-    <string name="local_no_video">没有可播放的视频~</string>
+    <string name="local_no_video">正在查找本地视频~</string>
     <string name="record_no_video">没有观看记录~</string>
 
 

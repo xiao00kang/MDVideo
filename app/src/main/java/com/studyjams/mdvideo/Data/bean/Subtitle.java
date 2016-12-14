@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.Data;
+package com.studyjams.mdvideo.Data.bean;
 
 /**
  * Created by syamiadmin on 2016/9/9.

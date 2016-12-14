@@ -67,7 +67,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.MainFrame.MainActivity;
 import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
-import com.studyjams.mdvideo.PlayerModule.MediaController.VideoMenuDialog;
+import com.studyjams.mdvideo.PlayerModule.MenuDialog.VideoMenuDialog;
 import com.studyjams.mdvideo.PlayerModule.ui.MediaControlView;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.Util.Tools;
@@ -91,6 +91,7 @@ import static com.studyjams.mdvideo.R.id.root;
  */
 public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.EventListener,
         TrackSelector.EventListener<MappedTrackInfo>,VideoMenuDialog.VideoSelected{
+    private static final String TAG = "PlayerActivityV2";
 
     public static final String DRM_SCHEME_UUID_EXTRA = "drm_scheme_uuid";
     public static final String DRM_LICENSE_URL = "drm_license_url";
@@ -118,7 +119,7 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
     //数据表中的id
     private String mContentId;
     //已播放时长
-    private String mContentPosition;
+    private long mContentPosition;
 
     private MediaControlView controller;
 
@@ -272,17 +273,16 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
         String type = intent.getType();
 
         if (Intent.ACTION_SEND.equals(action) && type.equals("video/*")) {
+
             mContentUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             mContentId = "";
-            mContentPosition = "0";
-            playerPosition = 0;
+            mContentPosition = C.TIME_UNSET;
         } else{
+
             mContentUri = intent.getData();
             mContentId = intent.getStringExtra(CONTENT_ID_EXTRA);
-            mContentPosition = intent.getStringExtra(CONTENT_POSITION_EXTRA);
-            if(mContentPosition != null){
-                playerPosition = Long.valueOf(mContentPosition);
-            }
+            mContentPosition = intent.getLongExtra(CONTENT_POSITION_EXTRA,0);
+            playerPosition = mContentPosition;
         }
 
         if (player == null) {
@@ -334,13 +334,13 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
             controller.setPlayer(player);
             controller.setTitle(mContentUri.getLastPathSegment());
 
-            if (isTimelineStatic) {
+//            if (isTimelineStatic) {
                 if (playerPosition == C.TIME_UNSET) {
                     player.seekToDefaultPosition(playerWindow);
                 } else {
                     player.seekTo(playerWindow, playerPosition);
                 }
-            }
+//            }
             player.setPlayWhenReady(shouldAutoPlay);
 
             /**调试信息
@@ -427,11 +427,12 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
             upDateRecord();
             shouldAutoPlay = player.getPlayWhenReady();
             playerWindow = player.getCurrentWindowIndex();
-            playerPosition = C.TIME_UNSET;
-            Timeline timeline = player.getCurrentTimeline();
-            if (timeline != null && timeline.getWindow(playerWindow, window).isSeekable) {
-                playerPosition = player.getCurrentPosition();
-            }
+//            playerPosition = C.TIME_UNSET;
+            playerPosition = mContentPosition;
+//            Timeline timeline = player.getCurrentTimeline();
+//            if (timeline != null && timeline.getWindow(playerWindow, window).isSeekable) {
+//                playerPosition = player.getCurrentPosition();
+//            }
             player.release();
             player = null;
             trackSelector = null;

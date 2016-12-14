@@ -20,12 +20,11 @@ android {
         applicationId "com.studyjams.mdvideo"
         minSdkVersion 21
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
 
         // Enabling multidex support.
 //        multiDexEnabled true
-
     }
 
     lintOptions {
@@ -37,7 +36,11 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+
+            //是否去除无效的资源文件
+            shrinkResources true
+
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             //定制APK生成的文件名

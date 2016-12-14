@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.studyjams.mdvideo">
 
-    <!-- 网络访问 -->
+    <!-- 网络访问
     <uses-permission android:name="android.permission.INTERNET"/>
+     -->
     <!-- 屏幕锁定 -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <!-- 读写SD卡的权限 -->

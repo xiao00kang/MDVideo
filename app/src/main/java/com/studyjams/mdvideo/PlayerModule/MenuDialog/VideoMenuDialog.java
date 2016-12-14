@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.PlayerModule.MediaController;
+package com.studyjams.mdvideo.PlayerModule.MenuDialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -66,6 +66,7 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
 
     @Override
     public void setupDialog(Dialog dialog, int style) {
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         Window window = dialog.getWindow();
         window.getAttributes().windowAnimations = R.style.DialogMenuAnimation;
         window.setGravity(Gravity.END);
@@ -120,7 +121,7 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
                 .setAction(PlayerActivityV2.ACTION_VIEW)
                 .putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, String.valueOf(mDialogVideoMenuAdapter.getItemData(position).getId()))
                 .putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, mDialogVideoMenuAdapter.getItemData(position).getMimeType())
-                .putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,"0");
+                .putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,0);
         mVideoSelected.onVideoSelected(intent);
         dismiss();
     }

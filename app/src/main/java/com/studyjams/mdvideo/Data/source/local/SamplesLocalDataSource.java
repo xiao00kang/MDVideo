@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.Data.source.SamplesValues;
 import com.studyjams.mdvideo.Data.source.SubtitleDataSource;
 import com.studyjams.mdvideo.Data.source.VideoDataSource;

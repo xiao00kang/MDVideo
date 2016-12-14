@@ -27,6 +27,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -293,15 +295,14 @@ public class MediaControlView extends FrameLayout implements View.OnTouchListene
         visibilityListener.onVisibilityChange(topBar.getVisibility());
       }
 
-//      Animation animTopIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_in);
-//      animTopIn.setFillAfter(true);
-//      Animation animBottomIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_in);
-//      animBottomIn.setFillAfter(true);
-//      topBar.setAnimation(animTopIn);
-//      bottomBar.setAnimation(animBottomIn);
-//      animTopIn.start();
-//      animBottomIn.start();
-
+      Animation animTopIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_in);
+      animTopIn.setFillAfter(true);
+      Animation animBottomIn = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_in);
+      animBottomIn.setFillAfter(true);
+      topBar.setAnimation(animTopIn);
+      bottomBar.setAnimation(animBottomIn);
+      animTopIn.start();
+      animBottomIn.start();
 
       updateAll();
     }
@@ -313,14 +314,14 @@ public class MediaControlView extends FrameLayout implements View.OnTouchListene
   public void hide() {
     if (topBar.getVisibility() == VISIBLE) {
 
-//      Animation animTopOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_out);
-//      Animation animBottomOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_out);
+      Animation animTopOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_top_out);
+      Animation animBottomOut = AnimationUtils.loadAnimation(getContext(), R.anim.popup_bottom_out);
 //      animTopOut.setFillAfter(true);
 //      animBottomOut.setFillAfter(true);
-//      topBar.setAnimation(animTopOut);
-//      bottomBar.setAnimation(animBottomOut);
-//      animTopOut.start();
-//      animBottomOut.start();
+      topBar.setAnimation(animTopOut);
+      bottomBar.setAnimation(animBottomOut);
+      animTopOut.start();
+      animBottomOut.start();
 
       topBar.setVisibility(INVISIBLE);
       bottomBar.setVisibility(INVISIBLE);

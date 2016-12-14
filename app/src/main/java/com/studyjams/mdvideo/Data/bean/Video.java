@@ -1,4 +1,4 @@
-package com.studyjams.mdvideo.Data;
+package com.studyjams.mdvideo.Data.bean;
 
 import android.database.Cursor;
 import android.util.Log;

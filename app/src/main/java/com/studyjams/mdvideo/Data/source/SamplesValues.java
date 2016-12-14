@@ -3,7 +3,7 @@ package com.studyjams.mdvideo.Data.source;
 import android.content.ContentValues;
 import android.media.MediaMetadataRetriever;
 
-import com.studyjams.mdvideo.Data.Video;
+import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.SubtitleEntry;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract.VideoEntry;
 import com.studyjams.mdvideo.Data.source.remote.FileItem;

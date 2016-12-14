@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity
                     intent.setAction(PlayerActivityV2.ACTION_VIEW);
                     intent.putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, REQUEST_CODE);
                     intent.putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, C.TYPE_OTHER);
-                    intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA, "0");
+                    intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA, 0);
                     startActivity(intent);
                     break;
                 default:break;
