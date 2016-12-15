@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.studyjams.mdvideo">
 
-    <!-- 网络访问
+    <!--
+    网络访问
     <uses-permission android:name="android.permission.INTERNET"/>
-     -->
+    -->
     <!-- 屏幕锁定 -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <!-- 读写SD卡的权限 -->
@@ -24,11 +25,9 @@
             android:label="@string/app_name"
             android:screenOrientation="fullSensor"
             android:theme="@style/DrawerLayoutTheme">
-
         </activity>
-
         <activity
-            android:name="com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2"
+            android:name=".PlayerModule.ExoPlayerV2.PlayerActivityV2"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:launchMode="singleTop"
             android:parentActivityName=".MainFrame.MainActivity"
@@ -36,6 +35,7 @@
             android:theme="@style/MyTheme.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
 
                 <data android:mimeType="video/*"/>
@@ -68,7 +68,7 @@
             android:name=".Data.source.remote.SyncService"
             android:exported="false">
         </service>
-        <!--最先启动的activity，用于解决烦人的黑白屏问题-->
+        <!-- 最先启动的activity，用于解决烦人的黑白屏问题 -->
         <activity
             android:name=".MainFrame.WelcomeActivity"
             android:theme="@style/StartActivityTransparent">
@@ -77,6 +77,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".BaseActivity">
         </activity>
     </application>
 
