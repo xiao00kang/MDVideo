@@ -24,6 +24,7 @@ import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
 import com.studyjams.mdvideo.R;
+import com.studyjams.mdvideo.Setting.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -196,6 +197,9 @@ public class MainActivity extends AppCompatActivity
 
                 sendEmail();
                 break;
+            case R.id.menu_video_setting:
+                openSettingView();
+                break;
             default:
 
                 break;
@@ -247,5 +251,13 @@ public class MainActivity extends AppCompatActivity
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
+    }
+
+    /**
+     * open setting menu
+     **/
+    private void openSettingView() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }
