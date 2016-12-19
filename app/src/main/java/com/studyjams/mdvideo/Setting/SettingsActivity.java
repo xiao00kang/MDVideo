@@ -1,6 +1,5 @@
 package com.studyjams.mdvideo.Setting;
 
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +12,13 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.studyjams.mdvideo.R;
@@ -35,7 +36,8 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity {
+    private static final String TAG = "SettingsActivity";
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -52,10 +54,7 @@ public class SettingsActivity extends PreferenceActivity {
                 int index = listPreference.findIndexOfValue(stringValue);
 
                 // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
+                preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
 
             } else if (preference instanceof RingtonePreference) {
                 // For ringtone preferences, look up the correct display value
@@ -65,8 +64,7 @@ public class SettingsActivity extends PreferenceActivity {
                     preference.setSummary(R.string.pref_ringtone_silent);
 
                 } else {
-                    Ringtone ringtone = RingtoneManager.getRingtone(
-                            preference.getContext(), Uri.parse(stringValue));
+                    Ringtone ringtone = RingtoneManager.getRingtone(preference.getContext(), Uri.parse(stringValue));
 
                     if (ringtone == null) {
                         // Clear the summary if there was a lookup error.
@@ -113,8 +111,7 @@ public class SettingsActivity extends PreferenceActivity {
         // Trigger the listener immediately with the preference's
         // current value.
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
+                PreferenceManager.getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
     }
 
@@ -128,11 +125,22 @@ public class SettingsActivity extends PreferenceActivity {
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -149,6 +157,9 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onBuildHeaders(List<Header> target) {
+        setContentView(R.layout.activity_setting);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.setting_toolbar);
+        setSupportActionBar(toolbar);
         loadHeadersFromResource(R.xml.pref_headers, target);
     }
 
@@ -187,6 +198,8 @@ public class SettingsActivity extends PreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
+
+                Log.d(TAG, "================onOptionsItemSelected: test111111111");
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
             }

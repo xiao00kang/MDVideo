@@ -73,14 +73,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        final FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.main_fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                fileChooser();
-//            }
-//        });
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -96,24 +88,6 @@ public class MainActivity extends AppCompatActivity
 
         mViewpager.setAdapter(mainPagerAdapter);
         tabLayout.setupWithViewPager(mViewpager);
-
-//        mViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                /**切换页面时显示文件打开**/
-//                fab.show();
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//
-//            }
-//        });
     }
 
     @Override

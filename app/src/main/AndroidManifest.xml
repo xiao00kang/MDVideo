@@ -81,7 +81,9 @@
 
         <activity
             android:name=".Setting.SettingsActivity"
-            android:label="@string/title_activity_settings">
+            android:screenOrientation="fullSensor"
+            android:parentActivityName=".MainFrame.MainActivity"
+            android:label="@string/setting_title">
         </activity>
     </application>
 
