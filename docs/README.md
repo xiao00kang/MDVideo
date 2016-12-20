@@ -19,6 +19,10 @@ git pull
 git push 仓库地址
 
 git push (remote) (branch)
+
+git branch -a
+
+git checkout -t origin/dev
 ```
 
 ```java
@@ -46,4 +50,3 @@ To solve this:
 ## 问题解决与分享
 - [项目 git及GitHub简单应用](http://www.jianshu.com/p/3113cf8d794e)
 - [APP Bar 的使用](http://artharyoung.github.io/2016/06/16/2016-6-16/)
-

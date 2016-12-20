@@ -11,37 +11,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.studyjams.mdvideo.R;
 
-import java.util.List;
-
-/**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -118,7 +100,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setting);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.setting_toolbar);
+        setSupportActionBar(toolbar);
         setupActionBar();
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.setting_content, new VideoPreferenceFragment())
+                .commit();
     }
 
     /**
@@ -143,54 +132,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        setContentView(R.layout.activity_setting);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.setting_toolbar);
-        setSupportActionBar(toolbar);
-        loadHeadersFromResource(R.xml.pref_headers, target);
-    }
-
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
-                || NotificationPreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
+    public static class VideoPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
+            addPreferencesFromResource(R.xml.pref_video_setting);
             setHasOptionsMenu(true);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
+            bindPreferenceSummaryToValue(findPreference("video_list"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
@@ -199,7 +152,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             int id = item.getItemId();
             if (id == android.R.id.home) {
 
-                Log.d(TAG, "================onOptionsItemSelected: test111111111");
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
             }
