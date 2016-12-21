@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.studyjams.mdvideo.Data.bean.Subtitle;
 import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewCursorAdapter;
@@ -20,16 +21,22 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
 
     private static final String TAG = "DialogVideoMenuAdapter";
     private ArrayList<Video> mVideoData;
+    private ArrayList<Subtitle> mSubtitleData;
     private String selected;
+
+    private int mType;
+
     /**
      * Constructor.
      * @param context The Context the Adapter is displayed in.
      */
-    public DialogVideoMenuAdapter(Context context, String defaultId) {
+    public DialogVideoMenuAdapter(Context context, String defaultId,int type) {
         super(context);
         selected = defaultId;
         setupCursorAdapter(null, 0, R.layout.dialogfragment_video_list_item, false);
         mVideoData = new ArrayList<>();
+        mSubtitleData = new ArrayList<>();
+        mType = type;
     }
 
     @Override
@@ -42,8 +49,17 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
      * @param position
      * @return
      */
-    public Video getItemData(int position){
+    public Video getVideoItemData(int position){
         return mVideoData.get(position);
+    }
+
+    /**
+     * 返回单个item的数据
+     * @param position
+     * @return
+     */
+    public Subtitle getSubtitleItemData(int position){
+        return mSubtitleData.get(position);
     }
 
     /**
@@ -86,17 +102,31 @@ public class DialogVideoMenuAdapter extends RecyclerViewCursorAdapter<DialogVide
         @Override
         public void bindCursor(Cursor cursor) {
 
-            Video video = Video.from(cursor);
+            if (mType == VideoMenuDialog.VIDEO) {
+                Video video = Video.from(cursor);
 
-            if(selected.equals(video.getId())){
-                mTitle.setTextColor(mContext.getResources().getColor(R.color.accent));
-            }else{
-                mTitle.setTextColor(mContext.getResources().getColor(R.color.primary));
+                if (selected.equals(video.getId())) {
+                    mTitle.setTextColor(mContext.getResources().getColor(R.color.accent));
+                } else {
+                    mTitle.setTextColor(mContext.getResources().getColor(R.color.primary));
+                }
+
+                /**save data for click event**/
+                mVideoData.add(getAdapterPosition(), video);
+                mTitle.setText(video.getTitle());
+            } else if (mType == VideoMenuDialog.SUBTITLE) {
+                Subtitle subtitle = Subtitle.from(cursor);
+
+                if (selected.equals(subtitle.getPath())) {
+                    mTitle.setTextColor(mContext.getResources().getColor(R.color.accent));
+                } else {
+                    mTitle.setTextColor(mContext.getResources().getColor(R.color.primary));
+                }
+
+                /**save data for click event**/
+                mSubtitleData.add(getAdapterPosition(), subtitle);
+                mTitle.setText(subtitle.getTitle());
             }
-
-            /**save data for click event**/
-            mVideoData.add(getAdapterPosition(),video);
-            mTitle.setText(video.getTitle());
         }
     }
 }

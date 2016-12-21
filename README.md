@@ -1,6 +1,6 @@
 # Material Design Video
 
-MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作项目。我们希望在完全不考虑商业利益的环境下，开发一款Material Design
+MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作项目。作者希望在完全不考虑商业利益的环境下，开发一款Material Design
 设计风格的播放器。项目的重心将会集中在以下几点：
 
 - Material Design的UI风格
@@ -9,7 +9,7 @@ MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作
 - 功能的完整性（提供基本的播放需求）
 - 性能和内存的优化
 
-我们希望通过项目协作，达到以下目标：
+作者希望通过项目协作，达到以下目标：
 - 完成APP本地视频播放的功能设计与开发并将APP上架到Google Play。
 - 熟练掌握GitHub团队协作流程与Git的基本操作。
 - 学习Material Design的设计风格与思想。
@@ -17,7 +17,7 @@ MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作
 - 熟悉APP的整体开发流程，以及性能调试与测试。
 - 培养良好的代码风格
 
-活动在 2016 八月份结束，但我觉得这个项目不应该就此终结。在工作之余仍会投入精力开发。
+活动在 2016 八月份结束，但作者觉得这个项目不应该就此终结。持续开发中······
 
 [**开发文档**](https://github.com/AndroidTips/MDVideo/tree/master/docs)
 ## Features
@@ -25,6 +25,7 @@ MDVideo是在Google Study Jams 2016活动第二阶段发起的一个团队协作
 - 支持Android API 21及以上
 - 本地视频播放支持
 - 支持FMP4, MP4, M4A, MKV, WebM, MP3, AAC, MPEG-TS, MPEG-PS, OGG, FLV, WAV格式
+- 支持srt格式外挂字幕
 
 ## Download
 <a href='https://play.google.com/store/apps/details?id=com.studyjams.mdvideo&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="20%"/></a>
@@ -45,4 +46,13 @@ Email: artharyoungcn@gmail.com
 - [dev-todo-mvp-tablet](https://github.com/googlesamples/android-architecture/tree/dev-todo-mvp-tablet)
 
 ## License
-MDVideo is licensed under the terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
+Copyright (C) 2016 A.Y
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

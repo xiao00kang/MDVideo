@@ -25,6 +25,7 @@ import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
 import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.Setting.SettingsActivity;
+import com.studyjams.mdvideo.Util.D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +110,8 @@ public class MainActivity extends AppCompatActivity
                 SyncService.startActionUpdate(MainActivity.this,
                         intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID),
                         intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION),
-                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE));
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE),
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SUBTITLE_PATH));
             }
         }
     }
@@ -194,9 +196,11 @@ public class MainActivity extends AppCompatActivity
                     Intent intent = new Intent(this, PlayerActivityV2.class);
                     intent.setData(data.getData());
                     intent.setAction(PlayerActivityV2.ACTION_VIEW);
+                    intent.putExtra(PlayerActivityV2.CONTENT_TYPE_INTENT, D.TYPE_VIDEO);
                     intent.putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, REQUEST_CODE);
                     intent.putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, C.TYPE_OTHER);
-                    intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA, 0);
+                    intent.putExtra(PlayerActivityV2.CONTENT_SUBTITLE_EXTRA,"");
+                    intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA, 0L);
                     startActivity(intent);
                     break;
                 default:break;

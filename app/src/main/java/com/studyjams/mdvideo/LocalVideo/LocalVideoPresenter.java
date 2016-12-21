@@ -14,6 +14,7 @@ import com.studyjams.mdvideo.Data.bean.Video;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
+import com.studyjams.mdvideo.Util.D;
 
 /**
  * Created by syamiadmin on 2016/9/2.
@@ -69,8 +70,10 @@ public class LocalVideoPresenter implements LocalVideoContract.Presenter, Loader
         intent.setData(Uri.parse(video.getPath()));
         intent.setAction(PlayerActivityV2.ACTION_VIEW);
         intent.putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, video.getId());
+        intent.putExtra(PlayerActivityV2.CONTENT_TYPE_INTENT, D.TYPE_VIDEO);
         intent.putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, video.getMimeType());
-        intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,0);
+        intent.putExtra(PlayerActivityV2.CONTENT_SUBTITLE_EXTRA,video.getSubtitlePath());
+        intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,0L);
 
         /**
         Intent intent = new Intent(mContext, PlayerActivity.class)
