@@ -173,9 +173,9 @@ public class MainActivity extends AppCompatActivity
 
                 sendEmail();
                 break;
-            case R.id.menu_video_setting:
-                openSettingView();
-                break;
+//            case R.id.menu_video_setting:
+//                openSettingView();
+//                break;
             default:
 
                 break;

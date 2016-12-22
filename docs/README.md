@@ -23,6 +23,8 @@ git push (remote) (branch)
 git branch -a
 
 git checkout -t origin/dev
+
+adb shell monkey -p your.package.name -v 500
 ```
 
 ```java
