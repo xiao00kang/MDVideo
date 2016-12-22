@@ -25,6 +25,8 @@
 -keepattributes *Annotation*        # 使用注解需要添加
 -keepattributes Signature           # 使用了反射需要加入
 -keepattributes EnclosingMethod     # 使用了反射需要加入
+-renamesourcefileattribute Proguard # 将.class信息中的类名重新定义为"Proguard"字符串
+-keepattributes SourceFile,LineNumberTable # 并保留源文件名为"Proguard"字符串，而非原始的类名 并保留行号
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*        # 混淆时所采用的算法
 
 #-libraryjars   libs/treecore.jar

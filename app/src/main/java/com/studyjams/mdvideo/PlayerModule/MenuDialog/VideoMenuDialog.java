@@ -21,10 +21,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
 import com.studyjams.mdvideo.R;
+import com.studyjams.mdvideo.Util.D;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemClickListener;
 import com.studyjams.mdvideo.View.ProRecyclerView.RecyclerViewItemDivider;
 
@@ -37,15 +39,20 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
     private VideoSelected mVideoSelected;
     private LoaderManager mLoaderManager;
     private static final int DIALOG_LOADER = 121;
+    private static final int DIALOG_LOADER_SUBTITLE = 123;
     private RecyclerView mRecyclerView;
     private DialogVideoMenuAdapter mDialogVideoMenuAdapter;
     /**播放视频的ID**/
     private String contentId = "";
 
+    public static final int VIDEO = 0;
+    public static final int SUBTITLE = 1;
+    private static int mType;
+
     public VideoMenuDialog(){}
 
-    public static VideoMenuDialog newInstance(){
-
+    public static VideoMenuDialog newInstance(int type){
+        mType = type;
         return new VideoMenuDialog();
     }
 
@@ -92,6 +99,13 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
                              Bundle savedInstanceState) {
         View parent = inflater.inflate(R.layout.dialogfragment_video_list, container, false);
 
+        TextView title = (TextView)parent.findViewById(R.id.dialog_menu_title);
+        if(mType == VIDEO){
+            title.setText(getString(R.string.player_menu_title));
+        }else if(mType == SUBTITLE){
+            title.setText(getString(R.string.player_menu_title_subtitle));
+        }
+
         ImageButton back = (ImageButton) parent.findViewById(R.id.dialog_menu_exit);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,7 +121,7 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
         //设置布局管理器
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new RecyclerViewItemDivider(getActivity(), RecyclerViewItemDivider.VERTICAL_LIST));
-        mDialogVideoMenuAdapter = new DialogVideoMenuAdapter(getActivity(),contentId);
+        mDialogVideoMenuAdapter = new DialogVideoMenuAdapter(getActivity(), contentId, mType);
         mRecyclerView.setAdapter(mDialogVideoMenuAdapter);
         mRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(getActivity(), this));
 
@@ -116,12 +130,21 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
 
     @Override
     public void onItemClick(View view, int position) {
-        Intent intent = new Intent(getActivity(), PlayerActivityV2.class)
-                .setData(Uri.parse(mDialogVideoMenuAdapter.getItemData(position).getPath()))
-                .setAction(PlayerActivityV2.ACTION_VIEW)
-                .putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, String.valueOf(mDialogVideoMenuAdapter.getItemData(position).getId()))
-                .putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, mDialogVideoMenuAdapter.getItemData(position).getMimeType())
-                .putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA,0);
+        Intent intent = new Intent(getActivity(),PlayerActivityV2.class);
+        intent.setAction(PlayerActivityV2.ACTION_VIEW);
+        intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA, 0L);
+        if(mType == VIDEO) {
+            intent.putExtra(PlayerActivityV2.CONTENT_TYPE_INTENT, D.TYPE_VIDEO);
+            intent.setData(Uri.parse(mDialogVideoMenuAdapter.getVideoItemData(position).getPath()));
+            intent.putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, String.valueOf(mDialogVideoMenuAdapter.getVideoItemData(position).getId()));
+            intent.putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, mDialogVideoMenuAdapter.getVideoItemData(position).getMimeType());
+            intent.putExtra(PlayerActivityV2.CONTENT_SUBTITLE_EXTRA,mDialogVideoMenuAdapter.getVideoItemData(position).getSubtitlePath());
+        }else if(mType == SUBTITLE){
+            intent.putExtra(PlayerActivityV2.CONTENT_TYPE_INTENT, D.TYPE_SUBTITLE);
+            intent.setData(Uri.parse(mDialogVideoMenuAdapter.getSubtitleItemData(position).getPath()));
+            intent.putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, String.valueOf(mDialogVideoMenuAdapter.getSubtitleItemData(position).getId()));
+            intent.putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, mDialogVideoMenuAdapter.getSubtitleItemData(position).getMimeType());
+        }
         mVideoSelected.onVideoSelected(intent);
         dismiss();
     }
@@ -130,7 +153,12 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mLoaderManager = getActivity().getSupportLoaderManager();
-        mLoaderManager.initLoader(DIALOG_LOADER, null, this);
+        if(mType == VIDEO){
+            mLoaderManager.initLoader(DIALOG_LOADER, null, this);
+        }else if(mType == SUBTITLE){
+            mLoaderManager.initLoader(DIALOG_LOADER_SUBTITLE, null, this);
+        }
+
     }
 
     @Override
@@ -140,6 +168,15 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
                 return new CursorLoader(
                         getActivity(),
                         SamplesPersistenceContract.VideoEntry.buildVideosUri(),
+                        null,
+                        null,
+                        null,
+                        null
+                );
+            case DIALOG_LOADER_SUBTITLE:
+                return new CursorLoader(
+                        getActivity(),
+                        SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(),
                         null,
                         null,
                         null,
@@ -156,6 +193,9 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
             case DIALOG_LOADER:
                 mDialogVideoMenuAdapter.swapCursor(null);
                 break;
+            case DIALOG_LOADER_SUBTITLE:
+                mDialogVideoMenuAdapter.swapCursor(null);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown loader id: " + loader.getId());
         }
@@ -165,6 +205,9 @@ public class VideoMenuDialog extends DialogFragment implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch(loader.getId()) {
             case DIALOG_LOADER:
+                mDialogVideoMenuAdapter.swapCursor(data);
+                break;
+            case DIALOG_LOADER_SUBTITLE:
                 mDialogVideoMenuAdapter.swapCursor(data);
                 break;
             default:

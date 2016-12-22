@@ -24,6 +24,8 @@ import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.PlayerModule.ExoPlayerV2.PlayerActivityV2;
 import com.studyjams.mdvideo.R;
+import com.studyjams.mdvideo.Setting.SettingsActivity;
+import com.studyjams.mdvideo.Util.D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,14 +74,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        final FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.main_fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                fileChooser();
-//            }
-//        });
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -95,24 +89,6 @@ public class MainActivity extends AppCompatActivity
 
         mViewpager.setAdapter(mainPagerAdapter);
         tabLayout.setupWithViewPager(mViewpager);
-
-//        mViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                /**切换页面时显示文件打开**/
-//                fab.show();
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//
-//            }
-//        });
     }
 
     @Override
@@ -134,7 +110,8 @@ public class MainActivity extends AppCompatActivity
                 SyncService.startActionUpdate(MainActivity.this,
                         intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID),
                         intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION),
-                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE));
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE),
+                        intent.getStringExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SUBTITLE_PATH));
             }
         }
     }
@@ -196,6 +173,9 @@ public class MainActivity extends AppCompatActivity
 
                 sendEmail();
                 break;
+//            case R.id.menu_video_setting:
+//                openSettingView();
+//                break;
             default:
 
                 break;
@@ -216,9 +196,11 @@ public class MainActivity extends AppCompatActivity
                     Intent intent = new Intent(this, PlayerActivityV2.class);
                     intent.setData(data.getData());
                     intent.setAction(PlayerActivityV2.ACTION_VIEW);
+                    intent.putExtra(PlayerActivityV2.CONTENT_TYPE_INTENT, D.TYPE_VIDEO);
                     intent.putExtra(PlayerActivityV2.CONTENT_ID_EXTRA, REQUEST_CODE);
                     intent.putExtra(PlayerActivityV2.CONTENT_TYPE_EXTRA, C.TYPE_OTHER);
-                    intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA, 0);
+                    intent.putExtra(PlayerActivityV2.CONTENT_SUBTITLE_EXTRA,"");
+                    intent.putExtra(PlayerActivityV2.CONTENT_POSITION_EXTRA, 0L);
                     startActivity(intent);
                     break;
                 default:break;
@@ -247,5 +229,13 @@ public class MainActivity extends AppCompatActivity
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
+    }
+
+    /**
+     * open setting menu
+     **/
+    private void openSettingView() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }

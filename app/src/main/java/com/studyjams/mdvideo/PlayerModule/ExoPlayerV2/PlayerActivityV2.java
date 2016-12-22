@@ -23,7 +23,7 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.View;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.exoplayer2.C;
@@ -31,6 +31,7 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.drm.DrmSessionManager;
@@ -45,6 +46,8 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecUtil.DecoderQueryExcep
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MergingMediaSource;
+import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -63,6 +66,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.MainFrame.MainActivity;
@@ -70,6 +74,7 @@ import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
 import com.studyjams.mdvideo.PlayerModule.MenuDialog.VideoMenuDialog;
 import com.studyjams.mdvideo.PlayerModule.ui.MediaControlView;
 import com.studyjams.mdvideo.R;
+import com.studyjams.mdvideo.Util.D;
 import com.studyjams.mdvideo.Util.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -80,11 +85,11 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 import static com.google.android.exoplayer2.C.TYPE_SS;
-import static com.studyjams.mdvideo.R.id.root;
 
 /**
  * An activity that plays media using {@link SimpleExoPlayer}.
@@ -111,6 +116,10 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
     public static final String CONTENT_TYPE_EXTRA = "content_type";
     /**视频在数据表中已记录的播放时长**/
     public static final String CONTENT_POSITION_EXTRA = "content_position";
+    /**视频关联的字幕地址**/
+    public static final String CONTENT_SUBTITLE_EXTRA = "content_subtitle";
+    /**intent的类型，区别字幕与视频**/
+    public static final String CONTENT_TYPE_INTENT = "content_intent";
 
     /**播放地址**/
     private Uri mContentUri;
@@ -120,6 +129,9 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
     private String mContentId;
     //已播放时长
     private long mContentPosition;
+
+    /**字幕地址**/
+    private Uri mSubtitleUri;
 
     private MediaControlView controller;
 
@@ -162,7 +174,7 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
         }
 
         setContentView(R.layout.player_activity_v2);
-        View rootView = findViewById(root);
+//        View rootView = findViewById(root);
 
         simpleExoPlayerView = (SimpleExoPlayerView) findViewById(R.id.player_view);
 //        simpleExoPlayerView.setControllerVisibilityListener(this);
@@ -184,6 +196,10 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
     //从MenuDialog里传入的数据，一个数据传输通道
     @Override
     public void onVideoSelected(Intent intent) {
+
+        if (player != null) {
+            mContentPosition = player.getCurrentPosition();
+        }
         onNewIntent(intent);
         initializePlayer();
         if (!controller.isVisible()) {
@@ -259,7 +275,6 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
 //    }
 
     // PlaybackControlView.VisibilityListener implementation
-    /**不使用自带的mediaController**/
 //
 //    @Override
 //    public void onVisibilityChange(int visibility) {
@@ -271,18 +286,28 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
+        String intentType = intent.getStringExtra(CONTENT_TYPE_INTENT);
 
         if (Intent.ACTION_SEND.equals(action) && type.equals("video/*")) {
 
             mContentUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             mContentId = "";
             mContentPosition = C.TIME_UNSET;
-        } else{
+            mSubtitleUri = null;
+        } else if(intentType.equals(D.TYPE_VIDEO)){
 
             mContentUri = intent.getData();
             mContentId = intent.getStringExtra(CONTENT_ID_EXTRA);
             mContentPosition = intent.getLongExtra(CONTENT_POSITION_EXTRA,0);
+            String subtitle = intent.getStringExtra(CONTENT_SUBTITLE_EXTRA);
+            if(!TextUtils.isEmpty(subtitle)){
+                mSubtitleUri = Uri.parse(subtitle);
+            }else{
+                mSubtitleUri = null;
+            }
             playerPosition = mContentPosition;
+        }else if(intentType.equals(D.TYPE_SUBTITLE)){
+            mSubtitleUri = intent.getData();
         }
 
         if (player == null) {
@@ -354,7 +379,8 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
             Uri[] uris;
             String[] extensions;
             if (ACTION_VIEW.equals(action)) {
-                uris = new Uri[]{intent.getData()};
+//                uris = new Uri[]{intent.getData()};
+                uris = new Uri[]{mContentUri};
                 extensions = new String[]{intent.getStringExtra(EXTENSION_EXTRA)};
             } else if (ACTION_VIEW_LIST.equals(action)) {
                 String[] uriStrings = intent.getStringArrayExtra(URI_LIST_EXTRA);
@@ -401,12 +427,32 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
             case C.TYPE_HLS:
                 return new HlsMediaSource(uri, mediaDataSourceFactory, mainHandler, eventLogger);
             case C.TYPE_OTHER:
-                return new ExtractorMediaSource(uri, mediaDataSourceFactory, new DefaultExtractorsFactory(),
+                MediaSource mediaSource = new ExtractorMediaSource(uri, mediaDataSourceFactory, new DefaultExtractorsFactory(),
                         mainHandler, eventLogger);
+
+                if (mSubtitleUri != null) {
+                    Log.d(TAG, "====加载字幕====buildMediaSource: ");
+                    return TextSubtitle(mSubtitleUri, mediaSource);
+                } else {
+                    return mediaSource;
+                }
             default: {
                 throw new IllegalStateException("Unsupported type: " + type);
             }
         }
+    }
+
+    /**
+     * 加载字幕
+     * @param srtUri
+     * @param mediaSource
+     */
+    private MediaSource TextSubtitle(Uri srtUri, MediaSource mediaSource){
+        Format textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP,
+                null, Format.NO_VALUE, Format.NO_VALUE, Locale.getDefault().getLanguage(), null);
+        MediaSource textMediaSource = new SingleSampleMediaSource(srtUri, mediaDataSourceFactory, textFormat, C.TIME_UNSET);
+
+        return new MergingMediaSource(mediaSource, textMediaSource);
     }
 
     private DrmSessionManager<FrameworkMediaCrypto> buildDrmSessionManager(UUID uuid,
@@ -468,7 +514,7 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
     }
 
     HttpDataSource.Factory buildHttpDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
-        return new DefaultHttpDataSourceFactory(Util.getUserAgent(this, "ExoPlayerDemo"), bandwidthMeter);
+        return new DefaultHttpDataSourceFactory(Util.getUserAgent(this, "MDVideo"), bandwidthMeter);
     }
 
     // ExoPlayer.EventListener implementation
@@ -552,6 +598,7 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
             intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID,mContentId);
             intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION,String.valueOf(playDuration));
             intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE, Tools.getCurrentTimeMillis());
+            intent.putExtra(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SUBTITLE_PATH, String.valueOf(mSubtitleUri));
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }
     }
@@ -569,14 +616,18 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
                 finish();
                 break;
             case ControllerMessage.SUBTITLE:
-                Toast.makeText(this,"Subtitle is not support now",Toast.LENGTH_SHORT).show();
+                if (controller.isVisible()) {
+                    controller.hide();
+                }
+                VideoMenuDialog subtitleMenuDialog = VideoMenuDialog.newInstance(VideoMenuDialog.SUBTITLE);
+                subtitleMenuDialog.show(getSupportFragmentManager(),String.valueOf(mSubtitleUri));
                 break;
             case ControllerMessage.MENU:
                 if (controller.isVisible()) {
                     controller.hide();
                 }
 
-                VideoMenuDialog videoMenuDialog = VideoMenuDialog.newInstance();
+                VideoMenuDialog videoMenuDialog = VideoMenuDialog.newInstance(VideoMenuDialog.VIDEO);
                 videoMenuDialog.show(getSupportFragmentManager(),mContentId);
                 break;
             default:break;

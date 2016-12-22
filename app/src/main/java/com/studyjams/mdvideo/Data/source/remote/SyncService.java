@@ -23,6 +23,7 @@ public class SyncService extends IntentService {
     private static final String EXTRA_ID = "com.studyjams.mdvideo.ID";
     private static final String EXTRA_PLAYDURATION = "com.studyjams.mdvideo.PLAYDURATION";
     private static final String EXTRA_CREATEDDATE = "com.studyjams.mdvideo.CREATEDDATE";
+    private static final String EXTRA_SUBTITLEPATH = "com.studyjams.mdvideo.SUBTITLEPATH";
 
     public SyncService() {
         super("SyncService");
@@ -51,12 +52,13 @@ public class SyncService extends IntentService {
     /**
      * 更新播放历史纪录
      */
-    public static void startActionUpdate(Context context, String id, String playDuration, String createdDate) {
+    public static void startActionUpdate(Context context, String id, String playDuration, String createdDate, String subtitleUri) {
         Intent intent = new Intent(context, SyncService.class);
         intent.setAction(ACTION_UPDATE);
         intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_PLAYDURATION, playDuration);
         intent.putExtra(EXTRA_CREATEDDATE, createdDate);
+        intent.putExtra(EXTRA_SUBTITLEPATH,subtitleUri);
         context.startService(intent);
     }
 
@@ -70,7 +72,8 @@ public class SyncService extends IntentService {
                 final String param1 = intent.getStringExtra(EXTRA_ID);
                 final String param2 = intent.getStringExtra(EXTRA_PLAYDURATION);
                 final String param3 = intent.getStringExtra(EXTRA_CREATEDDATE);
-                handleActionUpdate(param1, param2,param3);
+                final String param4 = intent.getStringExtra(EXTRA_SUBTITLEPATH);
+                handleActionUpdate(param1, param2,param3,param4);
             }else if(ACTION_TRAVERSAL.equals(action)){
                 handleActionTraversal();
             }
@@ -109,9 +112,9 @@ public class SyncService extends IntentService {
     /**
      * 更新播放历史
      */
-    private void handleActionUpdate(String id, String playDuration, String createdDate) {
+    private void handleActionUpdate(String id, String playDuration, String createdDate, String subtitlePath) {
 
-        SamplesLocalDataSource.getInstance(getContentResolver()).updateVideo(id,playDuration,createdDate);
+        SamplesLocalDataSource.getInstance(getContentResolver()).updateVideo(id,playDuration,createdDate,subtitlePath);
     }
 
     /**

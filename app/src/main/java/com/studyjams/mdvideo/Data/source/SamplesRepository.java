@@ -126,8 +126,8 @@ public class SamplesRepository implements VideoDataSource,SubtitleDataSource{
     }
 
     @Override
-    public void updateVideo(@NonNull String videoId, String playDuration, String createdDate) {
-        mVideosRemoteDataSource.updateVideo(videoId,playDuration,createdDate);
+    public void updateVideo(@NonNull String videoId, String playDuration, String createdDate, String subtitlePath) {
+        mVideosRemoteDataSource.updateVideo(videoId,playDuration,createdDate,subtitlePath);
     }
 
     private void refreshLocalDataSource(List<Video> videos) {

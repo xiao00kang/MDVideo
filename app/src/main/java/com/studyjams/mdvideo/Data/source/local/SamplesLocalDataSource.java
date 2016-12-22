@@ -116,11 +116,12 @@ public class SamplesLocalDataSource implements VideoDataSource,SubtitleDataSourc
     }
 
     @Override
-    public void updateVideo(@NonNull String videoId, String playDuration, String createdDate) {
+    public void updateVideo(@NonNull String videoId, String playDuration, String createdDate,String subtitlePath) {
 
         ContentValues values = new ContentValues();
         values.put(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_PLAY_DURATION, playDuration);
         values.put(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_CREATED_DATE, createdDate);
+        values.put(SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_SUBTITLE_PATH, subtitlePath);
 
         String selection = SamplesPersistenceContract.VideoEntry.COLUMN_VIDEO_ENTRY_ID + " LIKE ?";
         String[] selectionArgs = {videoId};

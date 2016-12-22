@@ -10,6 +10,7 @@
 
     <string name="menu_video_share">Share</string>
     <string name="menu_video_send">FeedBack</string>
+    <string name="menu_video_setting">Setting</string>
 
     <string name="menu_title">A simple player</string>
     <string name="menu_folder_title">Please select the video you want to open</string>
@@ -30,6 +31,7 @@
 
     <!--playerDemo-->
     <string name="player_menu_title">video list</string>
+    <string name="player_menu_title_subtitle">subtitle list</string>
     <string name="enable_background_audio">Play in background</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>

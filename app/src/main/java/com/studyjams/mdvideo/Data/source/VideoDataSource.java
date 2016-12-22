@@ -36,7 +36,7 @@ public interface VideoDataSource {
 
     void updateVideo(@NonNull Video video);
 
-    void updateVideo(@NonNull String videoId, String playDuration, String createdDate);
+    void updateVideo(@NonNull String videoId, String playDuration, String createdDate, String subtitlePath);
 
     void clearNotExistsVideos();
 

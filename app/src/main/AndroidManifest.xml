@@ -78,6 +78,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Setting.SettingsActivity"
+            android:screenOrientation="fullSensor"
+            android:parentActivityName=".MainFrame.MainActivity"
+            android:label="@string/setting_title">
+        </activity>
+
     </application>
 
 </manifest>
