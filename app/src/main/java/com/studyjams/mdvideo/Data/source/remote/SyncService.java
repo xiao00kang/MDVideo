@@ -3,9 +3,12 @@ package com.studyjams.mdvideo.Data.source.remote;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 
 import com.studyjams.mdvideo.Data.source.local.SamplesLocalDataSource;
+import com.studyjams.mdvideo.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -87,7 +90,15 @@ public class SyncService extends IntentService {
      * 这个肯定是需要一个通用的算法来实现的（2016.8.25）
      */
     private void handleActionTraversal(){
-        File storage = Environment.getExternalStorageDirectory();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        File storage;
+        if (sharedPref.getBoolean(getString(R.string.setting_storage_scan_key), false)) {
+            storage = Environment.getExternalStorageDirectory();
+        } else {
+            storage = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        }
+
+//        File storage = Environment.getExternalStorageDirectory();
         List<FileItem> list = fileTraversal(storage,new VideoFileFilter());
         for (FileItem file:list){
             String filePath = file.getPath();

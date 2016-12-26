@@ -10,13 +10,14 @@ import com.studyjams.mdvideo.R;
  * Created by visn on 2016/12/20.
  */
 
-public class AboutAuthor extends DialogPreference{
+public class AboutAuthor extends DialogPreference {
+    private static final String TAG = "AboutAuthor";
 
-        public AboutAuthor(Context context, AttributeSet attrs) {
-            super(context, attrs);
-            setDialogLayoutResource(R.layout.setting_about_author);
-            setPositiveButtonText(android.R.string.ok);
-            setNegativeButtonText(android.R.string.cancel);
-            setDialogIcon(null);
-        }
+    public AboutAuthor(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        setDialogLayoutResource(R.layout.setting_about_author);
+        setPositiveButtonText(android.R.string.ok);
+        setNegativeButtonText(android.R.string.cancel);
+        setDialogIcon(null);
+    }
 }
