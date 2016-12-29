@@ -1,6 +1,7 @@
 package com.studyjams.mdvideo.Setting;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -17,6 +18,10 @@ import com.studyjams.mdvideo.R;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
+
+    /**记录扫描的路径是否改变，只在设置页面退出时扫描**/
+    private static boolean isLoadChanged = false;
+
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -25,8 +30,10 @@ public class SettingsActivity extends AppCompatActivity {
             if(preference instanceof SwitchPreference){
 
                 if(preference.getKey().equals(preference.getContext().getString(R.string.setting_storage_scan_key))){
-                    SyncService.startActionCheck(preference.getContext());
-                    SyncService.startActionTraversal(preference.getContext());
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
+                    if((boolean)value != sharedPref.getBoolean(preference.getContext().getString(R.string.setting_storage_scan_key), false)){
+                        isLoadChanged = true;
+                    }
                 }
             }
 
@@ -79,6 +86,8 @@ public class SettingsActivity extends AppCompatActivity {
         getFragmentManager().beginTransaction()
                 .replace(R.id.setting_content, new VideoPreferenceFragment())
                 .commit();
+        /**重置设置的记录**/
+        isLoadChanged = false;
     }
 
     /**
@@ -124,6 +133,16 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             }
             return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isLoadChanged) {
+            SyncService.startActionClearSql(this);
+            SyncService.startActionCheck(this);
+            SyncService.startActionTraversal(this);
         }
     }
 }

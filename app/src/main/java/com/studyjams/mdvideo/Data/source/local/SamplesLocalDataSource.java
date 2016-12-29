@@ -130,6 +130,11 @@ public class SamplesLocalDataSource implements VideoDataSource,SubtitleDataSourc
     }
 
     @Override
+    public void clearAllVideos() {
+        mContentResolver.delete(SamplesPersistenceContract.VideoEntry.buildVideosUri(),null,null);
+    }
+
+    @Override
     public void clearNotExistsSubtitles() {
         Cursor cursor = mContentResolver.query(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(),
                 new String[]{SamplesPersistenceContract.SubtitleEntry.COLUMN_SUBTITLE_PATH},
@@ -182,5 +187,10 @@ public class SamplesLocalDataSource implements VideoDataSource,SubtitleDataSourc
             cursor.close();
         }
         mContentResolver.notifyChange(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(), null);
+    }
+
+    @Override
+    public void clearAllSubtitles() {
+        mContentResolver.delete(SamplesPersistenceContract.SubtitleEntry.buildSubtitlesUri(),null,null);
     }
 }

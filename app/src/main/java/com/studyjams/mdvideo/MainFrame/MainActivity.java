@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initData();
         initView();
-
+        SyncService.startActionCheck(this);
+        SyncService.startActionTraversal(this);
     }
 
     private void initData(){
@@ -169,10 +170,10 @@ public class MainActivity extends AppCompatActivity
             case R.id.menu_video_share:
                 shareWithFriends();
                 break;
-            case R.id.menu_video_send:
-
-                sendEmail();
-                break;
+//            case R.id.menu_video_send:
+//
+//                sendEmail();
+//                break;
             case R.id.menu_video_setting:
                 openSettingView();
                 break;

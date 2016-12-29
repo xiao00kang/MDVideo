@@ -49,7 +49,7 @@
     <string name="setting_storage_scan">视频、字幕加载位置</string>
     <string name="setting_storage_scan_key">storage_scan</string>
     <string name="setting_storage_scan_all">检索所有路径（加载时间较慢）</string>
-    <string name="setting_storage_scan_sdcard">仅检索 sdcard </string>
+    <string name="setting_storage_scan_sdcard">仅检索用户存储路径</string>
 
     <!--自动播放-->
     <string name="setting_video_play">连续播放</string>

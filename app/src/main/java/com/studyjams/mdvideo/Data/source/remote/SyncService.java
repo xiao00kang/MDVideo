@@ -22,11 +22,17 @@ public class SyncService extends IntentService {
     private static final String ACTION_CHECK = "com.studyjams.mdvideo.action.CHECK";
     private static final String ACTION_UPDATE = "com.studyjams.mdvideo.action.UPDATE";
     private static final String ACTION_TRAVERSAL = "com.studyjams.mdvideo.action.TRAVERSAL";
+    private static final String ACTION_CLEAR = "com.studyjams.mdvideo.action.CLEAR";
 
     private static final String EXTRA_ID = "com.studyjams.mdvideo.ID";
     private static final String EXTRA_PLAYDURATION = "com.studyjams.mdvideo.PLAYDURATION";
     private static final String EXTRA_CREATEDDATE = "com.studyjams.mdvideo.CREATEDDATE";
     private static final String EXTRA_SUBTITLEPATH = "com.studyjams.mdvideo.SUBTITLEPATH";
+
+    /**遍历的最大目录层级**/
+    private static final int MAX_FILE_TREE = 2;
+    private static final String SEPARATOR = "/";
+    private static final String SUBTITLE = ".srt";
 
     public SyncService() {
         super("SyncService");
@@ -65,6 +71,13 @@ public class SyncService extends IntentService {
         context.startService(intent);
     }
 
+    /**清理数据库**/
+    public static void startActionClearSql(Context context){
+        Intent intent = new Intent(context, SyncService.class);
+        intent.setAction(ACTION_CLEAR);
+        context.startService(intent);
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
@@ -79,6 +92,8 @@ public class SyncService extends IntentService {
                 handleActionUpdate(param1, param2,param3,param4);
             }else if(ACTION_TRAVERSAL.equals(action)){
                 handleActionTraversal();
+            }else if(ACTION_CLEAR.equals(action)){
+                handleActionClearSql();
             }
         }
     }
@@ -91,23 +106,29 @@ public class SyncService extends IntentService {
      */
     private void handleActionTraversal(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        File storage;
-        if (sharedPref.getBoolean(getString(R.string.setting_storage_scan_key), false)) {
-            storage = Environment.getExternalStorageDirectory();
-        } else {
-            storage = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        File storage = Environment.getExternalStorageDirectory();
+        final List<FileItem> list;
+        if(sharedPref.getBoolean(getString(R.string.setting_storage_scan_key), false)){
+            list = fileTraversalAll(storage,new VideoFileFilter());
+        }else{
+            list = fileTraversal(storage,new VideoFileFilter());
         }
 
-//        File storage = Environment.getExternalStorageDirectory();
-        List<FileItem> list = fileTraversal(storage,new VideoFileFilter());
         for (FileItem file:list){
             String filePath = file.getPath();
-            if(!filePath.endsWith("srt")) {
+            if(!filePath.endsWith(SUBTITLE)) {
                 SamplesLocalDataSource.getInstance(getContentResolver()).saveVideo(file);
             }else{
                 SamplesLocalDataSource.getInstance(getContentResolver()).saveSubtitle(file);
             }
         }
+    }
+
+    /**清空数据库**/
+    private void handleActionClearSql() {
+
+        SamplesLocalDataSource.getInstance(getContentResolver()).clearAllVideos();
+        SamplesLocalDataSource.getInstance(getContentResolver()).clearAllSubtitles();
     }
 
     /**
@@ -129,12 +150,56 @@ public class SyncService extends IntentService {
     }
 
     /**
-     * 遍历SD卡
+     * 遍历SD卡,只遍历两个目录层级
      * @param root
      * @param filter
      * @return
      */
     private List<FileItem> fileTraversal(File root, VideoFileFilter filter) {
+
+        Queue<File> mQueue = new LinkedList<>();
+        List<FileItem> list = new ArrayList<>();
+        int rootFileLength = root.getPath().split(SEPARATOR).length;
+        boolean status = mQueue.offer(root);
+        if (status) {
+            while (!mQueue.isEmpty()) {
+                File file = mQueue.poll();
+                for (File name : file.listFiles(filter)) {
+                    //If file/directory can be read by the Application
+                    if (name.isDirectory()) {
+                        //过滤掉缓存的隐藏文件夹
+                        if (!name.isHidden()) {
+                            //加入元素
+                            int addFileLength = name.getPath().split(SEPARATOR).length;
+                            if (addFileLength - rootFileLength < MAX_FILE_TREE) {
+                                mQueue.offer(name);
+                            }
+                        }
+                    } else {
+                        FileItem item = new FileItem();
+                        item.setName(name.getName());
+                        item.setPath(name.getAbsolutePath());
+                        item.setDate(name.lastModified());
+                        long length = name.length();
+                        //过滤掉长度为0的文件
+                        if (length != 0) {
+                            item.setSize(length);
+                            list.add(item);
+                        }
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 遍历SD卡，编译所有目录
+     * @param root
+     * @param filter
+     * @return
+     */
+    private List<FileItem> fileTraversalAll(File root, VideoFileFilter filter) {
 
         Queue<File> mQueue = new LinkedList<>();
         List<FileItem> list = new ArrayList<>();
@@ -145,8 +210,8 @@ public class SyncService extends IntentService {
                 for (File name : file.listFiles(filter)) {
                     //If file/directory can be read by the Application
                     if (name.isDirectory()) {
-                        //过滤掉缓存的隐藏文件夹，缓存文件有很多不能播放的文件
-                        if (!name.getPath().contains("/.")) {
+                        //过滤掉缓存的隐藏文件夹
+                        if (!name.isHidden()) {
                             mQueue.offer(name);
                         }
                     } else {

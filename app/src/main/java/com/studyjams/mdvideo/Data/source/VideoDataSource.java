@@ -41,4 +41,6 @@ public interface VideoDataSource {
     void clearNotExistsVideos();
 
     void deleteVideo(@NonNull String videoId);
+
+    void clearAllVideos();
 }

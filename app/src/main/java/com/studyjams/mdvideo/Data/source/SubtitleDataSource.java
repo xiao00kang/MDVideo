@@ -32,4 +32,6 @@ public interface SubtitleDataSource {
     void saveSubtitle(@NonNull FileItem fileItem);
 
     void clearNotExistsSubtitles();
+
+    void clearAllSubtitles();
 }

@@ -8,12 +8,18 @@
         android:summaryOff="@string/setting_storage_scan_sdcard"
         android:title="@string/setting_storage_scan"/>
 
+    <!--
     <SwitchPreference
         android:defaultValue="true"
         android:key="@string/setting_video_play_key"
         android:summaryOn="@string/setting_video_play_next"
         android:summaryOff="@string/setting_video_play_stop"
         android:title="@string/setting_video_play"/>
+-->
+    <Preference android:title="@string/menu_video_send" >
+        <intent android:action="android.intent.action.SENDTO"
+                android:data="@string/send_share_email" />
+    </Preference>
 
     <com.studyjams.mdvideo.Setting.AboutAuthor
         android:title="@string/pref_about_author"

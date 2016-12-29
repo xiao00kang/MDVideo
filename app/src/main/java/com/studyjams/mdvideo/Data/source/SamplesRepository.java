@@ -145,4 +145,14 @@ public class SamplesRepository implements VideoDataSource,SubtitleDataSource{
 
         void onDataReset();
     }
+
+    @Override
+    public void clearAllSubtitles() {
+
+    }
+
+    @Override
+    public void clearAllVideos() {
+
+    }
 }
