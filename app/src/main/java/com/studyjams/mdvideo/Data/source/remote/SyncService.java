@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 
 import com.studyjams.mdvideo.Data.source.local.SamplesLocalDataSource;
 import com.studyjams.mdvideo.R;
+import com.studyjams.mdvideo.Util.D;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,8 +30,8 @@ public class SyncService extends IntentService {
     private static final String EXTRA_CREATEDDATE = "com.studyjams.mdvideo.CREATEDDATE";
     private static final String EXTRA_SUBTITLEPATH = "com.studyjams.mdvideo.SUBTITLEPATH";
 
-    /**遍历的最大目录层级**/
-    private static final int MAX_FILE_TREE = 2;
+    /**遍历目录层级**/
+    private int fileTree = 2;
     private static final String SEPARATOR = "/";
     private static final String SUBTITLE = ".srt";
 
@@ -107,8 +108,9 @@ public class SyncService extends IntentService {
     private void handleActionTraversal(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         File storage = Environment.getExternalStorageDirectory();
+        fileTree = Integer.valueOf(sharedPref.getString(getString(R.string.setting_storage_scan_tree_key), D.DEFAULT_TREE_FILE));
         final List<FileItem> list;
-        if(sharedPref.getBoolean(getString(R.string.setting_storage_scan_key), false)){
+        if(D.ALL_TREE_FILE == fileTree){
             list = fileTraversalAll(storage,new VideoFileFilter());
         }else{
             list = fileTraversal(storage,new VideoFileFilter());
@@ -171,7 +173,7 @@ public class SyncService extends IntentService {
                         if (!name.isHidden()) {
                             //加入元素
                             int addFileLength = name.getPath().split(SEPARATOR).length;
-                            if (addFileLength - rootFileLength < MAX_FILE_TREE) {
+                            if (addFileLength - rootFileLength < fileTree) {
                                 mQueue.offer(name);
                             }
                         }

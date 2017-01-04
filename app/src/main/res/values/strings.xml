@@ -45,12 +45,6 @@
     <!--设定-->
     <string name="setting_title">设定</string>
 
-    <!--扫描路径 start-->
-    <string name="setting_storage_scan">视频、字幕加载位置</string>
-    <string name="setting_storage_scan_key">storage_scan</string>
-    <string name="setting_storage_scan_all">检索所有路径（加载时间较慢）</string>
-    <string name="setting_storage_scan_sdcard">仅检索用户存储路径</string>
-
     <!--自动播放-->
     <string name="setting_video_play">连续播放</string>
     <string name="setting_video_play_key">video_play</string>
@@ -62,7 +56,32 @@
     <string name="pref_about_author">关于作者</string>
     <string name="pref_about_author_text">这家伙很懒，什么都没留下</string>
 
+    <!--扫描层级-->
+    <string name="setting_storage_scan_tree_key">tree_scan</string>
+    <string name="setting_storage_scan_title">视频文件扫描层级</string>
+    <string-array name="setting_storage_scan_titles">
+        <item>三级目录（默认）</item>
+        <item>四级目录</item>
+        <item>五级目录</item>
+        <item>六级目录</item>
+        <item>七级目录</item>
+        <item>全路径</item>
+    </string-array>
+    <string-array name="setting_storage_scan_values">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>-1</item>
+    </string-array>
 
+    <!--权限-->
+    <string name="permission_storage_write">需要读写外部存储权限</string>
+    <string name="permission_storage_ask_again">需要读写外部存储权限</string>
+    <string name="permission_storage_title">权限设置</string>
+    <string name="permission_storage_again_positive">设置</string>
+    <string name="permission_storage_again_negative">取消</string>
 
     <string name="player_play">play</string>
     <string name="player_pause">pause</string>

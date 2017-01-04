@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="@string/setting_storage_scan_key"
-        android:summaryOn="@string/setting_storage_scan_all"
-        android:summaryOff="@string/setting_storage_scan_sdcard"
-        android:title="@string/setting_storage_scan"/>
-
     <!--
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="@string/setting_video_play_key"
-        android:summaryOn="@string/setting_video_play_next"
-        android:summaryOff="@string/setting_video_play_stop"
-        android:title="@string/setting_video_play"/>
--->
-    <Preference android:title="@string/menu_video_send" >
+       <SwitchPreference
+           android:defaultValue="true"
+           android:key="@string/setting_video_play_key"
+           android:summaryOn="@string/setting_video_play_next"
+           android:summaryOff="@string/setting_video_play_stop"
+           android:title="@string/setting_video_play"/>
+   -->
+    <ListPreference
+        android:defaultValue="2"
+        android:entries="@array/setting_storage_scan_titles"
+        android:entryValues="@array/setting_storage_scan_values"
+        android:key="@string/setting_storage_scan_tree_key"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/setting_storage_scan_title"/>
+
+    <Preference android:title="@string/menu_video_send">
         <intent android:action="android.intent.action.SENDTO"
-                android:data="@string/send_share_email" />
+                android:data="@string/send_share_email"/>
     </Preference>
 
+    <!--
     <com.studyjams.mdvideo.Setting.AboutAuthor
         android:title="@string/pref_about_author"
         android:key="pref_key_storage_settings"/>
-
+-->
 </PreferenceScreen>

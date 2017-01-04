@@ -3,6 +3,7 @@ package com.studyjams.mdvideo.Setting;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 
 import com.studyjams.mdvideo.Data.source.remote.SyncService;
 import com.studyjams.mdvideo.R;
+import com.studyjams.mdvideo.Util.D;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
@@ -27,13 +29,14 @@ public class SettingsActivity extends AppCompatActivity {
         public boolean onPreferenceChange(Preference preference, Object value) {
             Log.d(TAG, "=============onPreferenceChange: " + value);
 
-            if(preference instanceof SwitchPreference){
-
-                if(preference.getKey().equals(preference.getContext().getString(R.string.setting_storage_scan_key))){
+            if(preference instanceof ListPreference){
+                if(preference.getKey().equals(preference.getContext().getString(R.string.setting_storage_scan_tree_key))){
+                    Log.d(TAG, "onPreferenceChange: " + value);
                     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
-                    if((boolean)value != sharedPref.getBoolean(preference.getContext().getString(R.string.setting_storage_scan_key), false)){
+                    if((value).equals(sharedPref.getString(preference.getContext().getString(R.string.setting_storage_scan_tree_key), D.DEFAULT_TREE_FILE))){
                         isLoadChanged = true;
                     }
+
                 }
             }
 
@@ -119,8 +122,7 @@ public class SettingsActivity extends AppCompatActivity {
             addPreferencesFromResource(R.xml.pref_video_setting);
             setHasOptionsMenu(true);
 
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.setting_storage_scan_key)));
-//            bindPreferenceSummaryToValue(findPreference("voice_list"));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.setting_storage_scan_tree_key)));
 //            bindPreferenceSummaryToValue(findPreference("video_switch"));
         }
 

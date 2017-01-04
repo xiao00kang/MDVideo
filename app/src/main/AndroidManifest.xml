@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.studyjams.mdvideo">
 
-    <!--
-    网络访问
+
+    <!--网络访问-->
     <uses-permission android:name="android.permission.INTERNET"/>
-    -->
+
     <!-- 屏幕锁定 -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <!-- 读写SD卡的权限 -->
+    <!-- 读写SD卡的权限,有写权限默认就能读 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!-- 申明自定义权限 -->
     <permission android:name="com.studyjams.mdvideo.PRIVODER"/>
@@ -73,17 +73,6 @@
             android:name=".Data.source.remote.SyncService"
             android:exported="false">
         </service>
-        <!-- 最先启动的activity，用于解决烦人的黑白屏问题
-        <activity
-            android:name=".MainFrame.WelcomeActivity"
-            android:theme="@style/StartActivityTransparent">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
--->
         <activity
             android:name=".Setting.SettingsActivity"
             android:screenOrientation="fullSensor"

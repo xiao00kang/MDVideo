@@ -1,5 +1,6 @@
 package com.studyjams.mdvideo.MainFrame;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -30,8 +31,11 @@ import com.studyjams.mdvideo.Util.D;
 import java.util.ArrayList;
 import java.util.List;
 
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE = 1;
@@ -53,8 +57,16 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initData();
         initView();
-        SyncService.startActionCheck(this);
-        SyncService.startActionTraversal(this);
+
+        /**权限判断**/
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            SyncService.startActionCheck(this);
+            SyncService.startActionTraversal(this);
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.permission_storage_write), EXTERNAL_READ_PERMISSION_GRANT, perms);
+        }
+
     }
 
     private void initData(){
@@ -209,6 +221,42 @@ public class MainActivity extends AppCompatActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    //成功
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        // Some permissions have been granted
+        SyncService.startActionCheck(this);
+        SyncService.startActionTraversal(this);
+    }
+
+    //失败
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        // Some permissions have been denied
+        // ...
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this, getString(R.string.permission_storage_ask_again))
+                    .setTitle(getString(R.string.permission_storage_title))
+                    .setPositiveButton(getString(R.string.permission_storage_again_positive))
+                    .setNegativeButton(getString(R.string.permission_storage_again_negative), null /* click listener */)
+                    .setRequestCode(EXTERNAL_READ_PERMISSION_GRANT)
+                    .build()
+                    .show();
+        }else{
+            //拒绝权限
+            this.finish();
+        }
+    }
+
 
     /**
      * Share with friends
