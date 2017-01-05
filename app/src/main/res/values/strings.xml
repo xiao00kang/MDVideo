@@ -77,8 +77,8 @@
     </string-array>
 
     <!--权限-->
-    <string name="permission_storage_write">需要访问外部存储权限</string>
-    <string name="permission_storage_ask_again">需要访问外部存储权限</string>
+    <string name="permission_storage_write">允许访问外部存储设备？</string>
+    <string name="permission_storage_ask_again">访问外部存储权限关闭，是否前去设置？</string>
     <string name="permission_storage_title">权限设置</string>
     <string name="permission_storage_again_positive">设置</string>
     <string name="permission_storage_again_negative">取消</string>
