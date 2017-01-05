@@ -58,7 +58,7 @@
 
     <!--扫描层级-->
     <string name="setting_storage_scan_tree_key">tree_scan</string>
-    <string name="setting_storage_scan_title">视频文件扫描层级</string>
+    <string name="setting_storage_scan_title">视频文件访问层级</string>
     <string-array name="setting_storage_scan_titles">
         <item>三级目录（默认）</item>
         <item>四级目录</item>
@@ -77,8 +77,8 @@
     </string-array>
 
     <!--权限-->
-    <string name="permission_storage_write">需要读写外部存储权限</string>
-    <string name="permission_storage_ask_again">需要读写外部存储权限</string>
+    <string name="permission_storage_write">需要访问外部存储权限</string>
+    <string name="permission_storage_ask_again">需要访问外部存储权限</string>
     <string name="permission_storage_title">权限设置</string>
     <string name="permission_storage_again_positive">设置</string>
     <string name="permission_storage_again_negative">取消</string>
