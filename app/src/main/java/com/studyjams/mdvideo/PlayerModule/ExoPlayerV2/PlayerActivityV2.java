@@ -48,6 +48,7 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -56,10 +57,8 @@ import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedTrackInfo;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelections;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -68,6 +67,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.studyjams.mdvideo.BuildConfig;
 import com.studyjams.mdvideo.Data.source.local.SamplesPersistenceContract;
 import com.studyjams.mdvideo.MainFrame.MainActivity;
 import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
@@ -94,8 +94,7 @@ import static com.google.android.exoplayer2.C.TYPE_SS;
 /**
  * An activity that plays media using {@link SimpleExoPlayer}.
  */
-public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.EventListener,
-        TrackSelector.EventListener<MappedTrackInfo>,VideoMenuDialog.VideoSelected{
+public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.EventListener, VideoMenuDialog.VideoSelected{
     private static final String TAG = "PlayerActivityV2";
 
     public static final String DRM_SCHEME_UUID_EXTRA = "drm_scheme_uuid";
@@ -340,19 +339,37 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
                 }
             }
 
-            eventLogger = new EventLogger();
+            @SimpleExoPlayer.ExtensionRendererMode int extensionRendererMode = useExtensionRenderers()
+                            ? (preferExtensionDecoders ? SimpleExoPlayer.EXTENSION_RENDERER_MODE_PREFER
+                            : SimpleExoPlayer.EXTENSION_RENDERER_MODE_ON)
+                            : SimpleExoPlayer.EXTENSION_RENDERER_MODE_OFF;
             TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(BANDWIDTH_METER);
-            trackSelector = new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
-            trackSelector.addListener(this);
-            trackSelector.addListener(eventLogger);
+            trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
             trackSelectionHelper = new TrackSelectionHelper(trackSelector, videoTrackSelectionFactory);
             player = ExoPlayerFactory.newSimpleInstance(this, trackSelector, new DefaultLoadControl(),
-                    drmSessionManager, preferExtensionDecoders);
+                    drmSessionManager, extensionRendererMode);
             player.addListener(this);
+
+            eventLogger = new EventLogger(trackSelector);
             player.addListener(eventLogger);
             player.setAudioDebugListener(eventLogger);
             player.setVideoDebugListener(eventLogger);
             player.setId3Output(eventLogger);
+
+
+//            eventLogger = new EventLogger();
+//            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(BANDWIDTH_METER);
+//            trackSelector = new DefaultTrackSelector(mainHandler, videoTrackSelectionFactory);
+//            trackSelector.addListener(this);
+//            trackSelector.addListener(eventLogger);
+//            trackSelectionHelper = new TrackSelectionHelper(trackSelector, videoTrackSelectionFactory);
+//            player = ExoPlayerFactory.newSimpleInstance(this, trackSelector, new DefaultLoadControl(),
+//                    drmSessionManager, preferExtensionDecoders);
+//            player.addListener(this);
+//            player.addListener(eventLogger);
+//            player.setAudioDebugListener(eventLogger);
+//            player.setVideoDebugListener(eventLogger);
+//            player.setId3Output(eventLogger);
             simpleExoPlayerView.setPlayer(player);
 
             //关联mediaController
@@ -413,6 +430,9 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
     }
 
 
+    public boolean useExtensionRenderers() {
+        return BuildConfig.FLAVOR.equals("withExtensions");
+    }
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
         int type = Util.inferContentType(!TextUtils.isEmpty(overrideExtension) ? "." + overrideExtension
@@ -578,15 +598,31 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
 
     // MappingTrackSelector.EventListener implementation
 
+//    @Override
+//    public void onTrackSelectionsChanged(TrackSelections<? extends MappedTrackInfo> trackSelections) {
+////        updateButtonVisibilities();
+//        MappedTrackInfo trackInfo = trackSelections.info;
+//        if (trackInfo.hasOnlyUnplayableTracks(C.TRACK_TYPE_VIDEO)) {
+//            showToast(R.string.error_unsupported_video);
+//        }
+//        if (trackInfo.hasOnlyUnplayableTracks(C.TRACK_TYPE_AUDIO)) {
+//            showToast(R.string.error_unsupported_audio);
+//        }
+//    }
+
+
     @Override
-    public void onTrackSelectionsChanged(TrackSelections<? extends MappedTrackInfo> trackSelections) {
-//        updateButtonVisibilities();
-        MappedTrackInfo trackInfo = trackSelections.info;
-        if (trackInfo.hasOnlyUnplayableTracks(C.TRACK_TYPE_VIDEO)) {
-            showToast(R.string.error_unsupported_video);
-        }
-        if (trackInfo.hasOnlyUnplayableTracks(C.TRACK_TYPE_AUDIO)) {
-            showToast(R.string.error_unsupported_audio);
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+        MappingTrackSelector.MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
+        if (mappedTrackInfo != null) {
+            if (mappedTrackInfo.getTrackTypeRendererSupport(C.TRACK_TYPE_VIDEO)
+                    == MappingTrackSelector.MappedTrackInfo.RENDERER_SUPPORT_UNSUPPORTED_TRACKS) {
+                showToast(R.string.error_unsupported_video);
+            }
+            if (mappedTrackInfo.getTrackTypeRendererSupport(C.TRACK_TYPE_AUDIO)
+                    == MappingTrackSelector.MappedTrackInfo.RENDERER_SUPPORT_UNSUPPORTED_TRACKS) {
+                showToast(R.string.error_unsupported_audio);
+            }
         }
     }
 

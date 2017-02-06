@@ -5,7 +5,7 @@
     <string name="app_name">BLACK&#9733;ROCK</string>
     <!--导航菜单-->
     <string name="menu_video_local">Local</string>
-    <string name="menu_video_history" translatable="false">Record</string>
+    <string name="menu_video_history">Record</string>
     <string name="menu_video_subtitle">subtitle</string>
 
     <string name="menu_video_share">Share</string>
@@ -26,8 +26,25 @@
     <string name="player_play_history">Watched to：</string>
     <string name="player_play_end">Watched End</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="setting_storage_scan_title">File access depth setting</string>
+    <string-array name="setting_storage_scan_titles">
+        <item>Three(default)</item>
+        <item>Four</item>
+        <item>Five</item>
+        <item>Six</item>
+        <item>Seven</item>
+        <item>All</item>
+    </string-array>
+
+    <!--设定-->
+    <string name="setting_title">Setting</string>
+
+    <!--权限-->
+    <string name="permission_storage_write">Allow access to external storage?</string>
+    <string name="permission_storage_ask_again">Access to external storage permissions to shut down, go to set?</string>
+    <string name="permission_storage_title">Permissions setting</string>
+    <string name="permission_storage_again_positive">Setting</string>
+    <string name="permission_storage_again_negative">Cancel</string>
 
     <!--playerDemo-->
     <string name="player_menu_title">video list</string>

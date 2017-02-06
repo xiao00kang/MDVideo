@@ -38,6 +38,8 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.util.Util;
 import com.studyjams.mdvideo.PlayerModule.EventBusMessage.ControllerMessage;
 import com.studyjams.mdvideo.R;
@@ -695,6 +697,11 @@ public class MediaControlView extends FrameLayout implements View.OnTouchListene
 
   private final class ComponentListener implements ExoPlayer.EventListener,
       SeekBar.OnSeekBarChangeListener, OnClickListener {
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+    }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {

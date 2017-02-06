@@ -35,7 +35,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <!--playerDemo-->
     <!--格式例子：下午 3：40 -->
     <string name="player_system_time">aa&#160;&#160;h:mm</string>
     <string name="player_time_separator">/</string>
@@ -58,13 +57,13 @@
 
     <!--扫描层级-->
     <string name="setting_storage_scan_tree_key">tree_scan</string>
-    <string name="setting_storage_scan_title">视频文件访问层级</string>
+    <string name="setting_storage_scan_title">文件访问深度设定</string>
     <string-array name="setting_storage_scan_titles">
-        <item>三级目录（默认）</item>
-        <item>四级目录</item>
-        <item>五级目录</item>
-        <item>六级目录</item>
-        <item>七级目录</item>
+        <item>三级（默认）</item>
+        <item>四级</item>
+        <item>五级</item>
+        <item>六级</item>
+        <item>七级</item>
         <item>全路径</item>
     </string-array>
     <string-array name="setting_storage_scan_values">
