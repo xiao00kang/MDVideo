@@ -73,15 +73,15 @@ public class LocalVideoCursorAdapter extends RecyclerViewCursorAdapter<LocalVide
     /**
      * ViewHolder used to display a movie name.
      */
-    public class VideoViewHolder extends RecyclerViewCursorViewHolder {
+     class VideoViewHolder extends RecyclerViewCursorViewHolder {
 
-        public final ImageView mThumbnail;
-        public final TextView mTitle;
-        public final TextView mInfo;
-        public final TextView mSize;
-        public final View mParent;
+        private final ImageView mThumbnail;
+        private final TextView mTitle;
+        private final TextView mInfo;
+        private final TextView mSize;
+        private final View mParent;
 
-        public VideoViewHolder(View view) {
+        private VideoViewHolder(View view) {
             super(view);
 
             mParent = view;
