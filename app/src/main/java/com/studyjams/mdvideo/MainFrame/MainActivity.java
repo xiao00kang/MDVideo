@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity
         mData = new ArrayList<>();
         mData.add(getResources().getString(R.string.menu_video_local));
         mData.add(getResources().getString(R.string.menu_video_history));
-//        mData.add(getResources().getString(R.string.menu_video_subtitle));
+//      mData.add(getResources().getString(R.string.menu_video_subtitle));
 
 
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -151,10 +152,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
-//        MenuItem searchViewMenuItem = menu.findItem(R.id.action_search);
-//        SearchView searchView = (SearchView) searchViewMenuItem.getActionView();
-
         return true;
     }
 
@@ -175,7 +172,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         switch(item.getItemId()){
 
@@ -256,7 +253,6 @@ public class MainActivity extends AppCompatActivity
             this.finish();
         }
     }
-
 
     /**
      * Share with friends

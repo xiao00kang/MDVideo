@@ -164,8 +164,6 @@ public class VideoPlayHistoryFragment extends Fragment implements VideoPlayHisto
         getActivity().getContentResolver().unregisterContentObserver(mVideoObserver);
     }
 
-
-
     private class VideoObserver extends ContentObserver {
 
         public VideoObserver(Handler handler) {
@@ -178,6 +176,7 @@ public class VideoPlayHistoryFragment extends Fragment implements VideoPlayHisto
             //此处可以进行相应的业务处理
             mPresenter.refreshData();
         }
+
     }
 
     private static class MyHandler extends Handler {

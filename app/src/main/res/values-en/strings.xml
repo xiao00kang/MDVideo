@@ -2,7 +2,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="app_name">BLACK&#9733;ROCK</string>
+    <string name="app_name">BLACK ROCK</string>
     <!--导航菜单-->
     <string name="menu_video_local">Local</string>
     <string name="menu_video_history">Record</string>

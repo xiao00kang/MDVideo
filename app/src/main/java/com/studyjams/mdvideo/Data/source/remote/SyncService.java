@@ -12,7 +12,6 @@ import com.studyjams.mdvideo.R;
 import com.studyjams.mdvideo.Util.D;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -160,7 +159,7 @@ public class SyncService extends IntentService {
     private List<FileItem> fileTraversal(File root, VideoFileFilter filter) {
 
         Queue<File> mQueue = new LinkedList<>();
-        List<FileItem> list = new ArrayList<>();
+        List<FileItem> list = new LinkedList<>();
         int rootFileLength = root.getPath().split(SEPARATOR).length;
         boolean status = mQueue.offer(root);
         if (status) {
@@ -204,7 +203,7 @@ public class SyncService extends IntentService {
     private List<FileItem> fileTraversalAll(File root, VideoFileFilter filter) {
 
         Queue<File> mQueue = new LinkedList<>();
-        List<FileItem> list = new ArrayList<>();
+        List<FileItem> list = new LinkedList<>();
         boolean status = mQueue.offer(root);
         if (status) {
             while (!mQueue.isEmpty()) {

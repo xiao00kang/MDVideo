@@ -272,8 +272,7 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
 //                    trackSelector.getCurrentSelections().info, (int) view.getTag());
 //        }
 //    }
-
-    // PlaybackControlView.VisibilityListener implementation
+//   PlaybackControlView.VisibilityListener implementation
 //
 //    @Override
 //    public void onVisibilityChange(int visibility) {
@@ -609,7 +608,7 @@ public class PlayerActivityV2 extends AppCompatActivity implements ExoPlayer.Eve
 //            showToast(R.string.error_unsupported_audio);
 //        }
 //    }
-
+//
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
